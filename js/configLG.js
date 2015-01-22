@@ -30,16 +30,16 @@ define([], function () {
         // 5.  Specify URLs for base maps                    - [ Tag(s) to look for: BaseMapLayers ]
         // 6.  Specify URLs for operational layers           - [ Tag(s) to look for: OperationalLayers]
         // 7.  Customize zoom level for address search       - [ Tag(s) to look for: ZoomLevel ]
-        // 8.  Customize address search settings            - [ Tag(s) to look for: LocatorSettings]
-        // 9.  Set URL for geometry service                 - [ Tag(s) to look for: GeometryService ]
+        // 8.  Customize address search settings             - [ Tag(s) to look for: LocatorSettings]
+        // 9.  Set URL for geometry service                  - [ Tag(s) to look for: GeometryService ]
         // 10. Specify URLs for map sharing                  - [ Tag(s) to look for: MapSharingOptions,TinyURLServiceURL, TinyURLResponseAttribute, FacebookShareURL, TwitterShareURL, ShareByMailLink ]
-        // 11.  Specify header widget settings                - [ Tag(s) to look for: AppHeaderWidgets ]
+        // 11.  Specify header widget settings               - [ Tag(s) to look for: AppHeaderWidgets ]
 
         // ------------------------------------------------------------------------------------------------------------------------
         // GENERAL SETTINGS
         // ------------------------------------------------------------------------------------------------------------------------
         // Set application title
-        ApplicationName: "Site Selector",
+        ApplicationName: "Naperville Site Selector",
 
         // Set application icon path
         ApplicationIcon: "/js/library/themes/images/site-selector-logo.png",
@@ -51,11 +51,11 @@ define([], function () {
         HelpURL: "help.htm",
 
         // Set custom logo url, displayed in lower left corner. Set to empty "" to disable.
-        CustomLogoUrl: "The Site Selector application helps individuals and businesses to explore a region and discover information that can aid in business decision-making. To locate Building(s) or Site(s) that are for sale or lease, select the Building or Site tab, enter an address in the search box, or use your current location, adjust the search parameters, and search. The building(s) or site(s) will be listed on the map with relevant information about available locations meeting your search criteria. To explore Business(es) or Communities, select the Business or Communities tab, enter an address in the search box, or use your current location, adjust the search parameters, and select enter. The Business(es) or Communities will then be listed on the map with relevant information meeting your search criteria.",
+        CustomLogoUrl: "",
 
         // Set splash window content - Message that appears when the application starts
         SplashScreen: {
-            SplashScreenContent: "",
+            SplashScreenContent: "The <b>Site Selector</b> application helps individuals and businesses to explore a region and discover information that can aid in business decision-making.</br>To locate Building(s) or Site(s) that are for sale or lease, select the Building or Site tab, enter an address in the search box, or use your current location, adjust the search parameters, and search. The building(s) or site(s) will be listed on the map with relevant information about available locations meeting your search criteria. </b>To explore Business(es), select the Business tab, enter an address in the search box, or use your current location, adjust the search parameters, and select enter. The Business(es) will then be listed on the map with relevant information meeting your search criteria.",
             IsVisible: true
         },
 
@@ -141,38 +141,39 @@ define([], function () {
                 Enabled: true,
                 SearchSettings: [
                     {
-                        Title: "Improved Sites",
-                        QueryLayerId: "0",
-                        SearchDisplayTitle: "Improved Sites",
-                        SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
-                        SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
+                    	Title: "Improved Sites",
+                    	QueryLayerId: "0",
+                    	SearchDisplayTitle: "Improved Sites",
+                    	SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
+                    	SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
 
-                        FilterSettings: {
-                            FilterRangeFields: [
+                    	FilterSettings: {
+                    		FilterRangeFields: [
                                 {
-                                    DisplayText: "Area (sqft)",
-                                    FieldName: "BLDGAREA"
+                                	DisplayText: "Area (sqft)",
+                                	FieldName: "BLDGAREA"
                                 }
-                            ],
-                            RegularFilterOptionFields: [
-                            ],
+                    		],
+                    		RegularFilterOptionFields: [
+								
 
+                            ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
-                                FilterFieldName: "ZONEDESC",
+                                FilterFieldName: "FACTYPE",
                                 FilterOptions: [
                                     {
-                                        DisplayText: "Agricultural",
-                                        FieldValue: "Agricultural"
-                                    }, {
-                                        DisplayText: "Industrial",
-                                        FieldValue: "Industrial"
-                                    }, {
                                         DisplayText: "Office",
-                                        FieldValue: "Office"
+                                        FieldValue: "Office Building"
                                     }, {
                                         DisplayText: "Retail",
-                                        FieldValue: "Retail"
+                                        FieldValue: "Retail Building"
+                                    }, {
+                                        DisplayText: "Warehouse",
+                                        FieldValue: "Warehouse Building"
+                                    }, {
+                                        DisplayText: "Industrial",
+                                        FieldValue: "Industrial Building"
                                     }
                                 ]
                             }
@@ -192,21 +193,13 @@ define([], function () {
                                 FieldName: "FULLADDR",
                                 SortingEnabled: false
                             }, {
-                                DisplayText: "Municipality:",
-                                FieldName: "MUNICIPALITY",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY",
-                                SortingEnabled: true
-                            }, {
                                 DisplayText: "Area (sqft):",
                                 FieldName: "BLDGAREA",
                                 SortingEnabled: true
+                            }, {
+                            	DisplayText: "Zoning Classification:",
+                            	FieldName: "ZONEDESC",
+                            	SortingEnabled: true
                             }
 
                         ]
@@ -314,24 +307,37 @@ define([], function () {
                                 }
                             ],
                             RegularFilterOptionFields: [
+							{
+								DisplayText: "Sewer Service",
+								FieldName: "SEWER",
+								FieldValue: "Yes"
+							}, {
+								DisplayText: "Water Service",
+								FieldName: "WATER",
+								FieldValue: "Yes"
+							}, {
+								DisplayText: "Gas Service",
+								FieldName: "GAS",
+								FieldValue: "Yes"
+							}
                             ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
-                                    {
-                                        DisplayText: "Residential",
-                                        FieldValue: "Residential"
-                                    }, {
-                                        DisplayText: "Industrial",
-                                        FieldValue: "Industrial"
-                                    }, {
-                                        DisplayText: "Office",
-                                        FieldValue: "Office"
-                                    }, {
-                                        DisplayText: "Retail",
-                                        FieldValue: "Retail"
-                                    }
+                                       {
+                                       	DisplayText: "Industrial (I-2) Zone",
+                                       	FieldValue: "I-2"
+                                       }, {
+                                       	DisplayText: "Commerical (C-1) Zone",
+                                       	FieldValue: "C-1"
+                                       }, {
+                                       	DisplayText: "Commercial (C-2) Zone",
+                                       	FieldValue: "C-2"
+                                       }, {
+                                       	DisplayText: "Planned Use Development (PUD) Zone",
+                                       	FieldValue: "PUD"
+                                       }
                                 ]
                             }
                         }
@@ -342,26 +348,23 @@ define([], function () {
                         ShowAttachments: true,
                         DisplayFields: [
                             {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME",
-                                SortingEnabled: true
+                            	DisplayText: "Name:",
+                            	FieldName: "FACNAME",
+                            	SortingEnabled: true
                             }, {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR",
-                                SortingEnabled: true
+                            	DisplayText: "Address:",
+                            	FieldName: "FULLADDR",
+                            	SortingEnabled: false
                             }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY",
-                                SortingEnabled: false
+                            	DisplayText: "Area (sqft):",
+                            	FieldName: "BLDGAREA",
+                            	SortingEnabled: true
                             }, {
-                                DisplayText: "Area (acres):",
-                                FieldName: "TOTAREA",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP",
-                                SortingEnabled: false
+                            	DisplayText: "Zoning Classification:",
+                            	FieldName: "ZONEDESC",
+                            	SortingEnabled: true
                             }
+
                         ]
                     },
                     LayerContents: {
