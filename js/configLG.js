@@ -63,9 +63,9 @@ define([], function () {
 
         PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
-        BasemapGroupTitle: "Basemapsdev",
+        BasemapGroupTitle: "ArcGIS for Local Government TryItLive Basemaps",
         // Specify the user name of owner of the group that contains basemaps
-        BasemapGroupOwner: "lkingdev",
+        BasemapGroupOwner: "ArcGISforLocalGovTryIt",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
         // Specify path to image used to display the thumbnail for a basemap when portal does not provide it
