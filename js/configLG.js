@@ -39,7 +39,7 @@ define([], function () {
         // GENERAL SETTINGS
         // ------------------------------------------------------------------------------------------------------------------------
         // Set application title
-        ApplicationName: "Naperville Site Selector",
+        ApplicationName: "Site Selector",
 
         // Set application icon path
         ApplicationIcon: "/js/library/themes/images/site-selector-logo.png",
@@ -55,7 +55,7 @@ define([], function () {
 
         // Set splash window content - Message that appears when the application starts
         SplashScreen: {
-            SplashScreenContent: "The <b>Site Selector</b> application helps individuals and businesses to explore a region and discover information that can aid in business decision-making.</br>To locate Building(s) or Site(s) that are for sale or lease, select the Building or Site tab, enter an address in the search box, or use your current location, adjust the search parameters, and search. The building(s) or site(s) will be listed on the map with relevant information about available locations meeting your search criteria. </b>To explore Business(es), select the Business tab, enter an address in the search box, or use your current location, adjust the search parameters, and select enter. The Business(es) will then be listed on the map with relevant information meeting your search criteria.",
+            SplashScreenContent: "The <b>Site Selector</b> application helps business owners and corporations search for and locate available buildings and sites, and combine their property search with key community and business demographic information.   Access to this information facilitates better business decisions and helps to ensure that investments in the area are sustainable and align with their corporate vision.</br>Search for a building, site, or business to access detailed property or demographic information and generate reports that can be shared with others.",
             IsVisible: true
         },
 
