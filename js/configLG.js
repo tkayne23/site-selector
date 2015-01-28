@@ -55,7 +55,7 @@ define([], function () {
 
         // Set splash window content - Message that appears when the application starts
         SplashScreen: {
-            SplashScreenContent: "The <b>Site Selector</b> application helps business owners and corporations search for and locate available buildings and sites, and combine their property search with key community and business demographic information.   Access to this information facilitates better business decisions and helps to ensure that investments in the area are sustainable and align with their corporate vision.</br>Search for a building, site, or business to access detailed property or demographic information and generate reports that can be shared with others.",
+            SplashScreenContent: "The <b>Site Selector</b> application helps business owners and corporations search for and locate available buildings and sites, and combine their property search with key community and business demographic information. Access to this information facilitates better business decisions and helps to ensure that investments in the area are sustainable and align with their corporate vision.</br></br>Search for a building, site, or business to access detailed property or demographic information and generate reports that can be shared with others.",
             IsVisible: true
         },
 
@@ -504,8 +504,7 @@ define([], function () {
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
                                     FieldName: "Industry.CIVLBFR_CY"
-                                },
-                                {
+                                }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
                                 }, {
@@ -586,8 +585,7 @@ define([], function () {
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
                                     FieldName: "Industry.CIVLBFR_CY"
-                                },
-                                {
+                                }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
                                 }, {
