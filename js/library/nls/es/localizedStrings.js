@@ -1,4 +1,5 @@
 ﻿/*global define */
+/*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
 | Version 10.2
 | Copyright 2013 Esri
@@ -16,14 +17,62 @@
 | limitations under the License.
 */
 define({
+    root: {
+        showNullValue: "@es@ N/A",
+        buttons: {
+            okButtonText: "@es@ OK",
+            link: "@es@ Link",
+            email: "correo electrónico",  // Shown next to icon for sharing the current map extents via email; works with shareViaEmail tooltip
+            facebook: "Facebook",  // Shown next to icon for sharing the current map extents via a Facebook post; works with shareViaFacebook tooltip
+            twitter: "Twitter",  // Shown next to icon for sharing the current map extents via a Twitter tweet; works with shareViaTwitter tooltip
+            embedding: "@es@ Embedded URL"
+        },
+        tooltips: {
+            search: "Buscar",
+            reports: "@es@ Site Selector",
+            locate: "Ubicación actual",
+            share: "Compartir",
+            help: "Ayuda",
+            clearEntry: "@es@ Clear",
+            previous: "@es@ Previous",
+            next: "@es@ Next"
+        },
         titles: {
-            informationDisplayText: "@@511 Information",
-            reRouteDisplayText: "@@Traffic Incidents found on this road"
+            informationPanelTitle: "@es@ Information for current map view",
+            searchBuildingText: "@es@ Search buildings near an address",
+            hideText: "@es@ Hide more options",
+            showText: "@es@ Show more options",
+            sliderDisplayText: "@es@ Show results within ",
+            communityText: "@es@ Search communities by city, county or region",
+            searchCommunityText: "@es@ Search communities in",
+            searchBusinessText: "@es@ Search business near an address",
+            serachSiteText: "@es@ Search sites near an address",
+            countStatus: "de",
+            webpageDisplayText: "@es@ Copy/Paste HTML into your web page",
+            textDownload: "@es@ Download",
+            result: "@es@ Back To Result",
+            sortBy: "@es@  Sort by",
+            select: "@es@ Select",
+            toText: "@es@ to",
+            fromText: "@es@ from"
         },
-        messages: {
-            splashScreenContent: "Estaremos desgarrando los profesionales nunca se han detenido, ni desea Cilla consectetaur dinero, sino porque se producen de vez en cuando las circunstancias en las que trabajo y el dolor pueden procurarle algún gran . Para tomar un ejemplo trivial , lo que de nosotros se compromete ejercicio físico laborioso , excepto para obtener alguna ventaja de ello. Actualmente tenemos en el tren llega a encontrar defectos en que no produce placer resultante es que las aplicaciones en línea . Estos casos son perfectamente cuenta del sistema, que tienen la culpa taller quae dejar suaviza recomendamos . Libro Conscient para usted para hacer frente a los hechos y las leyes de castigo. Estaremos desgarrando los profesionales nunca se han detenido, ni desea Cilla consectetaur dinero, sino porque se producen de vez en cuando las circunstancias en las que trabajo y el dolor pueden procurarle algún gran . Para tomar un ejemplo trivial , lo que de nosotros se compromete ejercicio físico laborioso , excepto para obtener alguna ventaja de ello. Actualmente tenemos en el tren llega a encontrar defectos en que no produce placer resultante es que las aplicaciones en línea . Estos casos son perfectamente cuenta del sistema, que tienen la culpa taller quae dejar suaviza recomendamos . Libro Conscient para usted para hacer frente a los hechos y las leyes de castigo. Estaremos desgarrando los profesionales nunca se han detenido, ni desea Cilla consectetaur dinero, sino porque se producen de vez en cuando las circunstancias en las que trabajo y el dolor pueden procurarle algún gran . Para tomar un ejemplo trivial , lo que de nosotros se compromete ejercicio físico laborioso , excepto para obtener alguna ventaja de ello. Actualmente tenemos en el tren llega a encontrar defectos en que no produce placer resultante es que las aplicaciones en línea . Estos casos son perfectamente cuenta del sistema, que tienen la culpa taller quae dejar suaviza recomendamos . Libro Conscient para usted para hacer frente a los hechos y las leyes de castigo. Estaremos desgarrando los profesionales nunca se han detenido, ni desea Cilla consectetaur dinero, sino porque se producen de vez en cuando las circunstancias en las que trabajo y el dolor pueden procurarle algún gran . Para tomar un ejemplo trivial , lo que de nosotros se compromete ejercicio físico laborioso , excepto para obtener alguna ventaja de ello. Actualmente tenemos en el tren llega a encontrar defectos en que no produce placer resultante es que las aplicaciones en línea . Estos casos son perfectamente cuenta del sistema, que tienen la culpa taller quae dejar suaviza recomendamos . Libro Conscient para usted para hacer frente a los hechos y las leyes de castigo."
-        },
-        notUsed: {
-            incidentInformationDisplayText: "@@Incident Information"
+        errorMessages: {
+            invalidSearch: "@es@ No results found",
+            downloadError: "@es@ Unable to complete operation",
+            geometryIntersectError: "@es@ The searched area is outside the area of interest and will not be analyzed.",
+            falseConfigParams: "@es@ Required configuration key values are either null or not exactly matching with layer attributes. This message may appear multiple times",
+            invalidLocation: "@es@ Current location not found",
+            invalidProjection: "@es@ Unable to plot current location on the map",
+            widgetNotLoaded: "@es@ Unable to load widgets.",
+            shareLoadingFailed: "@es@ Unable to load share options",
+            shareFailed: "@es@ Unable to share",
+            invalidBasemapQuery: "@es@ Invalid BasemapQuery",
+            noBasemap: "@es@ No Basemap Found",
+            disableTab: "@es@ Enable at least one tab",
+            bufferSliderValue: "@es@ Buffer slider should not be set to zero distance",
+            invalidInput: "@es@ Plese enter valid input",
+            unableToSort: "@es@ Unable to sort",
+            portalUrlNotFound: "@es@ Portal URL cannot be empty"
         }
+    }
 });
