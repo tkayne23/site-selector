@@ -99,7 +99,7 @@ define([], function () {
         DistanceUnitSettings: {
             DistanceUnitName: "Miles", // Allowed values for DistanceUnitName are "Miles", "Kilometers", "Meters" and "Feet".
             MinimumValue: 1,
-            MaximumValue: 10
+            MaximumValue: 20
         },
 
         // Set buffer symbology
