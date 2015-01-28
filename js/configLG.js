@@ -134,7 +134,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "a4ae42ba5a2645f4a575299c4b1664b4",
+        WebMapId: "2ef11dad8ff04178b2b236e867e9c952",
         Workflows: [
             {
                 Name: "Buildings",
@@ -394,7 +394,7 @@ define([], function () {
                     },
                     GeoenrichmentDistance: {
                         Unit: "UNIT_STATUTE_MILE",
-                        BufferDistance: 1
+                        BufferDistance: 2
                     },
                     GeoEnrichmentContents: {
                         DisplayTitle: "Neighborhood Information",
