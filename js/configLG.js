@@ -226,6 +226,36 @@ define([], function () {
                             }, {
                                 DisplayText: "Area (sqft):",
                                 FieldName: "BLDGAREA"
+                            }, {
+                                DisplayText: "Incentives:",
+                                FieldName: "INCENTIVE"
+                            }, {
+                                DisplayText: "Gas:",
+                                FieldName: "GAS"
+                            }, {
+                                DisplayText: "Electric:",
+                                FieldName: "ELECTRIC"
+                            }, {
+                                DisplayText: "Water:",
+                                FieldName: "WATER"
+                            }, {
+                                DisplayText: "Sewer:",
+                                FieldName: "SEWER"
+                            }, {
+                                DisplayText: "Telco:",
+                                FieldName: "TELCO"
+                            }, {
+                                DisplayText: "High-Speed ISP:",
+                                FieldName: "ISP"
+                            }, {
+                                DisplayText: "Contact Name:",
+                                FieldName: "POCNAME"
+                            }, {
+                                DisplayText: "Company Name:",
+                                FieldName: "POCCOMP"
+                            }, {
+                                DisplayText: "Contact Phone:",
+                                FieldName: "POCPHONE"
                             }
                         ]
                     },
@@ -389,6 +419,54 @@ define([], function () {
                             }, {
                                 DisplayText: "Area (acres):",
                                 FieldName: "TOTAREA"
+                            }, {
+                                DisplayText: "Incentives:",
+                                FieldName: "INCENTIVE"
+                            }, {
+                                DisplayText: "Gas:",
+                                FieldName: "GAS"
+                            }, {
+                                DisplayText: "Distance to Gas (Mi):",
+                                FieldName: "DISTGAS"
+                            }, {
+                                DisplayText: "Electric:",
+                                FieldName: "ELECTRIC"
+                            }, {
+                                DisplayText: "Distance to Electric (Mi):",
+                                FieldName: "DISTELEC"
+                            }, {
+                                DisplayText: "Water:",
+                                FieldName: "WATER"
+                            }, {
+                                DisplayText: "Distance to Water (Mi):",
+                                FieldName: "DISTWATER"
+                            }, {
+                                DisplayText: "Sewer:",
+                                FieldName: "SEWER"
+                            }, {
+                                DisplayText: "Distance to Sewer (Mi):",
+                                FieldName: "DISTSEWER"
+                            }, {
+                                DisplayText: "Telco:",
+                                FieldName: "TELCO"
+                            }, {
+                                DisplayText: "Distance to Telco (Mi):",
+                                FieldName: "DISTTELCO"
+                            }, {
+                                DisplayText: "High-Speed ISP:",
+                                FieldName: "ISP"
+                            }, {
+                                DisplayText: "Distance to High-Speed ISP (Mi):",
+                                FieldName: "DISTISP"
+                            }, {
+                                DisplayText: "Contact Name:",
+                                FieldName: "POCNAME"
+                            }, {
+                                DisplayText: "Company Name:",
+                                FieldName: "POCCOMP"
+                            }, {
+                                DisplayText: "Contact Phone:",
+                                FieldName: "POCPHONE"
                             }
                         ]
                     },
