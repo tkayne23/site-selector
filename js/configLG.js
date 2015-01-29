@@ -221,7 +221,7 @@ define([], function () {
                                 DisplayText: "Zipcode:",
                                 FieldName: "SITEZIP"
                             }, {
-                                DisplayText: "Type:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC"
                             }, {
                                 DisplayText: "Area (sqft):",
@@ -360,7 +360,7 @@ define([], function () {
                             	FieldName: "BLDGAREA",
                             	SortingEnabled: true
                             }, {
-                            	DisplayText: "Zoning Classification:",
+                            	DisplayText: "Zoning:",
                             	FieldName: "ZONEDESC",
                             	SortingEnabled: true
                             }
@@ -384,7 +384,7 @@ define([], function () {
                                 DisplayText: "Zipcode:",
                                 FieldName: "SITEZIP"
                             }, {
-                                DisplayText: "Type:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC"
                             }, {
                                 DisplayText: "Area (acres):",
