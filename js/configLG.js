@@ -653,7 +653,7 @@ define([], function () {
                 height: 35
             },
             DisplayText: "Address",
-            LocatorDefaultAddress: "1215 Hidden Springs, Naperville, Illinois, 60540",
+            LocatorDefaultAddress: "1100 Hidden Springs, Naperville, Illinois, 60540",
             LocatorParameters: {
                 SearchField: "SingleLine",
                 SearchBoundaryField: "searchExtent"
