@@ -30,10 +30,10 @@ define([], function () {
         // 5.  Specify URLs for base maps                    - [ Tag(s) to look for: BaseMapLayers ]
         // 6.  Specify URLs for operational layers           - [ Tag(s) to look for: OperationalLayers]
         // 7.  Customize zoom level for address search       - [ Tag(s) to look for: ZoomLevel ]
-        // 8.  Customize address search settings            - [ Tag(s) to look for: LocatorSettings]
-        // 9.  Set URL for geometry service                 - [ Tag(s) to look for: GeometryService ]
+        // 8.  Customize address search settings             - [ Tag(s) to look for: LocatorSettings]
+        // 9.  Set URL for geometry service                  - [ Tag(s) to look for: GeometryService ]
         // 10. Specify URLs for map sharing                  - [ Tag(s) to look for: MapSharingOptions,TinyURLServiceURL, TinyURLResponseAttribute, FacebookShareURL, TwitterShareURL, ShareByMailLink ]
-        // 11.  Specify header widget settings                - [ Tag(s) to look for: AppHeaderWidgets ]
+        // 11. Specify header widget settings                - [ Tag(s) to look for: AppHeaderWidgets ]
 
         // ------------------------------------------------------------------------------------------------------------------------
         // GENERAL SETTINGS
