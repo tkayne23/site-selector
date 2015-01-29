@@ -104,13 +104,13 @@ define([], function () {
 
         // Set buffer symbology
         BufferSymbology: {
-            FillSymbolColor: "255,0,0",
-            FillSymbolTransparency: "0.20",
-            LineSymbolColor: "255,0,0",
+            FillSymbolColor: "0,122,194",
+            FillSymbolTransparency: "0.10",
+            LineSymbolColor: "0,122,194",
             LineSymbolTransparency: "0.30"
         },
         DatePattern: "MMMM dd, yyyy",
-        RippleColor: "0,255,255",
+        RippleColor: "0,122,194",
         LocatorRippleSize: 40,
 
         // WORKFLOW SETTINGS
@@ -227,6 +227,9 @@ define([], function () {
                                 DisplayText: "Area (sqft):",
                                 FieldName: "BLDGAREA"
                             }, {
+                                DisplayText: "Acquisition:",
+                                FieldName: "ACQUISITION"
+                            }, {
                                 DisplayText: "Incentives:",
                                 FieldName: "INCENTIVE"
                             }, {
@@ -247,6 +250,15 @@ define([], function () {
                             }, {
                                 DisplayText: "High-Speed ISP:",
                                 FieldName: "ISP"
+                            }, {
+                                DisplayText: "Distance to Rail (Mi):",
+                                FieldName: "DISTRAIL"
+                            }, {
+                                DisplayText: "Distance to Highway (Mi):",
+                                FieldName: "DISTHGWY"
+                            }, {
+                                DisplayText: "Distance to Airport (Mi):",
+                                FieldName: "DISTAIR"
                             }, {
                                 DisplayText: "Contact Name:",
                                 FieldName: "POCNAME"
@@ -420,44 +432,38 @@ define([], function () {
                                 DisplayText: "Area (acres):",
                                 FieldName: "TOTAREA"
                             }, {
+                                DisplayText: "Acquisition:",
+                                FieldName: "ACQUISITION"
+                            }, {
                                 DisplayText: "Incentives:",
                                 FieldName: "INCENTIVE"
                             }, {
                                 DisplayText: "Gas:",
                                 FieldName: "GAS"
                             }, {
-                                DisplayText: "Distance to Gas (Mi):",
-                                FieldName: "DISTGAS"
-                            }, {
                                 DisplayText: "Electric:",
                                 FieldName: "ELECTRIC"
-                            }, {
-                                DisplayText: "Distance to Electric (Mi):",
-                                FieldName: "DISTELEC"
                             }, {
                                 DisplayText: "Water:",
                                 FieldName: "WATER"
                             }, {
-                                DisplayText: "Distance to Water (Mi):",
-                                FieldName: "DISTWATER"
-                            }, {
                                 DisplayText: "Sewer:",
                                 FieldName: "SEWER"
-                            }, {
-                                DisplayText: "Distance to Sewer (Mi):",
-                                FieldName: "DISTSEWER"
                             }, {
                                 DisplayText: "Telco:",
                                 FieldName: "TELCO"
                             }, {
-                                DisplayText: "Distance to Telco (Mi):",
-                                FieldName: "DISTTELCO"
-                            }, {
                                 DisplayText: "High-Speed ISP:",
                                 FieldName: "ISP"
                             }, {
-                                DisplayText: "Distance to High-Speed ISP (Mi):",
-                                FieldName: "DISTISP"
+                                DisplayText: "Distance to Rail (Mi):",
+                                FieldName: "DISTRAIL"
+                            }, {
+                                DisplayText: "Distance to Highway (Mi):",
+                                FieldName: "DISTHGWY"
+                            }, {
+                                DisplayText: "Distance to Airport (Mi):",
+                                FieldName: "DISTAIR"
                             }, {
                                 DisplayText: "Contact Name:",
                                 FieldName: "POCNAME"
