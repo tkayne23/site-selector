@@ -63,9 +63,9 @@ define([], function () {
 
         PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
-        BasemapGroupTitle: "Basemapsdev",
+        BasemapGroupTitle: "Basemaps",
         // Specify the user name of owner of the group that contains basemaps
-        BasemapGroupOwner: "lkingdev",
+        BasemapGroupOwner: "GISITAdmin",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
         // Specify path to image used to display the thumbnail for a basemap when portal does not provide it
@@ -134,14 +134,14 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "81ceb15ac37c4227aa21bbeb37de3c75",
+        WebMapId: "fcab8a1779694d1fbc4630a9d29ff009",
         Workflows: [
             {
                 Name: "Buildings",
                 Enabled: true,
                 SearchSettings: [
                     {
-                        Title: "MarylandBuildingsAndSites",
+                        Title: "Buildings",
                         QueryLayerId: "1",
                         SearchDisplayTitle: "Buildings",
                         SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
@@ -181,7 +181,7 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayFields: [
                             {
                                 DisplayText: "Name:",
@@ -212,7 +212,7 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayTitle: "Property Information",
                         DisplayFields: [
                             {
@@ -301,7 +301,7 @@ define([], function () {
                 Enabled: true,
                 SearchSettings: [
                     {
-                        Title: "MarylandBuildingsAndSites",
+                        Title: "Sites",
                         QueryLayerId: "0",
                         SearchDisplayTitle: "Sites",
                         SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${FULLADDR}",
@@ -339,7 +339,7 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayFields: [
                             {
                                 DisplayText: "Name:",
@@ -365,7 +365,7 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayTitle: "Site Information",
                         DisplayFields: [
                             {
@@ -567,8 +567,8 @@ define([], function () {
                         FeatureLimit: 10
                     },
                     FilterLayer: {
-                        Title: "EconomicDevelopment - Municipalities",
-                        QueryLayerId: "54",
+                        Title: "Municipalities",
+                        QueryLayerId: "2",
                         FilterFieldName: "COUNTY",
                         OutFields: ["COUNTY"]
                     },
