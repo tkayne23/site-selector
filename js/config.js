@@ -99,7 +99,7 @@ define([], function () {
         DistanceUnitSettings: {
             DistanceUnitName: "Miles", // Allowed values for DistanceUnitName are "Miles", "Kilometers", "Meters" and "Feet".
             MinimumValue: 1,
-            MaximumValue: 100
+            MaximumValue: 50
         },
 
         // Set buffer symbology
@@ -291,8 +291,12 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Property Information",
-                            GeoProcessingServiceURL: "http://54.241.236.56:6080/arcgis/rest/services/SiteSelector_UAT/GeneratePDFReport/GPServer/SiteSelectorPDFGen",
+                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
+			}, {
+                            DisplayOptionTitle: "Traffic Count Profile",
+                            GeoEnrichmentReportName: "traffic",
+                            Filetype: "PDF" //allowed PDF or XLSX
                         }
                     ]
                 }
@@ -445,7 +449,7 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Site Information",
-                            GeoProcessingServiceURL: "http://54.241.236.56:6080/arcgis/rest/services/SiteSelector_UAT/GeneratePDFReport/GPServer/SiteSelectorPDFGen",
+                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
