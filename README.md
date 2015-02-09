@@ -3,8 +3,7 @@ site-selector
 
 The Site Selector application is a configurable JavaScript application that allows interested parties to explore a geography and make a determination about where they want to locate their business.
 
-
-![Image of the Site Selector application](site-selector.png "Site Selector application")
+![Image of the Site Selector application](site-selector.png "Site Selector application")](http://links.esri.com/stategovernment/tryit/SiteSelector)
 
 ## Features
 
@@ -17,7 +16,6 @@ The Site Selector application is a configurable JavaScript application that allo
 ### Esri Sample Services
 
 Esri's sample services can be used with this repository to extend the application.
-
 
 ### General Help
 [New to Github? Get started here.](http://htmlpreview.github.com/?https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
@@ -37,7 +35,7 @@ Esri's sample services can be used with this repository to extend the applicatio
 
 ## Resources
 
-Learn more about Esri's [ArcGIS for State Government maps and apps](http://solutions.arcgis.com/state-government/).
+Show me a list of other [State and Local Government GitHub repositories](http://esri.github.io/#Government).
 
 Show me a list of other [Government GitHub repositories](http://esri.github.io/#Government).
 
