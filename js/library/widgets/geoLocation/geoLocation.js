@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,Modernizr,alert */
+﻿/*global define,dojo,dojoConfig,Modernizr,alert, appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
 | Copyright 2013 Esri
@@ -62,13 +62,13 @@ define([
 
         /**
         * get device location from geolocation service
-        * @param {string} dojo.configData.GeometryService Geometry service url specified in configuration file
+        * @param {string} appGlobals.configData.GeometryService Geometry service url specified in configuration file
         * @memberOf widgets/geoLocation/geoLocation
         */
 
         _showCurrentLocation: function () {
             var mapPoint, self = this, currentBaseMap, geometryServiceUrl, geometryService;
-            geometryServiceUrl = dojo.configData.GeometryService;
+            geometryServiceUrl = appGlobals.configData.GeometryService;
             geometryService = new GeometryService(geometryServiceUrl);
 
             /**
@@ -83,14 +83,14 @@ define([
 
                 /**
                 * projects the device location on the map
-                * @param {string} dojo.configData.ZoomLevel Zoom level specified in configuration file
+                * @param {string} appGlobals.configData.ZoomLevel Zoom level specified in configuration file
                 * @param {object} mapPoint Map point of device location in spatialReference of wkid:4326
                 * @param {object} newPoint Map point of device location in spatialReference of map
                 */
                 geometryService.project([mapPoint], self.map.spatialReference).then(function (newPoint) {
-                    currentBaseMap = self.map.getLayer("defaultBasemap");
-                    if (!currentBaseMap) {
-                        currentBaseMap = self.map.getLayer("defaultBasemap0");
+                    var basemapId = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex].basemapId;
+                    if (self.map.getLayer(basemapId)) {
+                        currentBaseMap = self.map.getLayer(basemapId).fullExtent;
                     }
 
                     if (currentBaseMap && currentBaseMap.visible) {
@@ -101,7 +101,7 @@ define([
                     }
                     mapPoint = newPoint[0];
                     topic.publish("geoLocation-Complete", mapPoint);
-                    self.map.centerAndZoom(mapPoint, dojo.configData.ZoomLevel);
+                    self.map.centerAndZoom(mapPoint, appGlobals.configData.ZoomLevel);
                     self._addGraphic(mapPoint);
                 }, function () {
                     alert(sharedNls.errorMessages.invalidProjection);
@@ -120,12 +120,11 @@ define([
         */
         _addGraphic: function (mapPoint) {
             var locatorMarkupSymbol, geoLocationPushpin, graphic;
-            geoLocationPushpin = dojoConfig.baseURL + dojo.configData.LocatorSettings.DefaultLocatorSymbol;
+            geoLocationPushpin = dojoConfig.baseURL + appGlobals.configData.LocatorSettings.DefaultLocatorSymbol;
             locatorMarkupSymbol = new PictureMarkerSymbol(geoLocationPushpin, "35", "35");
             graphic = new Graphic(mapPoint, locatorMarkupSymbol, null, null);
             this.map.getLayer("esriGraphicsLayerMapSettings").clear();
             this.map.getLayer("esriGraphicsLayerMapSettings").add(graphic);
         }
-
     });
 });

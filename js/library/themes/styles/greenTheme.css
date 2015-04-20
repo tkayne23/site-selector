@@ -14,6 +14,7 @@
 {
     background-image: url("../images/img24x24/search-24.png");
 }
+
 .esriCTHeaderSearchSelected
 {
     background-image: url("../images/img24x24/search-select-green-24.png");
@@ -23,14 +24,17 @@
 {
     background-image: url("../images/img24x24/imgSocialMedia_green-24.png");
 }
+
 .esriCTHelpImg
 {
     background-image: url("../images/img24x24/Help-24.png");
 }
+
 .esriCTTdGeolocation
 {
     background-image: url("../images/img24x24/imgGeolocation-24.png");
 }
+
 .esriCTRightArrow
 {
     background-image: url("../images/right-green-arrow.png");
@@ -40,34 +44,13 @@
 {
     background-image: url("../images/left-green-arrow.png");
 }
+
 .esriCTBackwardImage
 {
     background-image: url("../images/left-green-arrow.png");
 }
-.esriCTReportsImgSelected
-{
-    background-image: url("../images/reportsSelectedGreen.png");
-}
-
-/***/
-.esriCTRouteImg
-{
-    background-image: url("../images/locate.png") !important;
-}
-
-.esriCTRouteImgSelected
-{
-    background-image: url("../images/locateSelectedGreen.png");
-}
 
 /* Address container Styles */
-
-.esriCTAddressContent
-{
-    border-right: 1px solid #028D6A;
-    border-left: 1px solid #028D6A;
-    border-bottom: 1px solid #028D6A;
-}
 
 .esriCTSearchIcon
 {
@@ -79,15 +62,11 @@
     color: #028D6A;
 }
 
-.esriCTBuildingDownloadDiv
-{
-    color: #028D6A;
-}
-
 .esriCTBackToResult
 {
     color: #028D6A;
 }
+
 .esriCTInnerDownloadDiv
 {
     background: none repeat scroll 0% 0% #028D6A;
@@ -188,7 +167,7 @@
     background-color: #028D6A;
 }
 
-.esriCTAreaOfInterestTabSelected
+.esriCTBusinessInfoTabSelected
 {
     color: #028D6A;
 }
@@ -200,23 +179,19 @@
     color: #028D6A;
 }
 
-.esriCTHeaderReportContainer
-{
-    border-left: 1px solid #028D6A;
-    border-right: 1px solid #028D6A;
-}
-
-.esriCTReportTabSelected
+.esriCTDemographicInfoTabSelected
 {
     border-left: 1px solid #028D6A;
     border-bottom: 1px solid #028D6A;
     color: #028D6A;
 }
+
 .esriCTHeaderSearchContainer
 {
     border-left: 1px solid #028D6A;
     border-right: 1px solid #028D6A;
 }
+
 .esriCTReportTab
 {
     color: #028D6A;
@@ -265,24 +240,11 @@
     background: #fff;
     color: #028D6A;
 }
+
 .esriCTHeaderSearchContainer
 {
     border-left: 1px solid #028D6A;
     border-right: 1px solid #028D6A;
-}
-.esriOuterDiv
-{
-    border-bottom: 1px solid #028D6A;
-}
-
-.esriCTGoButton
-{
-    background: none repeat scroll 0 0 #028D6A;
-}
-
-.esriCTTextRight
-{
-    color: #028D6A;
 }
 
 .esriCTinfoWindow
@@ -358,10 +320,6 @@
     color: white !important;
 }
 
-.esriCTselectbox
-{
-    border-color: #028D6A !important;
-}
 .esriCTsliderDisplayText
 {
     color: #028D6A;
@@ -409,11 +367,6 @@ div.esriCTPrev
         background-image: url("../images/img2X/shareSelectedGreen@2x.png") !important;
     }
 
-    .esriCTReportsImgSelected
-    {
-        background-image: url("../images/reportsSelectedGreen@2x.png");
-    }
-
     .esriCTFacebook
     {
         background-image: url("../images/facebookGreen@2x.png") !important;
@@ -434,66 +387,112 @@ div.esriCTPrev
         background-image: url('../images/embeddingGreen@2x.png') !important;
     }
 }
+
 @media only screen and (min-device-width : 1024px) and (max-device-width : 1279px)
 {
     .esriCTHeaderSearch
     {
         background-image: url("../images/img44x44/search.png") !important;
     }
+
     .esriCTHeaderSearchSelected
     {
         background-image: url("../images/img44x44/search-select-green.png");
     }
-     .esriCTTdGeolocation
+
+    .esriCTTdGeolocation
     {
         background-image: url("../images/img44x44/imgGeolocation.png") !important;
     }
-     .esriCTHelpImg
+
+    .esriCTHelpImg
     {
         background-image: url("../images/img44x44/Help.png") !important;
     }
-
 }
+
 @media screen and (max-width: 1024px)
 {
     .esriCTHeaderSearch
     {
         background-image: url("../images/img44x44/search.png") !important;
     }
+
     .esriCTHeaderSearchSelected
     {
         background-image: url("../images/img44x44/search-select-green.png");
     }
+
     .esriCTTdGeolocation
     {
         background-image: url("../images/img44x44/imgGeolocation.png") !important;
     }
+
     .esriCTImgSocialMedia
     {
         background-image: url("../images/img44x44/imgSocialMedia.png") !important;
     }
+
     .esriCTImgSocialMediaSelected
     {
         background-image: url("../images/img44x44/imgSocialMedia-select-green.png") !important;
     }
-     .esriCTFacebook
+
+    .esriCTFacebook
     {
         background-image: url("../images/img44x44/img_facebook_green.png") !important;
     }
+
     .esriCTTwitter
     {
         background-image: url("../images/img44x44/img_twitter_green.png") !important;
     }
+
     .esriCTEmail
     {
         background-image: url("../images/img44x44/img_email_green.png") !important;
     }
+
     .esriCTEmbedding
     {
         background-image: url("../images/img44x44/embedding_green.png") !important;
     }
+
     .esriCTHelpImg
     {
         background-image: url("../images/img44x44/Help.png") !important;
     }
+}
+.esriOuterDivContainer
+{
+    border-bottom: 1px solid #028D6A;
+}
+.esriCTFilterMainContainer
+{
+    border-bottom: 1px solid #028D6A;
+}
+
+.esriCTrevenueEmpDiv
+{
+    border-bottom: 1px solid #028D6A;
+}
+
+.esriCTFilterTextEnable
+{
+    color: #028D6A;
+}
+
+.esriCTFilterEnabled
+{
+    background-image: url('../images/filter-green.png');
+}
+
+.esriCTClearFilterIconEnable
+{
+    background-image: url('../images/clear-filter-green.png');
+}
+
+.esriCTFilterDiv
+{
+    border-bottom: 1px solid #028D6A;
 }

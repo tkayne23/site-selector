@@ -17,62 +17,56 @@
 | limitations under the License.
 */
 define({
-    root: {
-        showNullValue: "@fr@ N/A",
-        buttons: {
-            okButtonText: "@fr@ OK",
-            link: "@fr@ Link",
-            email: "Email",  // Shown next to icon for sharing the current map extents via email; works with shareViaEmail tooltip
-            facebook: "Facebook",  // Shown next to icon for sharing the current map extents via a Facebook post; works with shareViaFacebook tooltip
-            twitter: "Twitter",  // Shown next to icon for sharing the current map extents via a Twitter tweet; works with shareViaTwitter tooltip
-            embedding: "@fr@ Embedded URL"
-        },
-        tooltips: {
-            search: "Rechercher",
-            reports: "@fr@ Site Selector",
-            locate: "Emplacement actuel",
-            share: "Partager",
-            help: "Aide",
-            clearEntry: "@fr@ Clear",
-            previous: "@fr@ Previous",
-            next: "@fr@ Next"
-        },
-        titles: {
-            informationPanelTitle: "@fr@ Information for current map view",
-            searchBuildingText: "@fr@ Search buildings near an address",
-            hideText: "@fr@ Hide more options",
-            showText: "@fr@ Show more options",
-            sliderDisplayText: "@fr@ Show results within ",
-            communityText: "@fr@ Search communities by city, county or region",
-            searchCommunityText: "@fr@ Search communities in",
-            searchBusinessText: "@fr@ Search business near an address",
-            serachSiteText: "@fr@ Search sites near an address",
-            countStatus: "de",
-            webpageDisplayText: "@fr@ Copy/Paste HTML into your web page",
-            textDownload: "@fr@ Download",
-            result: "@fr@ Back To Result",
-            sortBy: "@fr@  Sort by",
-            select: "@fr@ Select",
-            toText: "@fr@ to",
-            fromText: "@fr@ from"
-        },
-        errorMessages: {
-            invalidSearch: "@fr@ No results found",
-            downloadError: "@fr@ Unable to complete operation",
-            geometryIntersectError: "@fr@ The searched area is outside the area of interest and will not be analyzed.",
-            falseConfigParams: "@fr@ Required configuration key values are either null or not exactly matching with layer attributes. This message may appear multiple times",
-            invalidLocation: "@fr@ Current location not found",
-            invalidProjection: "@fr@ Unable to plot current location on the map",
-            widgetNotLoaded: "@fr@ Unable to load widgets.",
-            shareLoadingFailed: "@fr@ Unable to load share options",
-            shareFailed: "@fr@ Unable to share",
-            invalidBasemapQuery: "@fr@ Invalid BasemapQuery",
-            noBasemap: "@fr@ No Basemap Found",
-            disableTab: "@fr@ Enable at least one tab",
-            bufferSliderValue: "@fr@ Buffer slider should not be set to zero distance",
-            invalidInput: "@fr@ Plese enter valid input",
-            unableToSort: "@fr@ Unable to sort",
-            portalUrlNotFound: "@fr@ Portal URL cannot be empty"
-        }
+    buttons: {
+        okButtonText: "@fr@ OK", // Command button in Splash Screen to enter into the main screen of the application.
+        email: "Email",  // Shown next to icon for sharing the current map extents via email; works with shareViaEmail tooltip
+        facebook: "Facebook",  // Shown next to icon for sharing the current map extents via a Facebook post; works with shareViaFacebook tooltip
+        twitter: "Twitter",  // Shown next to icon for sharing the current map extents via a Twitter tweet; works with shareViaTwitter tooltip
+        embedding: "@fr@ Embedded URL" // Shown when hovering the mouse pointer over  ‘Embedding’ icon for sharing the current map extents via a link.
+    },
+    tooltips: {
+        search: "Rechercher", // Shown as a tooltip for the search icon when search from the address.
+        reports: "@fr@ Site Selector", // Shown as a tooltip for the search icon.
+        locate: "Emplacement actuel", // Shown as a tooltip for Geolocation icon in appHeader.
+        share: "Partager", // Shown as a tooltip for Share icon in appHeader to open the options available to share the application.
+        help: "Aide", // Shown as a tooltip for Help icon in appHeader to view the help file.
+        clearEntry: "@fr@ Clear", // Shown as a tooltip for Clear text, icon in unified search textbox to clear the text entered in the unified search text box.
+        previous: "@fr@ Previous", // Shown as a tooltip for Previous feature icon in infoWindow pod.
+        next: "@fr@ Next", // Shown as a tooltip for Next feature icon in infoWindow pod.
+        applyFilter: "@fr@ Apply Filter", // Shown as a tooltip for apply filter icon.
+        clearFilter: "@fr@ Clear Filter" //  Shown as a tooltip for clear filter icon.
+    },
+    titles: {
+        searchBuildingText: "@fr@ Search buildings near an address", // Shown as a label for search buildings near an address.
+        sliderDisplayText: "@fr@ Show results within ", // Shown as a label for slider use for display the result in buffer area.
+        communityText: "@fr@ Search communities by city, county or region", // Shown as a label for Search communities in communities tab.
+        searchCommunityText: "@fr@ Search communities in", // Shown as a label for slider use for display the result in buffer area in communities tab.
+        searchBusinessText: "@fr@ Search business near an address", //Shown as a label for search business near an address.
+        searchSiteText: "@fr@ Search sites near an address", // Shown as a label for search sites near an address
+        countStatus: "de", // Shown as a label for pagination in building and sites tab.
+        webpageDisplayText: "@fr@ Copy/Paste HTML into your web page", // Shown as a title when Embedding link share option is clicked/tapped
+        textDownload: "@fr@ Download", // Shown as a label for Download option in building, sites, communities, Business tab.
+        result: "@fr@ Back To Result", // Shown as a label for display the main tab when attachment panel is opened in building and sites tab.
+        sortBy: "@fr@  Sort by", // Shown as a label for display the main tab when attachment panel is opened in building and sites tab.
+        select: "@fr@ Select", // Shown as a label from selecting  from sorting data.
+        toText: "@fr@ to", //Shown as a label indicating the maximum range value in filter Data.
+        fromText: "@fr@ from", //Shown as a label indicating the minimum range value in filter Data.
+        filterText: "@fr@ Apply Filter", //Shown as a label for filter the data.
+        attchementText: "@fr@ Attachments" //Shown as a label for Attachments.
+    },
+    errorMessages: {
+        invalidSearch: "@fr@ No results found", // Shown when no results are found in unified search.
+        downloadError: "@fr@ Unable to complete operation", // Shown when the data is not download.
+        geometryIntersectError: "@fr@ The searched area is outside the area of interest and will not be analyzed.", // Shown when the searched area is outside the area of interest.
+        falseConfigParams: "@fr@ Required configuration key values are either null or not exactly matching with layer attributes. This message may appear multiple times", // Shown when Required configuration key values are either null or not exactly matching with layer attributes.
+        invalidLocation: "@fr@ Current location not found", // Shown when current Location not found.
+        invalidProjection: "@fr@ Unable to plot current location on the map", // Unable to plot current location on the map.
+        widgetNotLoaded: "@fr@ Unable to load widgets.", // Fail to load widgets.
+        noBasemap: "@fr@ No Basemap Found", // Shown when no basemap found in webmap.
+        disableTab: "@fr@ Enable at least one tab", // Shown when all tab is disable from config.
+        bufferSliderValue: "@fr@ Buffer slider should not be set to zero distance", // Shown when Buffer slider is set to zero distance.
+        invalidInput: "@fr@ Please provide valid input for range filters", // Shown when enter the invalid input.
+        unableToSort: "@fr@ Unable to sort", //Shown when the layer does not support the sorting feature.
+        portalUrlNotFound: "@fr@ Portal URL cannot be empty" //Portal URL cannot be empty.
     }
 });

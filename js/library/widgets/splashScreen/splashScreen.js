@@ -1,4 +1,4 @@
-﻿/*global define,dojo */
+﻿/*global define,dojo, appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
 | Copyright 2013 Esri
@@ -20,6 +20,7 @@ define([
     "dojo/_base/declare",
     "dojo/dom-construct",
     "dojo/dom-style",
+    "dojo/window",
     "dojo/_base/lang",
     "dojo/dom-attr",
     "dojo/on",
@@ -28,17 +29,14 @@ define([
     "dijit/_TemplatedMixin",
     "dojo/dom-class",
     "dijit/_WidgetsInTemplateMixin",
-    "dojo/i18n!application/js/library/nls/localizedStrings",
-    "../scrollBar/scrollBar"
-], function (declare, domConstruct, domStyle, lang, domAttr, on, template, _WidgetBase, _TemplatedMixin, domClass, _WidgetsInTemplateMixin, sharedNls, ScrollBar) {
+    "dojo/i18n!application/js/library/nls/localizedStrings"
+], function (declare, domConstruct, domStyle, win, lang, domAttr, on, template, _WidgetBase, _TemplatedMixin, domClass, _WidgetsInTemplateMixin, sharedNls) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
         sharedNls: sharedNls,
-        splashScreenScrollbar: null,
 
         /**
-        * create share widget
-        *
+        * create splashScreen widget
         * @class
         * @name widgets/splashScreen/splashScreen
         */
@@ -48,25 +46,30 @@ define([
             this.own(on(this.customButton, "click", lang.hitch(this, function () {
                 this._hideSplashScreenDialog();
             })));
-            this.domNode = domConstruct.create("div", { "class": "esriGovtLoadSpashScreen" }, dojo.body());
+            /**
+            * create UI for splashscreen
+            * @memberOf widgets/splashScreen/splashScreen
+            */
+            this.domNode = domConstruct.create("div", { "class": "esriGovtLoadSpashScreen" }, document.body);
             this.domNode.appendChild(this.splashScreenScrollBarOuterContainer);
             domConstruct.create("div", { "class": "esriCTLoadingIndicator", "id": "splashscreenlodingIndicator" }, this.splashScreenScrollBarOuterContainer);
         },
 
+        /**
+        * set splashContainer width
+        * @memberOf widgets/splashScreen/splashScreen
+        */
         showSplashScreenDialog: function () {
             var splashScreenContent;
             domStyle.set(this.domNode, "display", "block");
             splashScreenContent = domConstruct.create("div", { "class": "esriGovtSplashContent" }, this.splashScreenScrollBarContainer);
-            this.splashScreenScrollBarContainer.style.height = (this.splashScreenDialogContainer.offsetHeight - 70) + "px";
-            domAttr.set(splashScreenContent, "innerHTML", dojo.configData.SplashScreen.SplashScreenContent);
-            this.splashScreenScrollbar = new ScrollBar({ domNode: this.splashScreenScrollBarContainer });
-            if (dojo.window.getBox().w >= 680) {
-                domClass.replace(this.splashScreenScrollbar._scrollBarContent, "scrollbar_content_splashScreen", "scrollbar_content");
-            }
-            this.splashScreenScrollbar.setContent(splashScreenContent);
-            this.splashScreenScrollbar.createScrollBar();
+            domAttr.set(splashScreenContent, "innerHTML", appGlobals.configData.SplashScreen.SplashScreenContent);
         },
 
+        /**
+        * hide splash screen dialog
+        * @memberOf widgets/splashScreen/splashScreen
+        */
         _hideSplashScreenDialog: function () {
             domStyle.set(this.domNode, "display", "none");
         }
