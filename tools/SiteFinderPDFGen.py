@@ -114,7 +114,15 @@ def create_print_table(table_data):
 
     column_counter = 0
     data_list = []
-    table_keys = table_data.keys()
+    table_keys = []
+    for key in RECEIVEDDATA.keys():
+        TEMPDICT = {key : ATTRIBUTEDATA.find(key)}
+        TABLEKEYSINDEX.update(TEMPDICT)
+    SORTEDTABLESINDEX = sorted((value, key) for (key, value)
+                                   in TABLEKEYSINDEX.items())
+    for index in SORTEDTABLESINDEX:
+        table_keys.append(index[1])
+
     header_list = []
     rows_count = []
 
@@ -450,7 +458,7 @@ try:
         arcpy.AddMessage("Printing Table...")
         ELEMENTSOFDOC.append(Spacer(1, 0.50*cm))
         ELEMENTSOFDOC.append(TABLEHOLDER)
-        #ELEMENTSOFDOC.append(Spacer(1, 0.2*inch))
+       
 
     #Drawing the attachment images
     arcpy.AddMessage("Printing attachment images...")

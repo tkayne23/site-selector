@@ -37,12 +37,7 @@
         background-image: url("../images/share@2x.png");
     }
 
-    .esriCTReportsImg
-    {
-        background-image: url("../images/reports@2x.png");
-    }
-
-    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTReportsImg, .esriCTReportsImgSelected, .esriCTHelpImg, .esriCTRouteImg, .esriCTRouteImgSelected
+    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTHelpImg
     {
         height: 44px !important;
         width: 44px !important;
@@ -56,6 +51,11 @@
         width: 44px !important;
         padding: 8px 0 !important;
         background-size: 44px;
+    }
+
+    .esriCTContentTab
+    {
+        top: 99px !important;
     }
 }
 
@@ -76,7 +76,7 @@
         font-size: 14px !important;
     }
 
-    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTReportsImg, .esriCTReportsImgSelected, .esriCTHelpImg, .esriCTRouteImg, .esriCTRouteImgSelected
+    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTHelpImg
     {
         height: 44px !important;
         width: 44px !important;
@@ -87,11 +87,6 @@
     .esriCTApplicationHeader
     {
         height: 60px;
-    }
-
-    .esriCTAddressHolder, .esriCTAddressContentHeight
-    {
-        top: 61px !important;
     }
 
     .esriCTTxtAddress
@@ -153,6 +148,10 @@
         margin-left: 2px;
     }
 
+    .esriCTContentTab
+    {
+        top: 99px !important;
+    }
 }
 
 @media only screen and (min-width : 768px) and (max-width : 1024px) /*if device wise  @media only screen and (min-device-width : 768px) and (max-device-width : 1024px)*/
@@ -177,7 +176,7 @@
         font-size: 14px !important;
     }
 
-    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTReportsImg, .esriCTReportsImgSelected, .esriCTHelpImg, .esriCTRouteImg, .esriCTRouteImgSelected
+    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTHelpImg
     {
         height: 44px !important;
         width: 44px !important;
@@ -188,11 +187,6 @@
     .esriCTApplicationHeader
     {
         height: 60px;
-    }
-
-    .esriCTAddressHolder, .esriCTAddressContentHeight
-    {
-        top: 61px !important;
     }
 
     .esriCTTxtAddress
@@ -268,6 +262,11 @@
     .esriCTFirstIndex
     {
         height: 16px !important;
+    }
+
+    .esriCTContentTab
+    {
+        top: 99px !important;
     }
 }
 
@@ -293,7 +292,7 @@
         font-size: 14px !important;
     }
 
-    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTReportsImg, .esriCTReportsImgSelected, .esriCTHelpImg, .esriCTRouteImg, .esriCTRouteImgSelected
+    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTHelpImg
     {
         height: 44px !important;
         width: 44px !important;
@@ -309,11 +308,6 @@
     .esriCTApplicationHeaderIcon
     {
         display: none;
-    }
-
-    .esriCTAddressHolder, .esriCTAddressContentHeight
-    {
-        top: 61px !important;
     }
 
     .esriCTTxtAddress
@@ -391,6 +385,10 @@
         height: 16px !important;
     }
 
+    .esriCTContentTab
+    {
+        top: 99px !important;
+    }
 }
 
 @media screen and (min-width:0px) and (max-width: 680px)
@@ -414,6 +412,7 @@
     {
         font-size: 14px !important;
     }
+
     .esriCTApplicationHeaderTextTD
     {
         display: none;
@@ -434,22 +433,18 @@
         margin-top: 61px;
     }
 
-    .esriCTAddressHolder, .esriCTAddressContentHeight
-    {
-        top: 61px !important;
-    }
-
     .esriCTDivAppContainer
     {
         top: 61px !important;
     }
+
     .esriCTSplashScreenDialog
     {
         height: 90% !important;
         width: 93% !important;
     }
 
-    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTReportsImg, .esriCTReportsImgSelected, .esriCTHelpImg, .esriCTRouteImg, .esriCTRouteImgSelected
+    .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTHelpImg
     {
         height: 44px !important;
         width: 44px !important;
@@ -461,6 +456,30 @@
     .esriCTRightTab
     {
         width: 100%;
+    }
+
+    .esriCTToTextBoxFrom
+    {
+        width: 42px;
+        padding: 5px 2px !important;
+    }
+
+    .esriCTToTextBoxTo
+    {
+        width: 42px;
+        padding: 5px 2px !important;
+    }
+
+    .esriCTLeftFromTO
+    {
+        width: 45%;
+        float: left;
+        margin-bottom: 10px;
+    }
+
+    .esriCTContentTab
+    {
+        top: 99px !important;
     }
 }
 

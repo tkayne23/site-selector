@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,esri,esriConfig,alert,handle:true,dijit */
+﻿/*global define,dojo,dojoConfig,esri,esriConfig,alert,handle:true,dijit, appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
 | Version 10.2
@@ -18,70 +18,44 @@
 */
 //============================================================================================================================//
 define([
-    "dojo/_base/declare",
-    "dojo/dom-construct",
-    "dojo/on",
-    "dojo/topic",
-    "dojo/_base/lang",
     "dojo/_base/array",
-    "dojo/dom-style",
+    "dojo/_base/declare",
+    "dojo/_base/lang",
+    "dojo/promise/all",
     "dojo/dom-attr",
-    "dojo/dom",
-    "dojo/query",
-    "esri/tasks/locator",
     "dojo/dom-class",
-    "esri/tasks/FeatureSet",
-    "dojo/dom-geometry",
-    "esri/tasks/GeometryService",
-    "dojo/string",
-    "dojo/_base/html",
-    "dojo/text!./templates/siteLocatorTemplate.html",
-    "esri/urlUtils",
-    "esri/tasks/query",
-    "esri/tasks/QueryTask",
-    "dojo/Deferred",
-    "dojo/DeferredList",
-    "../scrollBar/scrollBar",
-    "dojo/_base/Color",
-    "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/SimpleFillSymbol",
-    "esri/symbols/SimpleMarkerSymbol",
-    "esri/graphic",
-    "esri/geometry/Point",
-    "dijit/registry",
-    "esri/tasks/BufferParameters",
+    "dojo/dom-construct",
+    "dojo/dom-style",
+    "dojo/i18n!application/js/library/nls/localizedStrings",
+    "dojo/on",
+    "dojo/query",
+    "dojo/topic",
     "dijit/_WidgetBase",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
-    "dojo/i18n!application/js/library/nls/localizedStrings",
-    "esri/layers/GraphicsLayer",
-    "dijit/form/HorizontalSlider",
     "dijit/form/Select",
-    "dojox/form/DropDownSelect",
-    "esri/request",
-    "esri/SpatialReference",
-    "dojo/number",
-    "esri/geometry/Polygon",
-    "dijit/form/HorizontalRule",
+    "esri/tasks/GeometryService",
+    "esri/tasks/query",
+    "esri/tasks/QueryTask",
     "../siteLocator/geoEnrichment"
-
-], function (declare, domConstruct, on, topic, lang, array, domStyle, domAttr, dom, query, Locator, domClass, FeatureSet, domGeom, GeometryService, string, html, template, urlUtils, Query, QueryTask, Deferred, DeferredList, ScrollBar, Color, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, Graphic, Point, registry, BufferParameters, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, sharedNls, GraphicsLayer, HorizontalSlider, SelectList, DropDownSelect, esriRequest, SpatialReference, number, Polygon, HorizontalRule, geoEnrichment) {
-
+], function (array, declare, lang, all, domAttr, domClass, domConstruct, domStyle, sharedNls, on, query, topic, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, SelectList, GeometryService, Query, QueryTask, geoEnrichment) {
     //========================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, geoEnrichment], {
         isSharedSort: false,
 
         /**
-        * Performs from to filter query
-        * @param {object}From container node
-        * @param {object}To container node
-        * @param {object}Check box object
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * performs from to(range) filter query
+        * @param {object}from container node
+        * @param {object}to container node
+        * @param {object}check box object
+        * @param {integer}buffer distanve
+        * @memberOf widgets/siteLocator/featureQuery
         */
-        _fromToQuery: function (fromNode, toNode, chkBox) {
-            var isfilterRemoved = false;
-            if (Number(fromNode.value) >= 0 && Number(toNode.value) >= 0 && Number(fromNode.value) < Number(toNode.value) && lang.trim(fromNode.value) !== "" && lang.trim(toNode.value) !== "") {
+        _fromToQuery: function (fromNode, toNode, chkBox, bufferDistance) {
+            var isfilterRemoved = false, isValid = true;
+            // check from node value and to node value and set the "AND" or "OR" query string
+            if (Number(fromNode.value) >= 0 && Number(toNode.value) >= 0 && Number(fromNode.value) <= Number(toNode.value) && lang.trim(fromNode.value) !== "" && lang.trim(toNode.value) !== "") {
                 if (this.workflowCount === 0) {
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
@@ -93,7 +67,7 @@ define([
                             fromNode.setAttribute("FieldValue", Number(fromNode.value));
                             toNode.setAttribute("FieldValue", Number(toNode.value));
                         } else {
-                            alert(sharedNls.errorMessages.invalidInput);
+                            isValid = false;
                         }
                     } else {
                         fromNode.value = "";
@@ -101,14 +75,15 @@ define([
                         fromNode.setAttribute("FieldValue", null);
                         toNode.setAttribute("FieldValue", null);
                     }
+
                     if ((fromNode.value !== "" && toNode.value !== "") || isfilterRemoved) {
                         if (this.featureGeometry[this.workflowCount] && !this.lastGeometry[this.workflowCount]) {
                             topic.publish("hideProgressIndicator");
-                            alert(sharedNls.errorMessages.bufferSliderValue);
-                        } else {
-                            this._callAndOrQuery(this.queryArrayBuildingAND, this.queryArrayBuildingOR);
+                            isValid = false;
                         }
                     }
+                    this.andArr = this.queryArrayBuildingAND;
+                    this.orArr = this.queryArrayBuildingOR;
                 } else {
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
@@ -120,7 +95,7 @@ define([
                             fromNode.setAttribute("FieldValue", Number(fromNode.value));
                             toNode.setAttribute("FieldValue", Number(toNode.value));
                         } else {
-                            alert(sharedNls.errorMessages.invalidInput);
+                            isValid = false;
                         }
                     } else {
                         fromNode.value = "";
@@ -129,48 +104,47 @@ define([
                         toNode.setAttribute("FieldValue", null);
                     }
                     if ((fromNode.value !== "" && toNode.value !== "") || isfilterRemoved) {
-
                         if (this.featureGeometry[this.workflowCount] && !this.lastGeometry[this.workflowCount]) {
                             topic.publish("hideProgressIndicator");
                             alert(sharedNls.errorMessages.bufferSliderValue);
-                        } else {
-                            this._callAndOrQuery(this.queryArraySitesAND, this.queryArraySitesOR);
                         }
                     }
+                    this.andArr = this.queryArraySitesAND;
+                    this.orArr = this.queryArraySitesOR;
                 }
+
             } else {
                 fromNode.value = "";
                 toNode.value = "";
                 if (this.workflowCount === 0) {
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-
                         this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
-                        this._callAndOrQuery(this.queryArrayBuildingAND, this.queryArrayBuildingOR);
                     }
+                    this.andArr = this.queryArrayBuildingAND;
+                    this.orArr = this.queryArrayBuildingOR;
+
                 } else {
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
-                        this._callAndOrQuery(this.queryArraySitesAND, this.queryArraySitesOR);
                     }
+                    this.andArr = this.queryArraySitesAND;
+                    this.orArr = this.queryArraySitesOR;
                 }
                 if (chkBox.checked) {
-                    alert(sharedNls.errorMessages.invalidInput);
+                    isValid = false;
                 }
             }
+            return isValid;
         },
 
         /**
-        * Check box query handler
+        * check box query handler
         * @param {object} check box node
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
-        chkQueryHandler: function (chkBoxNode, isExecuteQuery) {
+        chkQueryHandler: function (chkBoxNode) {
             var arrAndQuery = [], arrOrQuery = [];
-            if (!isExecuteQuery && isExecuteQuery !== false) {
-                isExecuteQuery = true;
-            }
-            topic.publish("showProgressIndicator");
-            dojo.sortingData = null;
+            appGlobals.shareOptions.sortingData = null;
             if (this.workflowCount === 0) {
                 if (this.selectBusinessSortForBuilding) {
                     this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
@@ -197,17 +171,14 @@ define([
                     }
                 }
             } else if (chkBoxNode && chkBoxNode.checked) {
-                if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')") === -1) {
+                if (chkBoxNode.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
+                    if (array.indexOf(arrAndQuery, chkBoxNode.name + "='" + chkBoxNode.value + "'") === -1) {
+                        arrAndQuery.push(chkBoxNode.name + "='" + chkBoxNode.value + "'");
+                    }
+                } else if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')") === -1) {
                     arrOrQuery.push("UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')");
                 }
-            } else {
-                if (chkBoxNode && chkBoxNode.target.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
-                    arrAndQuery.splice(array.indexOf(arrAndQuery, chkBoxNode.target.name + "='" + chkBoxNode.target.value + "'"), 1);
-                } else if (chkBoxNode) {
-                    arrOrQuery.splice(array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')"), 1);
-                }
             }
-
             if (this.workflowCount === 0) {
                 this.queryArrayBuildingAND = arrAndQuery;
                 this.queryArrayBuildingOR = arrOrQuery;
@@ -218,16 +189,17 @@ define([
             if (this.featureGeometry[this.workflowCount] && !this.lastGeometry[this.workflowCount]) {
                 topic.publish("hideProgressIndicator");
                 alert(sharedNls.errorMessages.bufferSliderValue);
-            } else if (isExecuteQuery) {
-                this._callAndOrQuery(arrAndQuery, arrOrQuery);
             }
+
+            this.andArr = arrAndQuery;
+            this.orArr = arrOrQuery;
         },
 
         /**
         * perform and/or query
         * @param {object} and query parameter
         * @param {object} or query parameter
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
         _callAndOrQuery: function (arrAndQuery, arrOrQuery) {
             var geometry, andString, orString, queryString;
@@ -250,141 +222,209 @@ define([
                 }
             }
             if (queryString) {
-                this.doLayerQuery(this.workflowCount, geometry, queryString);
+                this.doLayerQuery(geometry, queryString);
             } else if (geometry !== null) {
-                this.doLayerQuery(this.workflowCount, geometry, null);
+                this.doLayerQuery(geometry, null);
             } else {
                 topic.publish("hideProgressIndicator");
-                dojo.arrWhereClause[this.workflowCount] = null;
+                appGlobals.shareOptions.arrWhereClause[this.workflowCount] = null;
                 if (this.workflowCount === 0) {
                     domStyle.set(this.outerDivForPegination, "display", "none");
                     domConstruct.empty(this.outerResultContainerBuilding);
                     domConstruct.empty(this.attachmentOuterDiv);
                     delete this.buildingTabData;
-                    this.siteLocatorScrollbarAttributeBuilding = null;
                 } else {
                     domStyle.set(this.outerDivForPeginationSites, "display", "none");
                     domConstruct.empty(this.outerResultContainerSites);
                     domConstruct.empty(this.attachmentOuterDivSites);
                     delete this.sitesTabData;
-                    this.siteLocatorScrollbarSites = null;
                 }
             }
         },
 
         /**
-        * perform search by addess if search type is address search
-        * @param {number} tab count
-        * @param {object} Geometry to perform query
+        * perform search by address if search type is address search
+        * @param {object} geometry to perform query
         * @param {string} where clause for query
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
-        doLayerQuery: function (tabCount, geometry, where) {
+        doLayerQuery: function (geometry, where) {
             var queryLayer, queryLayerTask, geometryService, dateObj;
             dateObj = new Date().getTime().toString();
             this.lastGeometry[this.workflowCount] = geometry;
             this.showBuffer(geometry);
-            queryLayerTask = new QueryTask(this.opeartionLayer.url);
-            queryLayer = new esri.tasks.Query();
-            queryLayer.returnGeometry = false;
-            if (where !== null) {
-                queryLayer.where = dateObj + "=" + dateObj + " AND " + where;
-                dojo.arrWhereClause[this.workflowCount] = where;
-                dojo.arrWhereClause[this.workflowCount] = dojo.arrWhereClause[this.workflowCount].toString().replace(/%/g, "PERCENT");
-            } else {
-                dojo.arrWhereClause[this.workflowCount] = "1=1";
-                queryLayer.where = dateObj + "=" + dateObj;
-            }
-            if (geometry !== null) {
-                geometryService = new GeometryService(dojo.configData.GeometryService.toString());
-                geometryService.intersect(geometry, dojo.webMapExtent, lang.hitch(this, function (interSectGeometry) {
-                    if (interSectGeometry[0].rings.length > 0) {
-                        queryLayer.geometry = geometry[0];
-                        queryLayerTask.executeForIds(queryLayer, lang.hitch(this, this._queryLayerhandler), lang.hitch(this, this._queryErrorHandler));
-                    } else {
-                        topic.publish("hideProgressIndicator");
-                        if (this.workflowCount === 0) {
-                            domStyle.set(this.outerDivForPegination, "display", "none");
-                            domConstruct.empty(this.outerResultContainerBuilding);
-                            domConstruct.empty(this.attachmentOuterDiv);
-                            delete this.buildingTabData;
-                            this.siteLocatorScrollbarAttributeBuilding = null;
+            if (this.opeartionLayer && this.opeartionLayer.url) {
+                queryLayerTask = new QueryTask(this.opeartionLayer.url);
+                queryLayer = new Query();
+                queryLayer.returnGeometry = false;
+                if (where !== null) {
+                    queryLayer.where = dateObj + "=" + dateObj + " AND " + where;
+                    appGlobals.shareOptions.arrWhereClause[this.workflowCount] = where;
+                    appGlobals.shareOptions.arrWhereClause[this.workflowCount] = appGlobals.shareOptions.arrWhereClause[this.workflowCount].toString().replace(/%/g, "PERCENT");
+                } else {
+                    appGlobals.shareOptions.arrWhereClause[this.workflowCount] = "1=1";
+                    queryLayer.where = dateObj + "=" + dateObj;
+                }
+                if (geometry !== null) {
+                    geometryService = new GeometryService(appGlobals.configData.GeometryService.toString());
+                    geometryService.intersect(geometry, appGlobals.shareOptions.webMapExtent, lang.hitch(this, function (interSectGeometry) {
+                        if (interSectGeometry[0].rings.length > 0) {
+                            queryLayer.geometry = geometry[0];
+                            queryLayerTask.executeForIds(queryLayer, lang.hitch(this, this._queryLayerhandler), lang.hitch(this, this._queryErrorHandler));
                         } else {
-                            domStyle.set(this.outerDivForPeginationSites, "display", "none");
-                            domConstruct.empty(this.outerResultContainerSites);
-                            domConstruct.empty(this.attachmentOuterDivSites);
-                            delete this.sitesTabData;
-                            this.siteLocatorScrollbarSites = null;
+                            topic.publish("hideProgressIndicator");
+                            if (this.workflowCount === 0) {
+                                domStyle.set(this.outerDivForPegination, "display", "none");
+                                domConstruct.empty(this.outerResultContainerBuilding);
+                                domConstruct.empty(this.attachmentOuterDiv);
+                                delete this.buildingTabData;
+                            } else {
+                                domStyle.set(this.outerDivForPeginationSites, "display", "none");
+                                domConstruct.empty(this.outerResultContainerSites);
+                                domConstruct.empty(this.attachmentOuterDivSites);
+                                delete this.sitesTabData;
+                            }
+                            alert(sharedNls.errorMessages.geometryIntersectError);
+                            if (this.workflowCount === 0) {
+                                this._clearFilterCheckBoxes();
+                                domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                                domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                                domClass.remove(this.filterText, "esriCTFilterTextEnable");
+                                domStyle.set(this.filterContainer, "display", "none");
+                                domClass.add(this.filterMainContainer, "esriCTFilterMainContainer");
+                            } else {
+                                this._clearFilterCheckBoxes();
+                                domClass.remove(this.filterIconSites, "esriCTFilterEnabled");
+                                domClass.remove(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                                domClass.remove(this.filterTextSites, "esriCTFilterTextEnable");
+                                domStyle.set(this.filterContainerSites, "display", "none");
+                                domClass.add(this.filterMainContainerSites, "esriCTFilterMainContainer");
+                            }
                         }
+                    }), lang.hitch(this, function (Error) {
+                        topic.publish("hideProgressIndicator");
                         alert(sharedNls.errorMessages.geometryIntersectError);
-                    }
-                }), lang.hitch(this, function (Error) {
-                    topic.publish("hideProgressIndicator");
-                    alert(sharedNls.errorMessages.geometryIntersectError);
-                }));
+                        if (this.workflowCount === 0) {
+                            this._clearFilterCheckBoxes();
+                            domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                            domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                            domClass.remove(this.filterText, "esriCTFilterTextEnable");
+                            domStyle.set(this.filterContainer, "display", "none");
+                            domClass.add(this.filterMainContainer, "esriCTFilterMainContainer");
+                        } else {
+                            this._clearFilterCheckBoxes();
+                            domClass.remove(this.filterIconSites, "esriCTFilterEnabled");
+                            domClass.remove(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                            domClass.remove(this.filterTextSites, "esriCTFilterTextEnable");
+                            domStyle.set(this.filterContainerSites, "display", "none");
+                            domClass.add(this.filterMainContainerSites, "esriCTFilterMainContainer");
+                        }
+                    }));
+                } else {
+                    queryLayerTask.executeForIds(queryLayer, lang.hitch(this, this._queryLayerhandler), lang.hitch(this, this._queryErrorHandler));
+                }
             } else {
-                queryLayerTask.executeForIds(queryLayer, lang.hitch(this, this._queryLayerhandler), lang.hitch(this, this._queryErrorHandler));
+                topic.publish("hideProgressIndicator");
             }
         },
 
         /**
-        * Error call back for query performed on selected layer
-        * @param {object} Error object
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * error call back for query performed on selected layer
+        * @param {object} error object
+        * @memberOf widgets/siteLocator/featureQuery
         */
         _queryErrorHandler: function (error) {
             topic.publish("hideProgressIndicator");
         },
 
         /**
-        * Call back for query performed on selected layer
+        * call back for query performed on selected layer
         * @param {object} result data of query
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
         _queryLayerhandler: function (featureSet) {
             if (featureSet !== null && featureSet.length > 0) {
                 if (this.workflowCount === 0) {
+                    if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
+                        domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
+                        domClass.remove(this.filterText, "esriCTDisableText");
+                        domClass.add(this.filterText, "esriCTFilterTextEnable");
+                        domStyle.set(this.filterContainer, "display", "block");
+                        if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
+                            domClass.add(this.filterIcon, "esriCTFilterEnabled");
+                            domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                        }
+                    }
                     domStyle.set(this.outerDivForPegination, "display", "block");
                     this.buildingResultSet = featureSet;
-                    if (window.location.toString().split("$paginationIndex=").length > 1 && !dojo.paginationIndex) {
+                    if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
                         this._paginationForResults(Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
                     } else {
                         this._paginationForResults(0);
                     }
-                } else {
+                } else if (this.workflowCount === 1) {
+                    if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
+                        domClass.remove(this.filterMainContainerSites, "esriCTFilterMainContainer");
+                        domClass.remove(this.filterTextSites, "esriCTDisableText");
+                        domClass.add(this.filterTextSites, "esriCTFilterTextEnable");
+                        domStyle.set(this.filterContainerSites, "display", "block");
+                        if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
+                            domClass.add(this.filterIconSites, "esriCTFilterEnabled");
+                            domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                        }
+                    }
                     domStyle.set(this.outerDivForPeginationSites, "display", "block");
                     this.sitesResultSet = featureSet;
-                    if (window.location.toString().split("$paginationIndex=").length > 1 && !dojo.paginationIndex) {
+                    if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
                         this._paginationForResultsSites(Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
                     } else {
                         this._paginationForResultsSites(0);
                     }
                 }
-                if (window.location.toString().split("$paginationIndex=").length > 1 && !dojo.paginationIndex) {
+                if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
                     this.performQuery(this.opeartionLayer, featureSet, Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
                 } else {
                     this.performQuery(this.opeartionLayer, featureSet, 0);
                 }
             } else {
                 if (this.workflowCount === 0) {
+                    delete this.buildingTabData;
                     domStyle.set(this.outerDivForPegination, "display", "none");
                     domConstruct.empty(this.outerResultContainerBuilding);
                     domConstruct.empty(this.attachmentOuterDiv);
-                    delete this.buildingTabData;
-                    this.siteLocatorScrollbarAttributeBuilding = null;
                     if (this.selectedValue) {
                         this.selectedValue = null;
                         this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
                     }
+
                 } else {
                     domStyle.set(this.outerDivForPeginationSites, "display", "none");
                     domConstruct.empty(this.outerResultContainerSites);
                     domConstruct.empty(this.attachmentOuterDivSites);
                     delete this.sitesTabData;
-                    this.siteLocatorScrollbarSites = null;
                     if (this.selectedValue) {
                         this.selectedValue = null;
                         this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+                    }
+
+                }
+                if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
+                    if (this.workflowCount === 0) {
+                        domClass.add(this.filterIcon, "esriCTFilterEnabled");
+                        domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                        domClass.add(this.filterText, "esriCTFilterTextEnable");
+                        domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
+                        if (domStyle.get(this.filterContainer, "display") === "none") {
+                            domStyle.set(this.filterContainer, "display", "block");
+                        }
+                    } else {
+                        domClass.add(this.filterIconSites, "esriCTFilterEnabled");
+                        domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                        domClass.add(this.filterTextSites, "esriCTFilterTextEnable");
+                        domClass.remove(this.filterMainContainerSites, "esriCTFilterMainContainer");
+                        if (domStyle.get(this.filterContainerSites, "display") === "none") {
+                            domStyle.set(this.filterContainerSites, "display", "block");
+                        }
                     }
                 }
                 topic.publish("hideProgressIndicator");
@@ -393,23 +433,22 @@ define([
         },
 
         /**
-        * perform query to get data (attachments) for batches of 10 based on curent index
-        * @param {object} Layer on which query need to be performed
+        * perform query to get data (attachments) for batches of 10 based on current index
+        * @param {object} layer on which query need to be performed
         * @param {object} total features from query
         * @param {number} index of feature
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
         performQuery: function (layer, featureSet, curentIndex) {
-            var onCompleteArray, i, arrIds = [], finalIndex, layerFeatureSet, layerAttachmentInfos = [], deferredListResult, j;
+            var onCompleteArray, i, arrIds = [], finalIndex, layerFeatureSet, layerAttachmentInfos = [], j;
             try {
-                if (dojo.paginationIndex) {
-                    dojo.paginationIndex[this.workflowCount] = curentIndex;
+                if (appGlobals.shareOptions.paginationIndex) {
+                    appGlobals.shareOptions.paginationIndex[this.workflowCount] = curentIndex;
                 } else {
-                    dojo.paginationIndex = [null, null, null, null];
-                    dojo.paginationIndex[this.workflowCount] = curentIndex;
+                    appGlobals.shareOptions.paginationIndex = [null, null, null, null];
+                    appGlobals.shareOptions.paginationIndex[this.workflowCount] = curentIndex;
                 }
                 if (featureSet.length !== 0) {
-                    topic.publish("showProgressIndicator");
                     onCompleteArray = [];
                     finalIndex = curentIndex + 10;
                     if (curentIndex + 10 > featureSet.length) {
@@ -417,20 +456,19 @@ define([
                     }
                     for (i = curentIndex; i < finalIndex; i++) {
                         arrIds.push(featureSet[i]);
-                        if (layer.hasAttachments && dojo.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
+                        if (layer.hasAttachments && appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
                             this.itemquery(null, featureSet[i], layer, onCompleteArray);
                         }
                     }
                     this.itemquery(arrIds, null, layer, onCompleteArray);
-                    deferredListResult = new DeferredList(onCompleteArray);
-                    deferredListResult.then(lang.hitch(this, function (result) {
+                    all(onCompleteArray).then(lang.hitch(this, function (result) {
                         if (result) {
                             for (j = 0; j < result.length; j++) {
-                                if (result[j][1]) {
-                                    if (result[j][1].features) {
-                                        layerFeatureSet = result[j][1];
+                                if (result[j]) {
+                                    if (result[j].features) {
+                                        layerFeatureSet = result[j];
                                     } else {
-                                        layerAttachmentInfos.push(result[j][1]);
+                                        layerAttachmentInfos.push(result[j]);
                                     }
                                 }
                             }
@@ -439,8 +477,6 @@ define([
                     }), function (err) {
                         alert(err.message);
                     });
-
-
                 } else {
                     if (this.workflowCount === 0) {
                         domConstruct.empty(this.outerResultContainerBuilding);
@@ -456,15 +492,15 @@ define([
         * @param {array} array of Ids
         * @param {number} objectID of a feature
         * @param {object} layer on which query is performed
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
         itemquery: function (arrIds, objectId, layer, onCompleteArray) {
             var queryobject, queryObjectTask, oufields = [], i, queryOnRouteTask;
             if (arrIds !== null) {
                 queryObjectTask = new QueryTask(layer.url);
-                queryobject = new esri.tasks.Query();
-                for (i = 0; i < dojo.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.DisplayFields.length; i++) {
-                    oufields.push(dojo.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.DisplayFields[i].FieldName);
+                queryobject = new Query();
+                for (i = 0; i < appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.DisplayFields.length; i++) {
+                    oufields.push(appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.DisplayFields[i].FieldName);
                 }
                 oufields.push(layer.fields[0].name);
                 queryobject.outFields = oufields;
@@ -481,10 +517,11 @@ define([
         },
 
         /**
-        * Merge attachment with coresponding objectid
-        * @param {object} featureset for batch query
+        * merge attachment with corresponding objectid
+        * @param {object} layerFeatureSet for batch query
         * @param {array} array of attachments
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @param {object} layer is layer object
+        * @memberOf widgets/siteLocator/featureQuery
         */
         mergeItemData: function (layerFeatureSet, layerAttachmentInfos, layer) {
             var arrTabData = [], i, j;
@@ -509,10 +546,11 @@ define([
 
         /**
         * create pagination for batch query
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @param {object} layer is layer object
+        * @memberOf widgets/siteLocator/featureQuery
         */
-        _paginationForResults: function (index) {
-            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForBuilding, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1, total, result, i, timeOut, currentIndex = index, strLastUpdate;
+        _paginationForResults: function (currentIndex) {
+            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForBuilding, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1, total, result, i, timeOut, strLastUpdate, selectedOption;
             domConstruct.empty(this.outerDivForPegination);
             rangeDiv = domConstruct.create("div", { "class": "esriCTRangeDiv" }, this.outerDivForPegination);
             currentIndexNode = domConstruct.create("div", { "class": "esriCTIndex" }, rangeDiv);
@@ -565,9 +603,9 @@ define([
                     strLastUpdate = firstIndex.innerHTML;
                 }
                 if (Number(firstIndex.innerHTML).toString().length <= 10) {
-
                     clearTimeout(timeOut);
                     timeOut = setTimeout(lang.hitch(this, function () {
+                        topic.publish("showProgressIndicator");
                         if (!isNaN(Number(firstIndex.innerHTML)) && Number(firstIndex.innerHTML) > 0 && Math.ceil(Number(firstIndex.innerHTML)) <= result) {
                             currentIndex = Math.ceil(Number(firstIndex.innerHTML)) * 10 - 10;
                             currentPage = Math.ceil((currentIndex / 10) + 1);
@@ -603,23 +641,25 @@ define([
             if (!this.areaSortBuilding) {
                 this.areaSortBuilding = [];
                 this.areaSortBuilding.push({ "label": sharedNls.titles.select, "value": sharedNls.titles.select, "selected": true });
-                for (i = 0; i < dojo.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields.length; i++) {
-                    if (dojo.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].SortingEnabled) {
-                        this.areaSortBuilding.push({ "label": dojo.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.substring(0, dojo.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.length - 1), "value": dojo.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].FieldName });
+                for (i = 0; i < appGlobals.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields.length; i++) {
+                    if (appGlobals.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].SortingEnabled) {
+                        this.areaSortBuilding.push({ "label": appGlobals.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.substring(0, appGlobals.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.length - 1), "value": appGlobals.configData.Workflows[0].InfoPanelSettings.ResultContents.DisplayFields[i].FieldName });
                     }
                 }
             }
-            this.selectBusinessSortForBuilding = new SelectList({
-                options: this.areaSortBuilding,
-                maxHeight: 100
-            }, selectForBuilding);
 
+            selectedOption = (this.selectBusinessSortForBuilding && this.selectBusinessSortForBuilding.value) || this.areaSortBuilding[0].value;
             if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
                 this.isSharedSort = true;
-                this.siteLocatorScrollbarAttributeBuilding = null;
                 this.buildingResultSet = null;
-                this.selectBusinessSortForBuilding.set("value", window.location.toString().split("$strSortingData=")[1].split("$")[0]);
+                selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
             }
+
+            this.selectBusinessSortForBuilding = new SelectList({
+                options: this.areaSortBuilding,
+                maxHeight: 100,
+                value: selectedOption
+            }, selectForBuilding);
 
             this.own(on(this.selectBusinessSortForBuilding, "change", lang.hitch(this, function (value) {
                 if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
@@ -629,6 +669,7 @@ define([
 
             this.own(on(leftArrow, "click", lang.hitch(this, function () {
                 if (currentIndex !== 0) {
+                    topic.publish("showProgressIndicator");
                     currentIndex -= 10;
                     this.performQuery(this.opeartionLayer, this.buildingResultSet, currentIndex);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
@@ -650,6 +691,7 @@ define([
 
             this.own(on(rightArrow, "click", lang.hitch(this, function () {
                 if (result >= Number(firstIndex.innerHTML) + 1) {
+                    topic.publish("showProgressIndicator");
                     currentIndex += 10;
                     this.performQuery(this.opeartionLayer, this.buildingResultSet, currentIndex);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
@@ -672,10 +714,10 @@ define([
 
         /**
         * create pagination for batch query
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
         _paginationForResultsSites: function (index) {
-            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForSites, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1, total, result, i, timeOut, currentIndexSites = index, strLastUpdate;
+            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForSites, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1, total, result, i, timeOut, currentIndexSites = index, strLastUpdate, selectedOption;
             domConstruct.empty(this.outerDivForPeginationSites);
             rangeDiv = domConstruct.create("div", { "class": "esriCTRangeDiv" }, this.outerDivForPeginationSites);
             currentIndexNode = domConstruct.create("div", { "class": "esriCTIndex" }, rangeDiv);
@@ -730,6 +772,7 @@ define([
                 if (Number(firstIndex.innerHTML).toString().length <= 10) {
                     clearTimeout(timeOut);
                     timeOut = setTimeout(lang.hitch(this, function () {
+                        topic.publish("showProgressIndicator");
                         if (!isNaN(Number(firstIndex.innerHTML)) && Number(firstIndex.innerHTML) > 0 && Math.ceil(Number(firstIndex.innerHTML)) <= result) {
                             currentIndexSites = Math.ceil(Number(firstIndex.innerHTML)) * 10 - 10;
                             currentPage = Math.ceil((currentIndexSites / 10) + 1);
@@ -764,26 +807,31 @@ define([
             })));
             if (!this.areaSortSites) {
                 this.areaSortSites = [];
-                this.areaSortSites.push({ "label": sharedNls.titles.select, "value": sharedNls.titles.select, "selected": true });
-                for (i = 0; i < dojo.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields.length; i++) {
-                    if (dojo.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].SortingEnabled) {
-                        this.areaSortSites.push({ "label": dojo.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.substring(0, dojo.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.length - 1),
-                            "value": dojo.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].FieldName
-                            });
+                this.areaSortSites.push({
+                    "label": sharedNls.titles.select,
+                    "value": sharedNls.titles.select,
+                    "selected": true
+                });
+                for (i = 0; i < appGlobals.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields.length; i++) {
+                    if (appGlobals.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].SortingEnabled) {
+                        this.areaSortSites.push({
+                            "label": appGlobals.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.substring(0, appGlobals.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].DisplayText.length - 1),
+                            "value": appGlobals.configData.Workflows[1].InfoPanelSettings.ResultContents.DisplayFields[i].FieldName
+                        });
                     }
                 }
             }
-            this.selectBusinessSortForSites = new SelectList({
-                options: this.areaSortSites,
-                maxHeight: 100
-            }, selectForSites);
-
+            selectedOption = (this.selectBusinessSortForSites && this.selectBusinessSortForSites.value) || this.areaSortSites[0].value;
             if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
                 this.isSharedSort = true;
-                this.siteLocatorScrollbarSites = null;
                 this.sitesResultSet = null;
-                this.selectBusinessSortForSites.set("value", window.location.toString().split("$strSortingData=")[1].split("$")[0]);
+                selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
             }
+            this.selectBusinessSortForSites = new SelectList({
+                options: this.areaSortSites,
+                maxHeight: 100,
+                value: selectedOption
+            }, selectForSites);
 
             this.own(on(this.selectBusinessSortForSites, "change", lang.hitch(this, function (value) {
                 if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
@@ -792,6 +840,7 @@ define([
             })));
             this.own(on(leftArrow, "click", lang.hitch(this, function () {
                 if (currentIndexSites !== 0) {
+                    topic.publish("showProgressIndicator");
                     currentIndexSites -= 10;
                     this.performQuery(this.opeartionLayer, this.sitesResultSet, currentIndexSites);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
@@ -812,6 +861,7 @@ define([
             })));
             this.own(on(rightArrow, "click", lang.hitch(this, function () {
                 if (result >= Number(firstIndex.innerHTML) + 1) {
+                    topic.publish("showProgressIndicator");
                     currentIndexSites += 10;
                     this.performQuery(this.opeartionLayer, this.sitesResultSet, currentIndexSites);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
@@ -833,20 +883,19 @@ define([
         },
 
         /**
-        * Sorting based on configured outfields
+        * sorting based on configured outfields
         * @param {object} selection object
-        * @memberOf widgets/Sitelocator/FeatureQuery
+        * @memberOf widgets/siteLocator/featureQuery
         */
         _selectionChangeForBuildingSort: function (value) {
             var querySort, queryTask, andString, orString, queryString;
-            this.siteLocatorScrollbarAttributeBuilding = null;
-            this.siteLocatorScrollbarSites = null;
+            topic.publish("showProgressIndicator");
             this.buildingResultSet = null;
             this.sitesResultSet = null;
             this.selectedValue = value;
-            dojo.sortingData = this.selectedValue;
+            appGlobals.shareOptions.sortingData = this.selectedValue;
             queryTask = new QueryTask(this.opeartionLayer.url);
-            querySort = new esri.tasks.Query();
+            querySort = new Query();
             if (this.lastGeometry[this.workflowCount]) {
                 querySort.geometry = this.lastGeometry[this.workflowCount][0];
             }
@@ -884,6 +933,7 @@ define([
             querySort.orderByFields = [this.selectedValue];
             queryTask.executeForIds(querySort, lang.hitch(this, this._queryLayerhandler), function (error) {
                 alert(sharedNls.errorMessages.unableToSort);
+                topic.publish("hideProgressIndicator");
             });
         }
     });
