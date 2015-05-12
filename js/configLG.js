@@ -1,21 +1,20 @@
-﻿/*global dojo, define */
+﻿/*global dojo,define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
-| Version 10.2
-| Copyright 2013 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License"); you
-| may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Copyright 2013 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 define([], function () {
     return {
 
@@ -141,21 +140,21 @@ define([], function () {
                 Enabled: true,
                 SearchSettings: [
                     {
-                    	Title: "Improved Sites",
-                    	QueryLayerId: "0",
-                    	SearchDisplayTitle: "Improved Sites",
-                    	SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
-                    	SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
+                        Title: "Improved Sites",
+                        QueryLayerId: "0",
+                        SearchDisplayTitle: "Improved Sites",
+                        SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
+                        SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
 
-                    	FilterSettings: {
-                    		FilterRangeFields: [
+                        FilterSettings: {
+                            FilterRangeFields: [
                                 {
-                                	DisplayText: "Area (sqft)",
-                                	FieldName: "BLDGAREA"
+                                    DisplayText: "Area (sqft)",
+                                    FieldName: "BLDGAREA"
                                 }
-                    		],
-                    		RegularFilterOptionFields: [
-								
+                            ],
+                            RegularFilterOptionFields: [
+
 
                             ],
                             AdditionalFilterOptions: {
@@ -197,9 +196,9 @@ define([], function () {
                                 FieldName: "BLDGAREA",
                                 SortingEnabled: true
                             }, {
-                            	DisplayText: "Zoning Classification:",
-                            	FieldName: "ZONEDESC",
-                            	SortingEnabled: true
+                                DisplayText: "Zoning Classification:",
+                                FieldName: "ZONEDESC",
+                                SortingEnabled: true
                             }
 
                         ]
@@ -307,36 +306,36 @@ define([], function () {
                                 }
                             ],
                             RegularFilterOptionFields: [
-							{
-								DisplayText: "Sewer Service",
-								FieldName: "SEWER",
-								FieldValue: "Yes"
-							}, {
-								DisplayText: "Water Service",
-								FieldName: "WATER",
-								FieldValue: "Yes"
-							}, {
-								DisplayText: "Gas Service",
-								FieldName: "GAS",
-								FieldValue: "Yes"
-							}
+                            {
+                                DisplayText: "Sewer Service",
+                                FieldName: "SEWER",
+                                FieldValue: "Yes"
+                            }, {
+                                DisplayText: "Water Service",
+                                FieldName: "WATER",
+                                FieldValue: "Yes"
+                            }, {
+                                DisplayText: "Gas Service",
+                                FieldName: "GAS",
+                                FieldValue: "Yes"
+                            }
                             ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
                                        {
-                                       	DisplayText: "Industrial (I-2) Zone",
-                                       	FieldValue: "I-2"
+                                           DisplayText: "Industrial (I-2) Zone",
+                                           FieldValue: "I-2"
                                        }, {
-                                       	DisplayText: "Commerical (C-1) Zone",
-                                       	FieldValue: "C-1"
+                                           DisplayText: "Commerical (C-1) Zone",
+                                           FieldValue: "C-1"
                                        }, {
-                                       	DisplayText: "Commercial (C-2) Zone",
-                                       	FieldValue: "C-2"
+                                           DisplayText: "Commercial (C-2) Zone",
+                                           FieldValue: "C-2"
                                        }, {
-                                       	DisplayText: "Planned Use Development (PUD) Zone",
-                                       	FieldValue: "PUD"
+                                           DisplayText: "Planned Use Development (PUD) Zone",
+                                           FieldValue: "PUD"
                                        }
                                 ]
                             }
@@ -348,21 +347,21 @@ define([], function () {
                         ShowAttachments: true,
                         DisplayFields: [
                             {
-                            	DisplayText: "Name:",
-                            	FieldName: "FACNAME",
-                            	SortingEnabled: true
+                                DisplayText: "Name:",
+                                FieldName: "FACNAME",
+                                SortingEnabled: true
                             }, {
-                            	DisplayText: "Address:",
-                            	FieldName: "FULLADDR",
-                            	SortingEnabled: false
+                                DisplayText: "Address:",
+                                FieldName: "FULLADDR",
+                                SortingEnabled: false
                             }, {
-                            	DisplayText: "Area (sqft):",
-                            	FieldName: "BLDGAREA",
-                            	SortingEnabled: true
+                                DisplayText: "Area (sqft):",
+                                FieldName: "BLDGAREA",
+                                SortingEnabled: true
                             }, {
-                            	DisplayText: "Zoning Classification:",
-                            	FieldName: "ZONEDESC",
-                            	SortingEnabled: true
+                                DisplayText: "Zoning Classification:",
+                                FieldName: "ZONEDESC",
+                                SortingEnabled: true
                             }
 
                         ]
