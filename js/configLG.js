@@ -103,13 +103,13 @@ define([], function () {
 
         // Set buffer symbology
         BufferSymbology: {
-            FillSymbolColor: "255,0,0",
-            FillSymbolTransparency: "0.20",
-            LineSymbolColor: "255,0,0",
+            FillSymbolColor: "0,122,194",
+            FillSymbolTransparency: "0.10",
+            LineSymbolColor: "0,122,194",
             LineSymbolTransparency: "0.30"
         },
         DatePattern: "MMMM dd, yyyy",
-        RippleColor: "0,255,255",
+        RippleColor: "0,122,194",
         LocatorRippleSize: 40,
 
         // WORKFLOW SETTINGS
@@ -196,7 +196,7 @@ define([], function () {
                                 FieldName: "BLDGAREA",
                                 SortingEnabled: true
                             }, {
-                                DisplayText: "Zoning Classification:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC",
                                 SortingEnabled: true
                             }
@@ -220,11 +220,53 @@ define([], function () {
                                 DisplayText: "Zipcode:",
                                 FieldName: "SITEZIP"
                             }, {
-                                DisplayText: "Type:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC"
                             }, {
                                 DisplayText: "Area (sqft):",
                                 FieldName: "BLDGAREA"
+                            }, {
+                                DisplayText: "Acquisition:",
+                                FieldName: "ACQUISITION"
+                            }, {
+                                DisplayText: "Incentives:",
+                                FieldName: "INCENTIVE"
+                            }, {
+                                DisplayText: "Gas:",
+                                FieldName: "GAS"
+                            }, {
+                                DisplayText: "Electric:",
+                                FieldName: "ELECTRIC"
+                            }, {
+                                DisplayText: "Water:",
+                                FieldName: "WATER"
+                            }, {
+                                DisplayText: "Sewer:",
+                                FieldName: "SEWER"
+                            }, {
+                                DisplayText: "Telco:",
+                                FieldName: "TELCO"
+                            }, {
+                                DisplayText: "High-Speed ISP:",
+                                FieldName: "ISP"
+                            }, {
+                                DisplayText: "Distance to Rail (Mi):",
+                                FieldName: "DISTRAIL"
+                            }, {
+                                DisplayText: "Distance to Highway (Mi):",
+                                FieldName: "DISTHGWY"
+                            }, {
+                                DisplayText: "Distance to Airport (Mi):",
+                                FieldName: "DISTAIR"
+                            }, {
+                                DisplayText: "Contact Name:",
+                                FieldName: "POCNAME"
+                            }, {
+                                DisplayText: "Company Name:",
+                                FieldName: "POCCOMP"
+                            }, {
+                                DisplayText: "Contact Phone:",
+                                FieldName: "POCPHONE"
                             }
                         ]
                     },
@@ -359,7 +401,7 @@ define([], function () {
                                 FieldName: "BLDGAREA",
                                 SortingEnabled: true
                             }, {
-                                DisplayText: "Zoning Classification:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC",
                                 SortingEnabled: true
                             }
@@ -383,11 +425,53 @@ define([], function () {
                                 DisplayText: "Zipcode:",
                                 FieldName: "SITEZIP"
                             }, {
-                                DisplayText: "Type:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC"
                             }, {
                                 DisplayText: "Area (acres):",
                                 FieldName: "TOTAREA"
+                            }, {
+                                DisplayText: "Acquisition:",
+                                FieldName: "ACQUISITION"
+                            }, {
+                                DisplayText: "Incentives:",
+                                FieldName: "INCENTIVE"
+                            }, {
+                                DisplayText: "Gas:",
+                                FieldName: "GAS"
+                            }, {
+                                DisplayText: "Electric:",
+                                FieldName: "ELECTRIC"
+                            }, {
+                                DisplayText: "Water:",
+                                FieldName: "WATER"
+                            }, {
+                                DisplayText: "Sewer:",
+                                FieldName: "SEWER"
+                            }, {
+                                DisplayText: "Telco:",
+                                FieldName: "TELCO"
+                            }, {
+                                DisplayText: "High-Speed ISP:",
+                                FieldName: "ISP"
+                            }, {
+                                DisplayText: "Distance to Rail (Mi):",
+                                FieldName: "DISTRAIL"
+                            }, {
+                                DisplayText: "Distance to Highway (Mi):",
+                                FieldName: "DISTHGWY"
+                            }, {
+                                DisplayText: "Distance to Airport (Mi):",
+                                FieldName: "DISTAIR"
+                            }, {
+                                DisplayText: "Contact Name:",
+                                FieldName: "POCNAME"
+                            }, {
+                                DisplayText: "Company Name:",
+                                FieldName: "POCCOMP"
+                            }, {
+                                DisplayText: "Contact Phone:",
+                                FieldName: "POCPHONE"
                             }
                         ]
                     },
@@ -652,7 +736,7 @@ define([], function () {
                 height: 35
             },
             DisplayText: "Address",
-            LocatorDefaultAddress: "1215 Hidden Springs, Naperville, Illinois, 60540",
+            LocatorDefaultAddress: "1100 Hidden Springs, Naperville, Illinois, 60540",
             LocatorParameters: {
                 SearchField: "SingleLine",
                 SearchBoundaryField: "searchExtent"
@@ -677,7 +761,7 @@ define([], function () {
             TinyURLResponseAttribute: "data.url",
             FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Site%20Selector",
             TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Site%20Selector ${0}",
-            ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map!&body=${0}"
+            ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map&body=${0}"
         },
 
         //------------------------------------------------------------------------------------------------------------------------
