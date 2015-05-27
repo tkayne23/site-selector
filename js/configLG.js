@@ -306,37 +306,37 @@ define([], function () {
                                 }
                             ],
                             RegularFilterOptionFields: [
-                            {
-                                DisplayText: "Sewer Service",
-                                FieldName: "SEWER",
-                                FieldValue: "Yes"
-                            }, {
-                                DisplayText: "Water Service",
-                                FieldName: "WATER",
-                                FieldValue: "Yes"
-                            }, {
-                                DisplayText: "Gas Service",
-                                FieldName: "GAS",
-                                FieldValue: "Yes"
-                            }
+                                {
+                                    DisplayText: "Sewer Service",
+                                    FieldName: "SEWER",
+                                    FieldValue: "Yes"
+                                }, {
+                                    DisplayText: "Water Service",
+                                    FieldName: "WATER",
+                                    FieldValue: "Yes"
+                                }, {
+                                    DisplayText: "Gas Service",
+                                    FieldName: "GAS",
+                                    FieldValue: "Yes"
+                                }
                             ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
-                                       {
-                                           DisplayText: "Industrial (I-2) Zone",
-                                           FieldValue: "I-2"
-                                       }, {
-                                           DisplayText: "Commerical (C-1) Zone",
-                                           FieldValue: "C-1"
-                                       }, {
-                                           DisplayText: "Commercial (C-2) Zone",
-                                           FieldValue: "C-2"
-                                       }, {
-                                           DisplayText: "Planned Use Development (PUD) Zone",
-                                           FieldValue: "PUD"
-                                       }
+                                    {
+                                        DisplayText: "Industrial (I-2) Zone",
+                                        FieldValue: "I-2"
+                                    }, {
+                                        DisplayText: "Commerical (C-1) Zone",
+                                        FieldValue: "C-1"
+                                    }, {
+                                        DisplayText: "Commercial (C-2) Zone",
+                                        FieldValue: "C-2"
+                                    }, {
+                                        DisplayText: "Planned Use Development (PUD) Zone",
+                                        FieldValue: "PUD"
+                                    }
                                 ]
                             }
                         }
