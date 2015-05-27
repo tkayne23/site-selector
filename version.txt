@@ -1,2 +1,6 @@
-ArcGIS Solutions
-pulled from GitHub
+commit 4abaec84f65143d565a7d378f2104f77bf4ad3b4
+Merge: 30631fa d680e79
+Author: MikeTschudi <mtschudi@esri.com>
+Date:   Wed May 27 10:31:55 2015 -0700
+
+    Merge branch 'master' into development
