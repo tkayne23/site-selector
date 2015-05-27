@@ -107,7 +107,7 @@ define([], function () {
         // Set string value to be shown for null or blank values
         ShowNullValueAs: "N/A",
 
-        //Set mapAttribution visibility
+        //Set map source data as visible or not
         ShowMapAttribution: true,
 
 
@@ -129,10 +129,10 @@ define([], function () {
             LineSymbolTransparency: "0.30"
         },
 
-        //Set ripple color
+        //Set the color of the circle around the selected point
         RippleColor: "0,255,255",
 
-        //set ripple size
+        //Set the size of the circle around the selected point
         LocatorRippleSize: 40,
 
         // WORKFLOW SETTINGS
@@ -528,8 +528,7 @@ define([], function () {
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
                                     FieldName: "Industry.CIVLBFR_CY"
-                                },
-                                {
+                                }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
                                 }, {
@@ -709,7 +708,7 @@ define([], function () {
             TinyURLResponseAttribute: "data.url",
             FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Site%20Selector",
             TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Site%20Selector ${0}",
-            ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map!&body=${0}"
+            ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map&body=${0}"
         },
 
         //------------------------------------------------------------------------------------------------------------------------
