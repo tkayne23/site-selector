@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "751b99d469bf41668d0e59d69d1b3a9a",
+        WebMapId: "fcab8a1779694d1fbc4630a9d29ff009",
         Workflows: [
             {
                 Name: "Buildings",
@@ -181,7 +181,7 @@ define([], function () {
                             ],
 
                             AdditionalFilterOptions: {
-                                Enabled: true,
+                                Enabled: false,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
                                     {
@@ -204,7 +204,7 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayFields: [
                             {
                                 DisplayText: "Name:",
@@ -235,7 +235,7 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayTitle: "Property Information",
                         DisplayFields: [
                             {
@@ -366,7 +366,7 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayFields: [
                             {
                                 DisplayText: "Name:",
@@ -392,7 +392,7 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: true,
+                        ShowAttachments: false,
                         DisplayTitle: "Site Information",
                         DisplayFields: [
                             {
