@@ -593,13 +593,13 @@ define([], function () {
                             BusinessSummaryFields: [
                                 {
                                     DisplayText: "Businesses",
-                                    FieldName: "IndustryByNAICSCode.DN01_BUS"
+                                    FieldName: "IndustryByNAICSCode.N01_BUS"
                                 }, {
                                     DisplayText: "Revenue",
-                                    FieldName: "IndustryByNAICSCode.DN01_SALES"
+                                    FieldName: "IndustryByNAICSCode.N01_SALES"
                                 }, {
                                     DisplayText: "Employees",
-                                    FieldName: "IndustryByNAICSCode.DN01_EMP"
+                                    FieldName: "IndustryByNAICSCode.N01_EMP"
                                 }, {
                                     DisplayText: "Unemployment",
                                     FieldName: "Industry.UNEMPRT_CY"
