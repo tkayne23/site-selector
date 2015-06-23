@@ -1,3 +1,2 @@
 ArcGIS Solutions
-
-pulled from github
+July 2015
