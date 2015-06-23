@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "2ef11dad8ff04178b2b236e867e9c952",
+        WebMapId: "0376b6fa73534f5aa26d01e63367ae16",
         Workflows: [
             {
                 Name: "Buildings",
@@ -425,8 +425,8 @@ define([], function () {
                                 FieldName: "FULLADDR",
                                 SortingEnabled: false
                             }, {
-                                DisplayText: "Area (sqft):",
-                                FieldName: "BLDGAREA",
+                                DisplayText: "Area (acres):",
+                                FieldName: "TOTAREA",
                                 SortingEnabled: true
                             }, {
                                 DisplayText: "Zoning:",
