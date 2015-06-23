@@ -1,98 +1,71 @@
-﻿/*global define,dojo,dojoConfig,esri,esriConfig,alert,handle:true,dijit */
+﻿/*global define,dojo,dojoConfig,esri,esriConfig,alert,handle:true,dijit,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
-| Version 10.2
-| Copyright 2013 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Copyright 2013 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 //============================================================================================================================//
 define([
     "dojo/_base/declare",
-    "dojo/dom-construct",
-    "dojo/on",
-    "dojo/topic",
-    "dojo/_base/lang",
-    "dojo/_base/array",
-    "dojo/dom-style",
-    "dojo/dom-attr",
-    "dojo/dom",
-    "dojo/query",
-    "esri/tasks/locator",
-    "dojo/dom-class",
-    "esri/tasks/FeatureSet",
-    "dojo/dom-geometry",
-    "esri/tasks/GeometryService",
-    "dojo/string",
     "dojo/_base/html",
-    "dojo/text!./templates/siteLocatorTemplate.html",
-    "esri/urlUtils",
+    "dojo/_base/lang",
+    "dojo/Deferred",
+    "dojo/promise/all",
+    "dojo/dom-attr",
+    "dojo/dom-class",
+    "dojo/dom-construct",
+    "dojo/dom-style",
+    "dojo/i18n!application/js/library/nls/localizedStrings",
+    "dojo/on",
+    "dojo/query",
+    "dojo/string",
+    "dojo/topic",
+    "dojo/keys",
+    "dijit/_TemplatedMixin",
+    "dijit/_WidgetBase",
+    "dijit/_WidgetsInTemplateMixin",
+    "esri/geometry/Point",
+    "esri/graphic",
+    "esri/request",
+    "esri/symbols/PictureMarkerSymbol",
+    "esri/tasks/locator",
     "esri/tasks/query",
     "esri/tasks/QueryTask",
-    "dojo/Deferred",
-    "dojo/DeferredList",
-    "../scrollBar/scrollBar",
-    "dojo/_base/Color",
-    "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/SimpleFillSymbol",
-    "esri/symbols/SimpleMarkerSymbol",
-    "esri/graphic",
-    "esri/geometry/Point",
-    "dijit/registry",
-    "esri/tasks/BufferParameters",
-    "dijit/_WidgetBase",
-    "dijit/_TemplatedMixin",
-    "dijit/_WidgetsInTemplateMixin",
-    "dojo/i18n!application/js/library/nls/localizedStrings",
-    "esri/layers/GraphicsLayer",
-    "dijit/form/HorizontalSlider",
-    "dijit/form/Select",
-    "dojox/form/DropDownSelect",
-    "esri/request",
-    "esri/SpatialReference",
-    "dojo/number",
-    "esri/geometry/Polygon",
-    "dijit/form/HorizontalRule",
     "../siteLocator/featureQuery"
-
-], function (declare, domConstruct, on, topic, lang, array, domStyle, domAttr, dom, query, Locator, domClass, FeatureSet, domGeom, GeometryService, string, html, template, urlUtils, Query, QueryTask, Deferred, DeferredList, ScrollBar, Color, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, Graphic, Point, registry, BufferParameters, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, sharedNls, GraphicsLayer, HorizontalSlider, SelectList, DropDownSelect, esriRequest, SpatialReference, number, Polygon, HorizontalRule, featureQuery) {
-
+], function (declare, html, lang, Deferred, all, domAttr, domClass, domConstruct, domStyle, sharedNls, on, query, string, topic, keys, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, Point, Graphic, esriRequest, PictureMarkerSymbol, Locator, Query, QueryTask, featureQuery) {
     //========================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, featureQuery], {
-
         /**
         * attach locator events
-        * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} nodes and other variable for all workflows
+        * @memberOf widgets/siteLocator/unifiedSearch
         */
         _attachLocatorEvents: function (obj) {
-            this.own(on(obj.divSearch, "click", lang.hitch(this, function (evt) {
-                domStyle.set(obj.imgSearchLoader, "display", "block");
-                domStyle.set(obj.close, "display", "none");
-                this._locateAddress(evt, obj);
+            this.own(on(obj.divSearch, "click", lang.hitch(this, function () {
+                if (!domClass.contains(obj.divAddressResults, "esriCTDisableSearch")) {
+                    this._locateAddress(obj, true);
+                }
             })));
             this.own(on(obj.txtAddress, "keyup", lang.hitch(this, function (evt) {
-                domStyle.set(obj.close, "display", "block");
-                this._submitAddress(evt, false, obj);
+                this._submitAddress(evt, obj);
             })));
             this.own(on(obj.txtAddress, "paste", lang.hitch(this, function (evt) {
-                domStyle.set(obj.close, "display", "block");
-                this._submitAddress(evt, true, obj);
+                this._submitAddress(evt, obj);
             })));
             this.own(on(obj.txtAddress, "cut", lang.hitch(this, function (evt) {
-                domStyle.set(obj.close, "display", "block");
-                this._submitAddress(evt, true, obj);
+                this._submitAddress(evt, obj);
             })));
             this.own(on(obj.txtAddress, "dblclick", lang.hitch(this, function (evt) {
                 this._clearDefaultText(evt, obj);
@@ -101,9 +74,6 @@ define([
                 this._replaceDefaultText(evt, obj);
             })));
             this.own(on(obj.txtAddress, "focus", lang.hitch(this, function () {
-                if (domStyle.get(obj.imgSearchLoader, "display") !== "block") {
-                    domStyle.set(obj.close, "display", "block");
-                }
                 domClass.add(obj.txtAddress, "esriCTColorChange");
             })));
             this.own(on(obj.close, "click", lang.hitch(this, function () {
@@ -113,25 +83,21 @@ define([
             topic.subscribe("geoLocation-Complete", lang.hitch(this, function (mapPoint) {
                 if (this.workflowCount === obj.addressWorkflowCount) {
                     if (this.workflowCount === 0) {
-                        this.chkSerachContentBuilding.checked = true;
-                        this._buildingSearchButtonHandler(this.chkSerachContentBuilding);
                         this._getBackToTab(query(".esriCTAttachmentOuterDiv")[this.workflowCount], query(".esriCTMainDivBuilding")[0]);
                     } else if (this.workflowCount === 1) {
-                        this.chksearchContentSites.checked = true;
-                        this._sitesSearchButtonHandler(this.chksearchContentSites);
                         this._getBackToTab(query(".esriCTAttachmentOuterDiv")[this.workflowCount], query(".esriCTMainDivSites")[0]);
                     } else if (this.workflowCount === 3) {
                         this.rdoCommunitiesAddressSearch.checked = true;
                         this._communitiesSearchRadioButtonHandler(this.rdoCommunitiesAddressSearch);
                     }
+                    // when user clicks on geolocation icon in header panel, close the search panel if it is open and perform geolocation operation.
                     if (html.coords(this.applicationHeaderSearchContainer).h > 0) {
-                        dojo.arrAddressMapPoint[this.workflowCount] = mapPoint.x + "," + mapPoint.y;
+                        appGlobals.shareOptions.arrAddressMapPoint[this.workflowCount] = mapPoint.x + "," + mapPoint.y;
                         this._geoLocationQuery(obj, mapPoint);
-                        dojo.strGeoLocationMapPoint = null;
-
+                        appGlobals.shareOptions.strGeoLocationMapPoint = null;
                     } else {
                         topic.publish("hideProgressIndicator");
-                        dojo.strGeoLocationMapPoint = mapPoint.x + "," + mapPoint.y;
+                        appGlobals.shareOptions.strGeoLocationMapPoint = mapPoint.x + "," + mapPoint.y;
                     }
                 }
             }));
@@ -141,118 +107,172 @@ define([
         * perform query on GeoLocation
         * @param {object} Nodes and other variable for all workflows
         * @param {object} Geolocation MapPoint
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _geoLocationQuery: function (obj, mapPoint) {
             var locator;
-            locator = new Locator(dojo.configData.LocatorSettings.LocatorURL);
+            locator = new Locator(appGlobals.configData.LocatorSettings.LocatorURL);
             locator.locationToAddress(mapPoint, 100);
             locator.on("location-to-address-complete", lang.hitch(this, function (evt) {
+                // if address found then add the pushpin and create buffer
                 if (evt.address.address) {
                     domAttr.set(obj.txtAddress, "defaultAddress", evt.address.address.Address);
                     domAttr.set(obj.txtAddress, "value", evt.address.address.Address);
-                    domConstruct.empty(obj.divAddressResults, obj.divAddressScrollContent);
+                    domConstruct.empty(obj.divAddressResults);
                     domStyle.set(obj.divAddressScrollContainer, "display", "none");
                     domStyle.set(obj.divAddressScrollContent, "display", "none");
                     this.featureGeometry[this.workflowCount] = mapPoint;
                     this.addPushPin(this.featureGeometry[this.workflowCount]);
+                    // check workflow is communities and  perform geoenrichment.
                     if (this.workflowCount === 3) {
                         topic.publish("showProgressIndicator");
                         this._enrichData([mapPoint], this.workflowCount, null);
                     } else {
-                        this._createBuffer(mapPoint);
+                        // in other Workflow, create buffer.
+                        this._createBuffer(mapPoint, null, true);
                     }
-                    dojo.arrStrAdderss[this.workflowCount] = evt.address.address.Address;
-
+                    appGlobals.shareOptions.arrStrAdderss[this.workflowCount] = evt.address.address.Address;
                 }
             }));
             locator.on("error", function (error) {
                 alert(error.error.details[0]);
+                topic.publish("hideProgressIndicator");
             });
-
         },
 
         /**
         * perform search by address if search type is address search
-        * @param {object} evt Click event
         * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _locateAddress: function (evt, obj) {
-            domConstruct.empty(obj.divAddressResults);
-            if (lang.trim(obj.txtAddress.value) === '') {
+        _searchLocation: function (obj, searchText, thisSearchTime) {
+            var nameArray = {}, searchFields, addressFieldValues, s, deferredArray, resultLength, index;
+            // discard searches made obsolete by new typing from user
+            if (thisSearchTime < this.lastSearchTime) {
+                return;
+            }
+            if (searchText === "") {
+                // clear results if the search string is empty and display error message
                 domStyle.set(obj.imgSearchLoader, "display", "none");
                 domStyle.set(obj.close, "display", "block");
+                this.mapPoint = null;
+                this._locatorErrBack(obj, false);
                 domStyle.set(obj.divAddressScrollContainer, "display", "none");
                 domStyle.set(obj.divAddressScrollContent, "display", "none");
             } else {
-                if (obj.checkBox.checked) {
-                    if (obj.addressWorkflowCount === 3) {
-                        this._standardGeoQuery(obj);
-                    } else {
-                        this._searchLocation(obj);
-                    }
-                } else {
-                    domStyle.set(obj.imgSearchLoader, "display", "none");
-                    domStyle.set(obj.close, "display", "block");
-                    domStyle.set(obj.divAddressScrollContainer, "display", "none");
-                    domStyle.set(obj.divAddressScrollContent, "display", "none");
+                nameArray[appGlobals.configData.LocatorSettings.DisplayText] = [];
+                domAttr.set(obj.txtAddress, "defaultAddress", searchText);
+                domStyle.set(obj.imgSearchLoader, "display", "block");
+                domStyle.set(obj.close, "display", "none");
+                // discard searches made obsolete by new typing from user
+                if (thisSearchTime < this.lastSearchTime) {
+                    return;
                 }
+                searchFields = [];
+                // pass config setting based on tab selection
+                addressFieldValues = appGlobals.configData.LocatorSettings.LocatorFilterFieldValues;
+
+                for (s in addressFieldValues) {
+                    if (addressFieldValues.hasOwnProperty(s)) {
+                        searchFields.push(addressFieldValues[s]);
+                    }
+                }
+                deferredArray = [];
+
+                if (appGlobals.configData.Workflows[this.workflowCount].SearchSettings) {
+                    // get deferred for searching for search term in each feature layer in workflow in order
+                    for (index = 0; index < appGlobals.configData.Workflows[this.workflowCount].SearchSettings.length; index++) {
+                        this._layerSearchResults(deferredArray, appGlobals.configData.Workflows[this.workflowCount].SearchSettings[index], obj, searchText);
+                    }
+                }
+                this._getAddressSearchResults(deferredArray, searchText, obj);
+                // when deferred all complete, process the list in workflow order followed by the geocoding
+                all(deferredArray).then(lang.hitch(this, function (result) {
+                    var num, i, key, order, resultAttributes;
+                    domStyle.set(obj.divAddressScrollContainer, "display", "block");
+                    // discard searches made obsolete by new typing from user
+                    if (thisSearchTime < this.lastSearchTime) {
+                        return;
+                    }
+                    // check the result having the data or not
+                    if (result) {
+                        if (result.length > 0) {
+                            for (num = 0; num < result.length; num++) {
+                                if (result[num]) {
+                                    if (result[num].layerSearchSettings && appGlobals.configData.Workflows[this.workflowCount].SearchSettings && appGlobals.configData.Workflows[this.workflowCount].SearchSettings[num]) {
+                                        key = appGlobals.configData.Workflows[this.workflowCount].SearchSettings[num].SearchDisplayTitle;
+                                        nameArray[key] = [];
+                                        if (result[num].featureSet && result[num].featureSet.features) {
+                                            for (order = 0; order < result[num].featureSet.features.length; order++) {
+                                                resultAttributes = result[num].featureSet.features[order].attributes;
+                                                //set default value for fields if its value is null or undefined
+                                                for (i in resultAttributes) {
+                                                    if (resultAttributes.hasOwnProperty(i)) {
+                                                        if (!resultAttributes[i]) {
+                                                            resultAttributes[i] = appGlobals.configData.ShowNullValueAs;
+                                                        }
+                                                    }
+                                                }
+                                                //add feature data into nameArray
+                                                if (nameArray[key].length < appGlobals.configData.LocatorSettings.MaxResults) {
+                                                    nameArray[key].push({
+                                                        name: string.substitute(appGlobals.configData.Workflows[this.workflowCount].SearchSettings[num].SearchDisplayFields, result[num].featureSet.features[order].attributes),
+                                                        attributes: resultAttributes,
+                                                        fields: result[num].fields,
+                                                        layer: appGlobals.configData.Workflows[this.workflowCount].SearchSettings[num],
+                                                        geometry: result[num].featureSet.features[order].geometry
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    } else if (result[num].length) {
+                                        this._addressResult(result[num], nameArray, searchFields);
+                                    }
+                                    //result length in case of address
+                                    if (result[num].length) {
+                                        resultLength = result[num].length;
+                                    } else if (result[num].featureSet && result[num].featureSet.features.length > 0) {
+                                        //result length in case of features
+                                        resultLength = result[num].featureSet.features.length;
+                                    }
+                                }
+                            }
+                            this._showLocatedAddress(nameArray, resultLength, obj, searchText);
+                        }
+                    } else {
+                        this.mapPoint = null;
+                        this._locatorErrBack(obj, true);
+                    }
+                }));
             }
         },
 
         /**
-        * perform search by address if search type is address search
-        * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * get results from locator service
+        * @param {object} deferredArray
+        * @param {object} searchText
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _searchLocation: function (obj) {
-            var nameArray, locatorSettings, locator, searchFieldName, addressField, baseMapExtent, options, searchFields, addressFieldValues, addressFieldName, s, deferredArray, locatorDef, deferred, resultLength, deferredListResult, index;
-            nameArray = { Address: [] };
-            domStyle.set(obj.imgSearchLoader, "display", "block");
-            domStyle.set(obj.close, "display", "none");
-            domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
-
-            /**
-            * call locator service specified in configuration file
-            */
-            locatorSettings = dojo.configData.LocatorSettings;
-            locator = new Locator(locatorSettings.LocatorURL);
-            searchFieldName = locatorSettings.LocatorParameters.SearchField;
-            addressField = {};
-            addressField[searchFieldName] = lang.trim(obj.txtAddress.value);
-            if (dojo.configData.WebMapId && lang.trim(dojo.configData.WebMapId).length !== 0) {
-                baseMapExtent = this.map.getLayer(this.map.layerIds[0]).fullExtent;
-            } else {
-                baseMapExtent = this.map.getLayer(this.map.basemapLayerIds[0]).fullExtent;
+        _getAddressSearchResults: function (deferredArray, searchText, obj) {
+            var addressField = {}, options, searchFieldName, baseMapExtent, locator, locatorDef, deferred, basemapId;
+            // call locator service specified in configuration file
+            locator = new Locator(appGlobals.configData.LocatorSettings.LocatorURL);
+            searchFieldName = appGlobals.configData.LocatorSettings.LocatorParameters.SearchField;
+            addressField[searchFieldName] = searchText;
+            //get selected basemap id
+            basemapId = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex].basemapId;
+            if (this.map.getLayer(basemapId)) {
+                baseMapExtent = this.map.getLayer(basemapId).fullExtent;
             }
+            // options contains address, outFields and basemap extent for locator service
             options = {};
             options.address = addressField;
-            options.outFields = locatorSettings.LocatorOutFields;
-            options[locatorSettings.LocatorParameters.SearchBoundaryField] = baseMapExtent;
+            options.outFields = appGlobals.configData.LocatorSettings.LocatorOutFields;
+            options[appGlobals.configData.LocatorSettings.LocatorParameters.SearchBoundaryField] = baseMapExtent;
             locator.outSpatialReference = this.map.spatialReference;
-            searchFields = [];
-            addressFieldValues = dojo.configData.LocatorSettings.LocatorFilterFieldValues; //*****pass config seting based on tab selection******//
-            addressFieldName = dojo.configData.LocatorSettings.LocatorFilterFieldName.toString();
-            for (s in addressFieldValues) {
-                if (addressFieldValues.hasOwnProperty(s)) {
-                    searchFields.push(addressFieldValues[s]);
-                }
-            }
 
-            /**
-            * get results from locator service
-            * @param {object} options Contains address, outFields and basemap extent for locator service
-            * @param {object} candidates Contains results from locator service
-            * @memberOf widgets/Sitelocator/UnifiedSearch
-            */
-            deferredArray = [];
-            if (dojo.configData.Workflows[this.workflowCount].SearchSettings) {
-                for (index = 0; index < dojo.configData.Workflows[this.workflowCount].SearchSettings.length; index++) {
-                    this._locateLayersearchResult(deferredArray, dojo.configData.Workflows[this.workflowCount].SearchSettings[index], obj);
-                }
-            }
             locatorDef = locator.addressToLocations(options);
+            // candidates contains results from locator service
             locator.on("address-to-locations-complete", lang.hitch(this, function (candidates) {
                 deferred = new Deferred();
                 deferred.resolve(candidates);
@@ -260,110 +280,58 @@ define([
             }), function () {
                 domStyle.set(obj.imgSearchLoader, "display", "none");
                 domStyle.set(obj.close, "display", "block");
-                this._locatorErrBack(obj);
+                this._locatorErrBack(obj, true);
             });
             deferredArray.push(locatorDef);
-            deferredListResult = new DeferredList(deferredArray);
-            deferredListResult.then(lang.hitch(this, function (result) {
-                var num, i, key, order, resultAttributes;
-                domStyle.set(obj.divAddressScrollContainer, "display", "block");
-                domStyle.set(obj.divAddressScrollContent, "display", "block");
-                if (result) {
-                    if (result.length > 0) {
-                        for (num = 0; num < result.length; num++) {
-                            if (dojo.configData.Workflows[this.workflowCount].SearchSettings && dojo.configData.Workflows[this.workflowCount].SearchSettings[num]) {
-                                key = dojo.configData.Workflows[this.workflowCount].SearchSettings[num].SearchDisplayTitle;
-                                nameArray[key] = [];
-                                for (order = 0; order < result[num][1].features.length; order++) {
-                                    resultAttributes = result[num][1].features[order].attributes;
-                                    for (i in resultAttributes) {
-                                        if (resultAttributes.hasOwnProperty(i)) {
-                                            if (!resultAttributes[i]) {
-                                                resultAttributes[i] = sharedNls.showNullValue;
-                                            }
-                                        }
-                                    }
-                                    if (nameArray[key].length < dojo.configData.LocatorSettings.MaxResults) {
-                                        nameArray[key].push({
-                                            name: string.substitute(dojo.configData.Workflows[this.workflowCount].SearchSettings[num].SearchDisplayFields, result[num][1].features[order].attributes),
-                                            attributes: resultAttributes,
-                                            fields: result[num][1].fields,
-                                            layer: dojo.configData.Workflows[this.workflowCount].SearchSettings[num],
-                                            geometry: result[num][1].features[order].geometry
-                                        });
-                                    }
-                                }
-                            } else {
-                                this._addressResult(result[num][1], nameArray, searchFields, addressFieldName);
-                            }
-                            if (result[num][1].length) {
-                                resultLength = result[num][1].length;
-                            }
-                        }
-                        this._showLocatedAddress(nameArray, resultLength, obj);
-                    }
-                } else {
-                    this._locatorErrorHandler(obj);
-                }
-            }));
         },
-
         /**
         * query layer for searched result
         * @param {array} deferred array to push query result
         * @param {object} an instance of services
-        * @memberOf widgets/locator/locatorSetting
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj
+        * @param {string} searchText
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _locateLayersearchResult: function (deferredArray, layerobject, obj) {
-            var queryTask, queryLayer, queryTaskResult, deferred;
+        _layerSearchResults: function (deferredArray, layerobject, obj, searchText) {
+            var queryTask, queryLayer, deferred;
             domStyle.set(obj.imgSearchLoader, "display", "block");
             domStyle.set(obj.close, "display", "none");
+            deferred = new Deferred();
+            // if QueryURL is present for the configured layer
             if (layerobject.QueryURL) {
                 queryTask = new QueryTask(layerobject.QueryURL);
                 queryLayer = new Query();
-                queryLayer.where = string.substitute(layerobject.SearchExpression, [lang.trim(obj.txtAddress.value).toUpperCase()]);
+                queryLayer.where = string.substitute(layerobject.SearchExpression, [searchText]);
                 queryLayer.outSpatialReference = this.map.spatialReference;
-                queryLayer.returnGeometry = true;
+                // set return geometry true if object id field  is not available in layer
+                queryLayer.returnGeometry = layerobject.objectIDField ? false : true;
                 queryLayer.maxAllowableOffset = 100;
                 queryLayer.outFields = ["*"];
-                queryTaskResult = queryTask.execute(queryLayer, lang.hitch(this, function (featureSet) {
-                    deferred = new Deferred();
-                    deferred.resolve(featureSet);
-                    return deferred.promise;
+                queryTask.execute(queryLayer, lang.hitch(this, function (featureSet) {
+                    var featureObject = {
+                        "featureSet": featureSet,
+                        "layerSearchSettings": layerobject
+                    };
+                    deferred.resolve(featureObject);
                 }), function (err) {
+                    deferred.resolve();
                     alert(err.message);
                 });
-                deferredArray.push(queryTaskResult);
+                deferredArray.push(deferred);
             }
-        },
-
-        /**
-        * Search error handler
-        * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/Sitelocator/UnifiedSearch
-        */
-        _locatorErrorHandler: function (obj) {
-            domStyle.set(obj.imgSearchLoader, "display", "none");
-            domStyle.set(obj.close, "display", "block");
-            this.mapPoint = null;
-            this._locatorErrBack(obj);
         },
 
         /**
         * filter valid results from results returned by locator service
         * @param {object} candidates Contains results from locator service
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _showLocatedAddress: function (candidates, resultLength, obj) {
-            var addrListCount = 0, addrList = [], divAddressSearchCell, candidateArray, divAddressCounty, candidate, listContainer, i, candidateName, isCandidate;
+            var addrListCount = 0, noResultCount = 0, candidatesCount = 0, addrList = [], divAddressSearchCell, divAddressCounty, candidate, listContainer, i, candidateName;
             domConstruct.empty(obj.divAddressResults);
             if (lang.trim(obj.txtAddress.value) === "") {
                 obj.txtAddress.focus();
                 domConstruct.empty(obj.divAddressResults);
-                obj.locatorScrollbar = new ScrollBar({ domNode: obj.divAddressScrollContent });
-                obj.locatorScrollbar.setContent(obj.divAddressResults);
-                obj.locatorScrollbar.createScrollBar();
                 domStyle.set(obj.imgSearchLoader, "display", "none");
                 domStyle.set(obj.close, "display", "block");
                 return;
@@ -372,31 +340,17 @@ define([
             /**
             * display all the located address in the address container
             * 'this.divAddressResults' div dom element contains located addresses, created in widget template
-            * @memberOf widgets/Sitelocator/UnifiedSearch
             */
-            if (obj.locatorScrollbar) {
-                domClass.add(obj.locatorScrollbar._scrollBarContent, "esriCTZeroHeight");
-                obj.locatorScrollbar.removeScrollBar();
-            }
             domStyle.set(obj.divAddressScrollContainer, "display", "block");
             domStyle.set(obj.divAddressScrollContent, "display", "block");
-            obj.locatorScrollbar = new ScrollBar({ domNode: obj.divAddressScrollContent });
-            obj.locatorScrollbar.setContent(obj.divAddressResults);
-            obj.locatorScrollbar.createScrollBar();
             if (resultLength > 0) {
-                isCandidate = false;
-                for (candidateArray in candidates) {
-                    if (candidates.hasOwnProperty(candidateArray)) {
-                        if (!isCandidate) {
-                            candidateName = dojo.configData.LocatorSettings.DisplayText;
-                        } else {
-                            candidateName = candidateArray;
-                        }
-                        if (candidates[candidateArray].length > 0) {
-                            isCandidate = true;
+                for (candidateName in candidates) {
+                    if (candidates.hasOwnProperty(candidateName)) {
+                        candidatesCount++;
+                        if (candidates[candidateName].length > 0) {
                             divAddressCounty = domConstruct.create("div", { "class": "esriCTSearchGroupRow esriCTBottomBorder esriCTResultColor esriCTCursorPointer esriCTAddressCounty" }, obj.divAddressResults);
                             divAddressSearchCell = domConstruct.create("div", { "class": "esriCTSearchGroupCell" }, divAddressCounty);
-                            candidate = candidateName + " (" + candidates[candidateArray].length + ")";
+                            candidate = candidateName + " (" + candidates[candidateName].length + ")";
                             domConstruct.create("div", { "innerHTML": "+", "class": "esriCTPlusMinus" }, divAddressSearchCell);
                             domConstruct.create("div", { "innerHTML": candidate, "class": "esriCTGroupList" }, divAddressSearchCell);
                             domStyle.set(obj.imgSearchLoader, "display", "none");
@@ -405,14 +359,21 @@ define([
                             this._toggleAddressList(addrList, addrListCount, obj);
                             addrListCount++;
                             listContainer = domConstruct.create("div", { "class": "listContainer esriCTHideAddressList" }, obj.divAddressResults);
-                            for (i = 0; i < candidates[candidateArray].length; i++) {
-                                this._displayValidLocations(candidates[candidateArray][i], i, candidates[candidateArray], listContainer, obj);
+                            for (i = 0; i < candidates[candidateName].length; i++) {
+                                this._displayValidLocations(candidates[candidateName][i], i, candidates[candidateName], listContainer, obj);
                             }
+                        } else {
+                            noResultCount++;
                         }
                     }
                 }
+                if (noResultCount === candidatesCount) {
+                    this.mapPoint = null;
+                    this._locatorErrBack(obj, true);
+                }
             } else {
-                this._locatorErrorHandler(obj);
+                this.mapPoint = null;
+                this._locatorErrBack(obj, true);
             }
         },
 
@@ -433,12 +394,10 @@ define([
                         domClass.toggle(outputContainer, "esriCTShowAddressList");
                         listStatusSymbol = (domAttr.get(plusMinusContainer, "innerHTML") === "+") ? "-" : "+";
                         domAttr.set(plusMinusContainer, "innerHTML", listStatusSymbol);
-                        obj.locatorScrollbar.resetScrollBar();
                         return;
                     }
                     domClass.add(outputContainer, "esriCTShowAddressList");
                     domAttr.set(plusMinusContainer, "innerHTML", "-");
-                    obj.locatorScrollbar.resetScrollBar();
                 }
             });
         },
@@ -446,29 +405,17 @@ define([
         /**
         * search address on every key press
         * @param {object} evt Keyup event
-        * @param {string} locator text
-        * @param {object} Nodes and other variable for all workflows
+        * @param {string} obj
         * @memberOf widgets/Sitelocator/UnifiedSearch
         */
-        _submitAddress: function (evt, locatorText, obj) {
-            if (locatorText) {
-                setTimeout(lang.hitch(this, function () {
-                    if (obj.locatorScrollbar) {
-                        domClass.add(obj.locatorScrollbar._scrollBarContent, "esriCTZeroHeight");
-                        obj.locatorScrollbar.removeScrollBar();
-                    }
-                    this._locateAddress(evt, obj);
-                }), 100);
-                return;
-            }
+        _submitAddress: function (evt, obj) {
             if (evt) {
-                if (evt.keyCode === dojo.keys.ENTER) {
-                    if (obj.txtAddress.value !== '') {
-                        domStyle.set(obj.imgSearchLoader, "display", "block");
-                        domStyle.set(obj.close, "display", "none");
-                        this._locateAddress(evt, obj);
-                        return;
-                    }
+                /**
+                * Enter key immediately starts search
+                */
+                if (evt.keyCode === keys.ENTER) {
+                    this._locateAddress(obj, true);
+                    return;
                 }
 
                 /**
@@ -476,159 +423,248 @@ define([
                 * numbers,numpad keys,comma,ctl+v,ctrl +x,delete or
                 * backspace is pressed
                 */
-                if ((!((evt.keyCode >= 46 && evt.keyCode < 58) || (evt.keyCode > 64 && evt.keyCode < 91) || (evt.keyCode > 95 && evt.keyCode < 106) || evt.keyCode === 8 || evt.keyCode === 110 || evt.keyCode === 188)) || (evt.keyCode === 86 && evt.ctrlKey) || (evt.keyCode === 88 && evt.ctrlKey)) {
+                if (evt.ctrlKey || evt.altKey ||
+                            evt.keyCode === keys.UP_ARROW || evt.keyCode === keys.DOWN_ARROW ||
+                            evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
+                            evt.keyCode === keys.HOME || evt.keyCode === keys.END ||
+                            evt.keyCode === keys.CTRL || evt.keyCode === keys.SHIFT) {
                     evt.cancelBubble = true;
-                    if (evt.stopPropagation) {
-                        evt.stopPropagation();
-                    }
+                    evt.stopPropagation();
                     domStyle.set(obj.imgSearchLoader, "display", "none");
                     domStyle.set(obj.close, "display", "block");
                     return;
                 }
-
-                /**
-                * call locator service if search text is not empty
-                */
-                domStyle.set(obj.imgSearchLoader, "display", "block");
-                domStyle.set(obj.close, "display", "none");
-                if (domGeom.getMarginBox(obj.searchContent).h >= 0) {
-                    if (lang.trim(obj.txtAddress.value) !== '') {
-                        if (obj.lastSearchString !== lang.trim(obj.txtAddress.value)) {
-                            obj.lastSearchString = lang.trim(obj.txtAddress.value);
-                            domConstruct.empty(obj.divAddressResults);
-
-                            /**
-                            * clear any staged search
-                            */
-                            clearTimeout(this.stagedSearch);
-                            if (lang.trim(obj.txtAddress.value).length > 0) {
-
-                                /**
-                                * stage a new search, which will launch if no new searches show up
-                                * before the timeout
-                                */
-                                this.stagedSearch = setTimeout(lang.hitch(this, function () {
-
-                                    this.stagedSearch = this._locateAddress(evt, obj);
-                                }), 500);
-                            }
-                        } else {
-                            domStyle.set(obj.imgSearchLoader, "display", "none");
-                            domStyle.set(obj.close, "display", "block");
-                        }
-                    } else {
-                        obj.lastSearchString = lang.trim(obj.txtAddress.value);
-                        domStyle.set(obj.imgSearchLoader, "display", "none");
-                        domStyle.set(obj.close, "display", "block");
-                        domConstruct.empty(obj.divAddressResults);
-                    }
-                }
+                // call locator service
+                this._locateAddress(obj, false);
             }
         },
 
         /**
         * perform search by address if search type is address search
-        * @param {object} address candidate
-        * @param {number} index of address
-        * @param {array} array of candidate address
-        * @param {object} container node
-        * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj contains data for selected workflow
+        * @param {object} launchImmediately
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _displayValidLocations: function (candidate, index, candidateArray, listContainer, obj) {
-            var _this = this, candidateDate, esriCTSearchList;
+        _locateAddress: function (obj, launchImmediately) {
+            var searchText = lang.trim(obj.txtAddress.value);
+            // check the selected value contains sorted strings then set the dropdown value to select for workflows
+            if (this.selectedValue && this.selectBusinessSortForBuilding) {
+                this.selectedValue = null;
+                this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
+            }
+            if (this.selectedValue && this.selectBusinessSortForSites) {
+                this.selectedValue = null;
+                this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+            }
+            if (launchImmediately || this.lastSearchString !== searchText) {
+                this.lastSearchString = searchText;
+                // clear any staged search
+                clearTimeout(this.stagedSearch);
+                // hide existing results
+                domConstruct.empty(obj.divAddressResults);
+            }
+            // stage a new search, which will launch if no new searches show up before the timeout
+            this.stagedSearch = setTimeout(lang.hitch(this, function () {
+                var thisSearchTime;
+                // replace search type-in box' clear X with a busy cursor
+                domStyle.set(obj.imgSearchLoader, "display", "none");
+                domStyle.set(obj.close, "display", "block");
+                domStyle.set(obj.divAddressScrollContainer, "display", "none");
+                domStyle.set(obj.divAddressScrollContent, "display", "none");
+                // launch a search after recording when the search began
+                this.lastSearchTime = thisSearchTime = (new Date()).getTime();
+                if (obj.addressWorkflowCount === 3) {
+                    this._standardGeoQuery(obj);
+                } else {
+                    this._searchLocation(obj, lang.trim(obj.txtAddress.value), thisSearchTime);
+                }
+            }), (launchImmediately ? 0 : 500));
+        },
+
+        /**
+        * perform search by address if search type is address search
+        * @param {object} candidate contains the address result
+        * @param {int} index of address
+        * @param {object} candidateName contain the name of result
+        * @param {object} listContainer is div which stored address result
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
+        */
+        _displayValidLocations: function (candidate, index, candidateName, listContainer, obj) {
+            var candidateAddress, esriCTSearchList, layer;
             esriCTSearchList = domConstruct.create("div", { "class": "esriCTSearchListPanel" }, listContainer);
-            candidateDate = domConstruct.create("div", { "class": "esriCTContentBottomBorder esriCTCursorPointer" }, esriCTSearchList);
-            domAttr.set(candidateDate, "index", index);
+            candidateAddress = domConstruct.create("div", { "class": "esriCTContentBottomBorder esriCTCursorPointer" }, esriCTSearchList);
+            domAttr.set(candidateAddress, "index", index);
             try {
                 if (candidate.name) {
-                    domAttr.set(candidateDate, "innerHTML", candidate.name);
+                    domAttr.set(candidateAddress, "innerHTML", candidate.name);
                 } else {
-                    domAttr.set(candidateDate, "innerHTML", candidate);
+                    domAttr.set(candidateAddress, "innerHTML", candidate);
                 }
                 if (candidate.attributes.location) {
-                    domAttr.set(candidateDate, "x", candidate.attributes.location.x);
-                    domAttr.set(candidateDate, "y", candidate.attributes.location.y);
-                    domAttr.set(candidateDate, "address", string.substitute(dojo.configData.LocatorSettings.DisplayField, candidate.attributes.attributes));
+                    domAttr.set(candidateAddress, "x", candidate.attributes.location.x);
+                    domAttr.set(candidateAddress, "y", candidate.attributes.location.y);
+                    domAttr.set(candidateAddress, "address", string.substitute(appGlobals.configData.LocatorSettings.DisplayField, candidate.attributes.attributes));
                 }
             } catch (err) {
                 alert(sharedNls.errorMessages.falseConfigParams);
             }
-            candidateDate.onclick = function () {
+            on(candidateAddress, "click", lang.hitch(this, function (evt) {
+                var target, isValid;
                 topic.publish("showProgressIndicator");
+                // check the address entered from communities workflow and perform geoenrichment.
                 if (obj.addressWorkflowCount === 3) {
                     domConstruct.empty(obj.divAddressResults);
-                    _this.txtAddressCommunities.value = candidate.name;
-                    dojo.arrStrAdderss[obj.addressWorkflowCount] = lang.trim(_this.txtAddressCommunities.value);
+                    this.txtAddressCommunities.value = candidate.name;
+                    appGlobals.shareOptions.arrStrAdderss[obj.addressWorkflowCount] = lang.trim(this.txtAddressCommunities.value);
                     domStyle.set(obj.divAddressScrollContainer, "display", "none");
                     domStyle.set(obj.divAddressScrollContent, "display", "none");
-                    _this._enrichData(null, obj.addressWorkflowCount, candidate);
+                    this._enrichData(null, obj.addressWorkflowCount, candidate);
                 } else {
-                    if (_this.map.infoWindow) {
-                        _this.map.infoWindow.hide();
+                // check the infowindow is visible on map
+                    if (this.map.infoWindow) {
+                        this.map.infoWindow.hide();
                     }
-                    obj.txtAddress.value = this.innerHTML;
-                    domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
+                    if (obj.addressWorkflowCount === 0 && domClass.contains(this.filterIcon, "esriCTFilterEnabled")) {
+                        domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                    } else if (obj.addressWorkflowCount === 1 && domClass.contains(this.filterIconSites, "esriCTFilterEnabled")) {
+                        domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                    } else {
+                        if (domClass.contains(this.filterIconBusiness, "esriCTFilterEnabled")) {
+                            domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
+                        }
+                    }
+                    // validate range filter values in building, sites and business tab and set the default address
+                    isValid = this._validateRangeFilterValues();
+                    if (isValid) {
+                        obj.txtAddress.value = candidateAddress.innerHTML;
+                        domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
+                    }
                     if (candidate.attributes.location) {
-                        _this.mapPoint = new Point(domAttr.get(this, "x"), domAttr.get(this, "y"), _this.map.spatialReference);
-                        _this._locateAddressOnMap(_this.mapPoint, obj);
-                    } else if (candidate.geometry) {
-                        _this.mapPoint = new Point(candidate.geometry.x, candidate.geometry.y, _this.map.spatialReference);
-                        _this._locateAddressOnMap(_this.mapPoint, obj);
+                        target = evt.currentTarget || evt.srcElement;
+                        this.mapPoint = new Point(domAttr.get(target, "x"), domAttr.get(target, "y"), this.map.spatialReference);
+                        this._locateAddressOnMap(this.mapPoint, obj, isValid);
+                    } else {
+                        if (candidateName[domAttr.get(candidateAddress, "index", index)]) {
+                            layer = candidateName[domAttr.get(candidateAddress, "index", index)].layer;
+                            if (!candidate.geometry) {
+                                this._getSelectedCandidateGeometry(layer, candidate, obj, isValid);
+                            } else {
+                                this.mapPoint = new Point(candidate.geometry.x, candidate.geometry.y, this.map.spatialReference);
+                                this._locateAddressOnMap(this.mapPoint, obj, isValid);
+                            }
+                        }
                     }
                 }
-            };
+            }));
+        },
+
+        /**
+        * fetch geometry of the selected candidate
+        * @param {object} layerobject - selected candidate's layer details
+        * @param {object} candidate - selected candidate
+        * @param {object} obj contains data for selected workflow
+        * @param {boolean} isValid - flag to indicate if the applied filter is valid or not
+        * @memberOf widgets/SiteLocator/UnifiedSearch
+        */
+        _getSelectedCandidateGeometry: function (layerobject, candidate, obj, isValid) {
+            var queryTask, queryLayer, currentTime;
+            // if QueryURL is present for the selected candidate's layer, query the layer with the selected candidates objectid to fetch the candidate geometry
+            if (layerobject.QueryURL) {
+                currentTime = new Date();
+                queryTask = new QueryTask(layerobject.QueryURL);
+                queryLayer = new Query();
+                queryLayer.where = layerobject.objectIDField + " =" + candidate.attributes[layerobject.objectIDField] + " AND " + currentTime.getTime().toString() + "=" + currentTime.getTime().toString();
+                queryLayer.outSpatialReference = this.map.spatialReference;
+                queryLayer.returnGeometry = true;
+                queryTask.execute(queryLayer, lang.hitch(this, function (featureSet) {
+                    this.mapPoint = featureSet.features[0].geometry;
+                    this._locateAddressOnMap(this.mapPoint, obj, isValid);
+                    topic.publish("hideProgressIndicator");
+                }), function (err) {
+                    alert(err.message);
+                    topic.publish("hideProgressIndicator");
+                });
+            }
         },
 
         /**
         * perform search by address if search type is address search
         * @param {object} Map point
-        * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _locateAddressOnMap: function (mapPoint, obj) {
+        _locateAddressOnMap: function (mapPoint, obj, isValid) {
             var geoLocationPushpin, locatorMarkupSymbol, graphic;
-            if (!this.isSharedExtent) {
-                this.map.centerAt(mapPoint);
+            // if the applied filter is valid
+            if (isValid) {
+                if (!this.isSharedExtent) {
+                    this.map.centerAt(mapPoint);
+                }
+                // create pushpin to locate address on map
+                geoLocationPushpin = dojoConfig.baseURL + appGlobals.configData.LocatorSettings.DefaultLocatorSymbol;
+                locatorMarkupSymbol = new PictureMarkerSymbol(geoLocationPushpin, appGlobals.configData.LocatorSettings.MarkupSymbolSize.width, appGlobals.configData.LocatorSettings.MarkupSymbolSize.height);
+                graphic = new Graphic(mapPoint, locatorMarkupSymbol, {}, null);
+                // clear all graphics layers, and add pushpin
+                this.map.getLayer("esriFeatureGraphicsLayer").clear();
+                this.map.getLayer("esriGraphicsLayerMapSettings").clear();
+                this.map.getLayer("esriGraphicsLayerMapSettings").add(graphic);
+                if (obj) {
+                    obj.lastSearchString = lang.trim(obj.txtAddress.value);
+                    appGlobals.shareOptions.arrStrAdderss[this.workflowCount] = obj.lastSearchString;
+                }
+                // create buffer around the selected address
+                this._createBuffer(mapPoint, appGlobals.shareOptions.arrBufferDistance[this.workflowCount], false);
+                if (obj) {
+                    domConstruct.empty(obj.divAddressResults);
+                    domStyle.set(obj.divAddressScrollContainer, "display", "none");
+                    domStyle.set(obj.divAddressScrollContent, "display", "none");
+                }
+            } else {
+                obj.txtAddress.value = obj.lastSearchString;
+                alert(sharedNls.errorMessages.invalidInput);
+                topic.publish("hideProgressIndicator");
             }
-            geoLocationPushpin = dojoConfig.baseURL + dojo.configData.LocatorSettings.DefaultLocatorSymbol;
-            locatorMarkupSymbol = new esri.symbol.PictureMarkerSymbol(geoLocationPushpin, dojo.configData.LocatorSettings.MarkupSymbolSize.width, dojo.configData.LocatorSettings.MarkupSymbolSize.height);
-            graphic = new esri.Graphic(mapPoint, locatorMarkupSymbol, {}, null);
-            this.map.getLayer("esriFeatureGraphicsLayer").clear();
-            this.map.getLayer("esriGraphicsLayerMapSettings").clear();
-            this.map.getLayer("esriGraphicsLayerMapSettings").add(graphic);
-            topic.publish("hideProgressIndicator");
-            if (obj) {
-                obj.lastSearchString = lang.trim(obj.txtAddress.value);
-                dojo.arrStrAdderss[this.workflowCount] = obj.lastSearchString;
-                domConstruct.empty(obj.divAddressResults, obj.divAddressScrollContent);
-                domStyle.set(obj.divAddressScrollContainer, "display", "none");
-                domStyle.set(obj.divAddressScrollContent, "display", "none");
-            }
-            this._createBuffer(mapPoint);
-
         },
 
         /**
         * display error message if locator service fails or does not return any results
-        * @param {object} Nodes and other variable for all workflows
+        * @param {object} obj contains data for selected workflow
+        * @param {boolean} showMessage
         * @memberOf widgets/siteLocator/UnifiedSearch
         */
-        _locatorErrBack: function (obj) {
-            var errorAddressCounty;
+        _locatorErrBack: function (obj, showMessage) {
+            var errorAddressCounty, resultDiv;
             domStyle.set(obj.divAddressScrollContainer, "display", "block");
             domStyle.set(obj.divAddressScrollContent, "display", "block");
             domConstruct.empty(obj.divAddressResults);
             domStyle.set(obj.imgSearchLoader, "display", "none");
             domStyle.set(obj.close, "display", "block");
-            errorAddressCounty = domConstruct.create("div", { "class": "esriCTBottomBorder esriCTAddressCounty" }, obj.divAddressResults);
-            domAttr.set(errorAddressCounty, "innerHTML", sharedNls.errorMessages.invalidSearch);
+            if (showMessage) {
+                errorAddressCounty = domConstruct.create("div", { "class": "esriCTBottomBorder esriCTAddressCounty" }, obj.divAddressResults);
+                domAttr.set(errorAddressCounty, "innerHTML", sharedNls.errorMessages.invalidSearch);
+                if (this.workflowCount === 0 && this.buildingTabData) {
+                    this.buildingTabData = [];
+                } else if (this.workflowCount === 1 && this.sitesTabData) {
+                    this.sitesTabData = [];
+                } else if (this.workflowCount === 2) {
+                    resultDiv = query('.esriCTRightPanel');
+                    if (this.totalArray) {
+                        this.totalArray = [];
+                    }
+                    if (resultDiv) {
+                        domConstruct.empty(resultDiv);
+                        domStyle.set(resultDiv, "display", "none");
+                    }
+                }
+            }
         },
 
         /**
         * clear default value from search textbox
         * @param {object} evt Dblclick event
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _clearDefaultText: function (evt, obj) {
             var target = window.event ? window.event.srcElement : evt ? evt.target : null;
@@ -644,7 +680,8 @@ define([
         /**
         * set default value to search textbox
         * @param {object} evt Blur event
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _replaceDefaultText: function (evt, obj) {
             var target = window.event ? window.event.srcElement : evt ? evt.target : null;
@@ -655,23 +692,23 @@ define([
         },
 
         /**
-        * adress result handler for unified search
+        * address result handler for unified search
         * @param {object} Address candidate
         * @param {array} array of address name
         * @param {array} search fields
         * @param {string} address field name
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _addressResult: function (candidates, nameArray, searchFields, addressFieldName) {
+        _addressResult: function (candidates, nameArray, searchFields) {
             var order, j;
             for (order = 0; order < candidates.length; order++) {
-                if (candidates[order].attributes[dojo.configData.LocatorSettings.AddressMatchScore.Field] > dojo.configData.LocatorSettings.AddressMatchScore.Value) {
+                if (candidates[order].attributes[appGlobals.configData.LocatorSettings.AddressMatchScore.Field] > appGlobals.configData.LocatorSettings.AddressMatchScore.Value) {
                     for (j in searchFields) {
                         if (searchFields.hasOwnProperty(j)) {
-                            if (candidates[order].attributes[addressFieldName] === searchFields[j]) {
-                                if (nameArray.Address.length < dojo.configData.LocatorSettings.MaxResults) {
-                                    nameArray.Address.push({
-                                        name: string.substitute(dojo.configData.LocatorSettings.DisplayField, candidates[order].attributes),
+                            if (candidates[order].attributes[appGlobals.configData.LocatorSettings.LocatorFilterFieldName] === searchFields[j]) {
+                                if (nameArray[appGlobals.configData.LocatorSettings.DisplayText].length < appGlobals.configData.LocatorSettings.MaxResults) {
+                                    nameArray[appGlobals.configData.LocatorSettings.DisplayText].push({
+                                        name: string.substitute(appGlobals.configData.LocatorSettings.DisplayField, candidates[order].attributes),
                                         attributes: candidates[order]
                                     });
                                 }
@@ -686,8 +723,8 @@ define([
         * reset target value for unified search
         * @param {object} target
         * @param {object} title
-        * @param {object} obj
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _resetTargetValue: function (target, title, obj) {
             if (target.value === '' && domAttr.get(target, title)) {
@@ -700,34 +737,25 @@ define([
                 domClass.remove(target, "esriCTColorChange");
             }
             domClass.add(target, "esriCTBlurColorChange");
-            obj.lastSearchString = lang.trim(obj.txtAddress.value);
         },
 
         /**
         * hide text for unified search
-        * @param {object} obj
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _hideText: function (obj) {
-            if (obj.checkBox.checked) {
-                obj.txtAddress.value = "";
-                obj.lastSearchString = lang.trim(obj.txtAddress.value);
-                domConstruct.empty(obj.divAddressResults, obj.divAddressScrollContent);
-                domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
-                domStyle.set(obj.divAddressScrollContainer, "display", "none");
-                domStyle.set(obj.divAddressScrollContent, "display", "none");
-                if (obj.locatorScrollbar) {
-                    domClass.add(obj.locatorScrollbar._scrollBarContent, "esriCTZeroHeight");
-                    obj.locatorScrollbar.removeScrollBar();
-                }
-                this._resizeBuildingAndSites();
-            }
+            obj.txtAddress.value = "";
+            domConstruct.empty(obj.divAddressResults);
+            domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
+            domStyle.set(obj.divAddressScrollContainer, "display", "none");
+            domStyle.set(obj.divAddressScrollContent, "display", "none");
         },
 
         /**
-        * Standard geometry query using enrichment service
-        * @param {object} Node and other variables
-        * @memberOf widgets/Sitelocator/UnifiedSearch
+        * standard geometry query using enrichment service
+        * @param {object} obj contains data for selected workflow
+        * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _standardGeoQuery: function (obj) {
             var standardGeoQueryURL, standardGeoQueryRequest, arrResult = [];
@@ -735,7 +763,7 @@ define([
             domStyle.set(obj.imgSearchLoader, "display", "block");
             domStyle.set(obj.close, "display", "none");
             domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
-            standardGeoQueryURL = dojo.configData.GeoEnrichmentService + "/StandardGeographyQuery/execute";
+            standardGeoQueryURL = appGlobals.configData.GeoEnrichmentService + "/StandardGeographyQuery/execute";
             standardGeoQueryRequest = esriRequest({
                 url: standardGeoQueryURL,
                 content: {
@@ -743,8 +771,8 @@ define([
                     inSR: this.map.spatialReference.wkid,
                     outSR: this.map.spatialReference.wkid,
                     geographyQuery: lang.trim(obj.txtAddress.value) + "*",
-                    sourceCountry: dojo.configData.Workflows[obj.addressWorkflowCount].FilterSettings.StandardGeographyQuery.SourceCountry,
-                    featureLimit: dojo.configData.Workflows[obj.addressWorkflowCount].FilterSettings.StandardGeographyQuery.FeatureLimit
+                    sourceCountry: appGlobals.configData.Workflows[obj.addressWorkflowCount].FilterSettings.StandardGeographyQuery.SourceCountry,
+                    featureLimit: appGlobals.configData.Workflows[obj.addressWorkflowCount].FilterSettings.StandardGeographyQuery.FeatureLimit
                 },
                 handleAs: "json"
             });
@@ -760,6 +788,7 @@ define([
                 this._showLocatedAddress(arrResult, arrResult.Address.length, obj);
             }), function (error) {
                 alert(error.message);
+                topic.publish("hideProgressIndicator");
             });
         }
     });

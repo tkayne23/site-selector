@@ -2,6 +2,7 @@
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (-webkit-min-device-pixel-ratio: 2)
 {
 
+
     .esriCTHeaderSearch
     {
         background-image: url("../images/img2X/search@2X.png") !important;
@@ -32,15 +33,6 @@
         background-image: url("../images/img2X/share@2X.png") !important;
     }
 
-    .esriCTRouteImg
-    {
-        background-image: url("../images/img2X/get-route@2x.png") !important;
-    }
-
-    .esriCTRouteImg-select
-    {
-        background-image: url("../images/img2X/get-route-select@2x.png") !important;
-    }
     .esriCTFacebook
     {
         background-image: url("../images/img2X/img_facebook@2x.png") !important;
@@ -91,16 +83,6 @@
     .esriCTImgSocialMediaSelected
     {
         background-image: url("../images/img44x44/imgSocialMedia-select.png") !important;
-    }
-
-    .esriCTRouteImg
-    {
-        background-image: url("../images/img44x44/get-route.png") !important;
-    }
-
-    .esriCTRouteImg-select
-    {
-        background-image: url("../images/img44x44/get-route-select.png") !important;
     }
 
     .esriCTFacebook
@@ -161,16 +143,6 @@
         background-image: url("../images/img44x44/imgSocialMedia-select.png") !important;
     }
 
-    .esriCTRouteImg
-    {
-        background-image: url("../images/img44x44/get-route.png") !important;
-    }
-
-    .esriCTRouteImg-select
-    {
-        background-image: url("../images/img44x44/get-route-select.png") !important;
-    }
-
     .esriCTFacebook
     {
         background-image: url("../images/img44x44/img_facebook.png") !important;
@@ -219,11 +191,6 @@
     background-image: url("../images/img24x24/imgSocialMedia-24.png");
 }
 
-.esriCTReportsImg
-{
-    background-image: url("../images/img24x24/reports-24.png");
-}
-
 .esriCTHeaderSearchSelected
 {
     background-image: url("../images/img24x24/search-select-24.png");
@@ -234,10 +201,6 @@
     background-image: url("../images/img24x24/imgSocialMedia-select-24.png");
 }
 
-.esriCTReportsImgSelected
-{
-    background-image: url("../images/img24x24/reportsSelected-24.png");
-}
 .esriCTFacebook
 {
     background-image: url("../images/img24x24/img_facebook-24.png");
@@ -270,13 +233,6 @@
 }
 
 /* Address container Styles */
-
-.esriCTAddressContent
-{
-    border-right: 1px solid #007ac2;
-    border-left: 1px solid #007ac2;
-    border-bottom: 1px solid #007ac2;
-}
 
 .esriCTSearchIcon
 {
@@ -345,7 +301,7 @@
     border: 1px solid #007ac2;
 }
 
-.esriCTAreaOfInterestTabSelected
+.esriCTBusinessInfoTabSelected
 {
     color: #007AC2;
 }
@@ -357,13 +313,7 @@
     color: #007AC2;
 }
 
-.esriCTHeaderReportContainer
-{
-    border-left: 1px solid #007ac2;
-    border-right: 1px solid #007ac2;
-}
-
-.esriCTReportTabSelected
+.esriCTDemographicInfoTabSelected
 {
     border-left: 1px solid #007ac2;
     border-bottom: 1px solid #007ac2;
@@ -373,11 +323,6 @@
 .esriCTReportTab
 {
     color: #007AC2;
-}
-
-.esriCTBuildingDownloadDiv
-{
-    color: #007ac2;
 }
 
 .esriCTBackToResult
@@ -433,16 +378,6 @@
     color: #007AC2;
 }
 
-.esriOuterDiv
-{
-    border-bottom: 1px solid #007AC2;
-}
-
-.esriCTGoButton
-{
-    background: none repeat scroll 0 0 #007AC2;
-}
-
 .esriCTinfoWindow
 {
     border: #007AC2 solid 1px;
@@ -476,11 +411,6 @@
 .claro .dijitSlider .dijitSliderProgressBarH, .claro .dijitSlider .dijitSliderLeftBumper
 {
     background-color: #007AC2;
-}
-
-.esriCTTextRight
-{
-    color: #007AC2;
 }
 
 .dijitReset
@@ -521,25 +451,23 @@
     color: white !important;
 }
 
-.esriCTselectbox
-{
-    border-color: #007AC2 !important;
-}
-
 .esriCTsliderDisplayText
 {
     color: #007AC2;
 }
+
 .infopanel
 {
     border-top: 1px #007ac2 solid;
 }
 
 /* infowindow anchor*/
+
 .esriCTdivTriangle
 {
     background-image: url("../images/bottomArrow-blue.png");
 }
+
 .infoBackTitleArrow
 {
     background-image: url("../images/blue-arrow.png");
@@ -549,10 +477,12 @@
 {
     background: url("../images/right-blue-arrow.png") !important;
 }
+
 .esriCTdivInfoLeftArrow
 {
     background: url("../images/left-blue-arrow.png");
 }
+
 label.css-label
 {
     background-image: url(../images/checkbox.png);
@@ -579,3 +509,38 @@ div.esriCTPrev
     height: 60px;
     margin-right: -2px;
 }
+
+.esriOuterDivContainer
+{
+    border-bottom: 1px solid #007AC2;
+}
+.esriCTFilterMainContainer
+{
+    border-bottom: 1px solid #007AC2;
+}
+
+.esriCTrevenueEmpDiv
+{
+    border-bottom: 1px solid #007AC2;
+}
+
+.esriCTFilterTextEnable
+{
+    color: #007AC2;
+}
+.esriCTFilterEnabled
+{
+    background-image: url('../images/filter-blue.png');
+}
+
+.esriCTClearFilterIconEnable
+{
+    background-image: url('../images/clear-filter-blue.png');
+}
+
+.esriCTFilterDiv
+{
+    border-bottom: 1px solid #007AC2;
+}
+
+

@@ -1,20 +1,20 @@
-﻿/*global define,dojo,dojoConfig */
+﻿/*global define,dojo,dojoConfig,alert,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
-| Copyright 2013 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Copyright 2013 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 //============================================================================================================================//
 define([
     "dojo/_base/declare",
@@ -40,7 +40,7 @@ define([
         /**
         * create header panel
         *
-        * @param {string} dojo.configData.ApplicationName Applicaton name specified in configuration file
+        * @param {string} appGlobals.configData.ApplicationName Application name specified in configuration file
         *
         * @class
         * @name widgets/appHeader/appHeader
@@ -70,8 +70,8 @@ define([
             * @private
             * @memberOf widgets/appHeader/appHeader
             */
-            document.title = dojo.configData.ApplicationName;
-            domAttr.set(this.applicationHeaderName, "innerHTML", dojo.configData.ApplicationName);
+            document.title = appGlobals.configData.ApplicationName;
+            domAttr.set(this.applicationHeaderName, "innerHTML", appGlobals.configData.ApplicationName);
         },
 
         /**
@@ -102,13 +102,13 @@ define([
         * @memberOf widgets/appHeader/appHeader
         */
         _loadApplicationHeaderIcon: function () {
-            if (dojo.configData.ApplicationFavicon && lang.trim(dojo.configData.ApplicationFavicon).length !== 0) {
-                this._loadIcons("shortcut icon", dojo.configData.ApplicationFavicon);
+            if (appGlobals.configData.ApplicationFavicon && lang.trim(appGlobals.configData.ApplicationFavicon).length !== 0) {
+                this._loadIcons("shortcut icon", appGlobals.configData.ApplicationFavicon);
             }
-            if (dojo.configData.ApplicationIcon && lang.trim(dojo.configData.ApplicationIcon).length !== 0) {
-                this._loadIcons("apple-touch-icon-precomposed", dojo.configData.ApplicationIcon);
-                this._loadIcons("apple-touch-icon", dojo.configData.ApplicationIcon);
-                domConstruct.create("img", { "class": "esriCTApplicationIcon", "src": dojoConfig.baseURL + dojo.configData.ApplicationIcon }, this.divImgApplicationHeaderIcon);
+            if (appGlobals.configData.ApplicationIcon && lang.trim(appGlobals.configData.ApplicationIcon).length !== 0) {
+                this._loadIcons("apple-touch-icon-precomposed", appGlobals.configData.ApplicationIcon);
+                this._loadIcons("apple-touch-icon", appGlobals.configData.ApplicationIcon);
+                domConstruct.create("img", { "class": "esriCTApplicationIcon", "src": dojoConfig.baseURL + appGlobals.configData.ApplicationIcon }, this.divImgApplicationHeaderIcon);
             }
         },
 

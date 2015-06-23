@@ -1,20 +1,20 @@
-﻿/*global define,dojo,dojoConfig,esri,alert */
+﻿/*global define,dojo,dojoConfig,esri,alert,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
-| Copyright 2013 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Copyright 2013 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 //============================================================================================================================//
 define([
     "dojo/_base/declare",
@@ -26,14 +26,13 @@ define([
     "dojo/topic",
     "esri/domUtils",
     "esri/InfoWindowBase",
-    "../scrollBar/scrollBar",
     "dojo/text!./templates/infoWindow.html",
     "dijit/_WidgetBase",
     "dijit/_TemplatedMixin",
     "esri/tasks/query",
     "dojo/i18n!application/js/library/nls/localizedStrings",
     "dijit/_WidgetsInTemplateMixin"
-], function (declare, domConstruct, domStyle, lang, on, dom, topic, domUtils, InfoWindowBase, ScrollBar, template, _WidgetBase, _TemplatedMixin, query, sharedNls, _WidgetsInTemplateMixin) {
+], function (declare, domConstruct, domStyle, lang, on, dom, topic, domUtils, InfoWindowBase, template, _WidgetBase, _TemplatedMixin, query, sharedNls, _WidgetsInTemplateMixin) {
     return declare([InfoWindowBase, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
         InfoShow: null,
@@ -62,10 +61,9 @@ define([
                 } else {
                     this.InfoShow = false;
                 }
-                dojo.mapClickedPoint = null;
-                dojo.mapPointForInfowindow = null;
+                appGlobals.shareOptions.mapPointForInfowindow = null;
                 domUtils.hide(this.domNode);
-                dojo.infoWindowIsShowing = false;
+                appGlobals.shareOptions.infoWindowIsShowing = false;
                 topic.publish("clearSelectedFeature");
             })));
 
@@ -81,39 +79,20 @@ define([
         },
 
         /**
-        * show infowindow
-        * @param {object} screenPoint to show infowindow
+        * show infoWindow
+        * @param {object} screenPoint to show infoWindow
         * @memberOf widgets/infoWindow/infoWindow
         */
         show: function (detailsTab, screenPoint) {
-            var scrollContentHeight;
             this.InfoShow = false;
-            if (this.divInfoDetailsScroll) {
-                while (this.divInfoDetailsScroll.hasChildNodes()) {
-                    this.divInfoDetailsScroll.removeChild(this.divInfoDetailsScroll.lastChild);
-                }
-            }
-            if (this.infoContainerScrollbar) {
-                this.infoContainerScrollbar.removeScrollBar();
-            }
-
-            scrollContentHeight = dojo.configData.InfoPopupHeight - 50;
-            domStyle.set(this.divInfoScrollContent, "height", scrollContentHeight + "px");
             this.setLocation(screenPoint);
+            domConstruct.empty(this.divInfoDetailsScroll);
             this.divInfoDetailsScroll.appendChild(detailsTab);
-            this.infoContainerScrollbar = new ScrollBar({
-                domNode: this.divInfoScrollContent
-            });
-            this.infoContainerScrollbar.setContent(this.divInfoDetailsScroll);
-            this.infoContainerScrollbar.createScrollBar();
-            while (this.infoContainerScrollbar.domNode.children.length > 1) {
-                this.infoContainerScrollbar.domNode.removeChild(this.infoContainerScrollbar.domNode.firstChild);
-            }
-            dojo.isInfoPopupShared = false;
+            appGlobals.shareOptions.isInfoPopupShared = false;
         },
 
         /**
-        * resize infowindow
+        * resize infoWindow
         * @memberOf widgets/infoWindow/infoWindow
         */
         resize: function (width, height) {
@@ -126,21 +105,21 @@ define([
         },
 
         /**
-        * set title of infowindow
+        * set title of infoWindow
         * @memberOf widgets/infoWindow/infoWindow
         */
         setTitle: function (infoTitle) {
             if (infoTitle.length > 0) {
-                this.esriCTheadderPanel.innerHTML = "";
-                this.esriCTheadderPanel.innerHTML = infoTitle;
-                this.esriCTheadderPanel.title = infoTitle;
+                this.popUpHeaderPanel.innerHTML = "";
+                this.popUpHeaderPanel.innerHTML = infoTitle;
+                this.popUpHeaderPanel.title = infoTitle;
             } else {
-                this.esriCTheadderPanel.innerHTML = dojo.configData.ShowNullValueAs;
+                this.popUpHeaderPanel.innerHTML = appGlobals.configData.ShowNullValueAs;
             }
         },
 
         /**
-        * set location of infowindow
+        * set location of infoWindow
         * @memberOf widgets/infoWindow/infoWindow
         */
         setLocation: function (location) {
@@ -158,7 +137,7 @@ define([
         },
 
         /**
-        * hide infowindow
+        * hide infoWindow
         * @memberOf widgets/infoWindow/infoWindow
         */
         hide: function () {
@@ -168,7 +147,7 @@ define([
         },
 
         /**
-        * hide infowindow container
+        * hide infoWindow container
         * @memberOf widgets/infoWindow/infoWindow
         */
         _hideInfoContainer: function () {
