@@ -587,7 +587,7 @@ define([], function () {
                 EnableDropdown: true,
                 FilterSettings: {
                     StandardGeographyQuery: {
-                        LocatorDefaultAddress: "Maryland",
+                        LocatorDefaultAddress: "Baltimore, MD",
                         QueryField: "geographyQuery",
                         SourceCountry: "US",
                         FeatureLimit: 10
