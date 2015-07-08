@@ -4,10 +4,9 @@ site-selector
 The Site Selector application is a configuration of ArcGIS and a JavaScript application that helps business owners and corporations locate available buildings and sites, and combine their property search with key community and business demographic information. We have two configurations of this application focused on the workflows for State and Local Governments. 
 
 Try the [Site Selector (State Government) application](http://links.esri.com/stategovernment/tryit/SiteSelector)
-
 Try the [Site Selector (Local Government) application](http://links.esri.com/localgovernment/tryit/SiteSelector)
 
-![Image of the Site Selector application](site-selector.png "Site Selector application")](http://links.esri.com/stategovernment/tryit/SiteSelector)
+[![Image of the Site Selector application](site-selector.png "Site Selector application")](http://links.esri.com/stategovernment/tryit/SiteSelector)
 
 ## Features
 
