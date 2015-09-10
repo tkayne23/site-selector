@@ -1,3 +1,2 @@
 ArcGIS Solutions
-
-pulled from github
+pulled from Git

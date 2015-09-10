@@ -81,9 +81,9 @@ define([], function () {
         // Specify URL to ArcGIS Portal REST API
         PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
-        BasemapGroupTitle: "ArcGIS for Local Government TryItLive Basemaps",
+        BasemapGroupTitle: "ArcGISforLocalGovernmentBasemapGroup",
         // Specify the user name of owner of the group that contains basemaps
-        BasemapGroupOwner: "ArcGISforLocalGovTryIt",
+        BasemapGroupOwner: "StateLocalTryItLive",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
         // Specify path to image used to display the thumbnail for a basemap when portal does not provide it
@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "2ef11dad8ff04178b2b236e867e9c952",
+        WebMapId: "4e0f517c76c046a59da8c8955b7d5a43",
         Workflows: [
             {
                 Name: "Buildings",
@@ -425,8 +425,8 @@ define([], function () {
                                 FieldName: "FULLADDR",
                                 SortingEnabled: false
                             }, {
-                                DisplayText: "Area (sqft):",
-                                FieldName: "BLDGAREA",
+                                DisplayText: "Area (acres):",
+                                FieldName: "TOTAREA",
                                 SortingEnabled: true
                             }, {
                                 DisplayText: "Zoning:",
