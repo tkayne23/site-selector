@@ -130,11 +130,13 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _fetchWebMapData: function (response) {
-            var webMapDetails = response.itemInfo.itemData, i, defArr = [], def;
+            var webMapDetails = response.itemInfo.itemData, i, defArr = [], def, mapServerData;
             for (i = 0; i < webMapDetails.operationalLayers.length; i++) {
-                if (webMapDetails.operationalLayers[i].visibility) {
-                    if (webMapDetails.operationalLayers[i].layers) {
-                        this._setDynamicOperationLayers(webMapDetails.operationalLayers[i], defArr);
+                // check for webmap mapserver and feature layer
+                if (webMapDetails.operationalLayers[i].visibility && webMapDetails.operationalLayers[i].layerObject) {
+                    mapServerData = webMapDetails.operationalLayers[i].resourceInfo.layers || webMapDetails.operationalLayers[i].layerObject.layerInfos;
+                    if (mapServerData) {
+                        this._setDynamicOperationLayers(webMapDetails.operationalLayers[i], mapServerData, defArr);
                     } else {
                         def = new Deferred();
                         defArr.push(def);
@@ -157,16 +159,15 @@ define([
         * set Dynamic Operation Layers
         * @memberOf widgets/mapSettings/mapSettings
         */
-        _setDynamicOperationLayers: function (operationalLayer, defArr) {
+        _setDynamicOperationLayers: function (operationalLayer, mapServerData, defArr) {
             var url, layerUrl, i, operationalLayerObj = {};
             url = operationalLayer.url;
-
-            for (i = 0; i < operationalLayer.layers.length; i++) {
-                //check the operational layer default visibility
-                if (array.indexOf(operationalLayer.layerObject.visibleLayers, operationalLayer.layers[i].id) !== -1) {
-                    operationalLayerObj = operationalLayer.layers[i];
+            for (i = 0; i < mapServerData.length; i++) {
+                //check visibility of operational layer
+                if (array.indexOf(operationalLayer.layerObject.visibleLayers, mapServerData[i].id) !== -1) {
+                    operationalLayerObj = this._getLayerObject(operationalLayer, mapServerData[i]);
                     operationalLayerObj.title = operationalLayer.title;
-                    layerUrl = url + "/" + operationalLayer.layers[i].id;
+                    layerUrl = url + "/" + mapServerData[i].id;
                     defArr.push(this._loadFeatureLayer(layerUrl, operationalLayerObj));
                 }
             }
@@ -183,11 +184,28 @@ define([
                 dynamicOperationalLayer = layerObject;
                 dynamicOperationalLayer.layerObject = evt.layer;
                 dynamicOperationalLayer.url = evt.layer.url;
+                dynamicOperationalLayer.layerObject.visibleAtMapScale = true;
                 def.resolve(dynamicOperationalLayer);
             }));
             return def;
         },
 
+        /**
+        * get layer object info
+        * @memberOf widgets/mapSettings/mapSettings
+        */
+        _getLayerObject: function (operationalLayer, layerData) {
+            var i;
+            if (operationalLayer.layers) {
+                for (i = 0; i < operationalLayer.layers.length; i++) {
+                    if (operationalLayer.layers[i].id === layerData.id) {
+                        layerData = operationalLayer.layers[i];
+                        break;
+                    }
+                }
+            }
+            return layerData;
+        },
         /**
         * activate events on map
         * @memberOf widgets/mapSettings/mapSettings
@@ -269,10 +287,10 @@ define([
                     domAttr.set(query(".esriCTdivInfoTotalFeatureCount")[0], "innerHTML", '/' + featureArray.length);
                     domStyle.set(headerPanel, "display", "block");
                     domClass.remove(headerPanelnew, "esriCTNewHeaderPanel");
-                    query(".esriCTdivInfoRightArrow")[0].onclick = lang.hitch(this, function (evt) {
+                    query(".esriCTdivInfoRightArrow")[0].onclick = lang.hitch(this, function () {
                         this._nextInfoContent(featureArray, point);
                     });
-                    query(".esriCTdivInfoLeftArrow")[0].onclick = lang.hitch(this, function (evt) {
+                    query(".esriCTdivInfoLeftArrow")[0].onclick = lang.hitch(this, function () {
                         this._previousInfoContent(featureArray, point);
                     });
                 }

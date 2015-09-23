@@ -51,7 +51,7 @@ define([
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, unifiedSearch], {
         sliderDistance: null,
-        selectedValue: null,
+        selectedValue: {},
         areaSortBuilding: null,
         areaSortSites: null,
         lastGeometry: [null, null, null, null],
@@ -81,6 +81,7 @@ define([
                     appGlobals.configData.DistanceUnitSettings.MinimumValue = bufferDistance;
                 }
             }
+            // create horizontal slider object and set the slider parameter
             horizontalSlider = new HorizontalSlider({
                 intermediateChanges: false,
                 "class": "horizontalSlider",
@@ -125,6 +126,7 @@ define([
                 if (Number(value) > Number(horizontalSlider.maximum)) {
                     horizontalSlider.setValue(horizontalSlider.maximum);
                 }
+                // set change slider value for all workflows
                 domAttr.set(divSliderValue, "innerHTML", Math.round(value) + " " + domAttr.get(divSliderValue, "distanceUnit"));
                 if (_self.workflowCount === 0 && domClass.contains(_self.filterIcon, "esriCTFilterEnabled")) {
                     domClass.add(_self.clearFilterBuilding, "esriCTClearFilterIconEnable");
@@ -137,7 +139,9 @@ define([
                     if (appGlobals.shareOptions.arrBufferDistance[_self.workflowCount] !== value) {
                         if (!_self.sliderReset) {
                             if (_self.featureGeometry && _self.featureGeometry[_self.workflowCount]) {
+                                // call create buffer based on specified geometry
                                 _self._createBuffer(_self.featureGeometry[_self.workflowCount], Math.round(value), true);
+                                // set the "sorting" drop down value to first index value(Select) for all workflows
                                 if (_self.workflowCount === 0 && _self.selectBusinessSortForBuilding) {
                                     appGlobals.shareOptions.sortingData = null;
                                     _self.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
@@ -268,7 +272,7 @@ define([
                         this.addPushPin(this.featureGeometry[this.workflowCount]);
                     }
                     if (appGlobals.configData.Workflows[this.workflowCount].SearchSettings) {
-                        this.opeartionLayer = this.getCurrentOperationalLayer(this.workflowCount);
+                        this.operationalLayer = this.getCurrentOperationalLayer(this.workflowCount);
                     }
                 } else {
                     domStyle.set(this.TabContentContainer.children[i], "display", "none");
@@ -314,11 +318,11 @@ define([
                 var contentNode, attr, i, contentOuter, attchImages, featureInfo, j, k;
                 topic.publish("hideProgressIndicator");
                 domConstruct.empty(containerNode);
-
+                // loop all the data in list and check null values and replace it with "NA"
                 for (i = 0; i < listData.length; i++) {
                     for (attr in listData[i].featureData) {
                         if (listData[i].featureData.hasOwnProperty(attr)) {
-                            if (listData[i].featureData[attr] === null || listData[i].featureData[attr] === "") {
+                            if (listData[i].featureData[attr] === null || lang.trim(String(listData[i].featureData[attr])) === "") {
                                 listData[i].featureData[attr] = appGlobals.configData.ShowNullValueAs;
                             }
                         }
@@ -330,15 +334,17 @@ define([
                 if (this.workflowCount === 1) {
                     contentNode = domConstruct.create("div", { "class": "esriCTResultContentSites" }, containerNode);
                 }
+                // loop all the feature data and displayed it in container for specific workflows
                 for (i = 0; i < listData.length; i++) {
                     contentOuter = domConstruct.create("div", { "class": "esriCTOuterContent" }, contentNode);
                     domAttr.set(contentOuter, "index", i);
-                    if (this.opeartionLayer.hasAttachments && appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
+                    // if "hasattachment" tag in layer and show attachment tag in config are true then show the image in pagination panel in building ans sites tab
+                    if (this.operationalLayer.hasAttachments && appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
                         attchImages = domConstruct.create("div", { "class": "esriCTAttchImages" }, contentOuter);
                         if (listData[i].attachmentData) {
                             domConstruct.create("img", { "src": listData[i].attachmentData[0].url }, attchImages);
                         } else {
-
+                            // if attachment not found in layer then set not available image in pagination panel in building and sites tab
                             domConstruct.create("img", { "src": dojoConfig.baseURL + "/js/library/themes/images/not-available.png" }, attchImages);
                         }
                         featureInfo = domConstruct.create("div", { "class": "esriCTFeatureInfoAttachment" }, contentOuter);
@@ -389,9 +395,9 @@ define([
         },
 
         /**
-        * perform query to get geometry and other data based on object selection from display list
-        * @param {object} Selected value
-        * @param {object} Data for selected value
+        * perform query to get geometry and layer content based on object selection from display list
+        * @param {object} selected value
+        * @param {object} data for selected value
         * @param {object} html node for attachment
         * @param {object} html node for main container
         * @param {object} html node search content
@@ -409,9 +415,11 @@ define([
             backwardImage = domConstruct.create("div", { "class": "esriCTBackwardImage" }, backToResultDiv);
             backToResult = domConstruct.create("div", { "class": "esriCTBackToResult" }, backToResultDiv);
             domAttr.set(backToResult, "innerHTML", sharedNls.titles.result);
+            // check if selected index has attachment then create html structure to display image and layer content
             if (dataSelected.attachmentData) {
                 attachmentDiv = domConstruct.create("div", { "class": "esriCTAttachmentDiv" }, attachmentNode);
                 attachmentImageClickDiv = domConstruct.create("img", { "src": dataSelected.attachmentData[0].url }, attachmentDiv);
+                // if attachment length is greater than 0 then push the attachment URL into an array
                 if (dataSelected.attachmentData.length > 0) {
                     for (k = 0; k < dataSelected.attachmentData.length; k++) {
                         arrAttachmentURL.push(dataSelected.attachmentData[k].url);
@@ -422,14 +430,14 @@ define([
                         prevdiv = domConstruct.create("div", { "class": "esriCTPrev" }, prevNextdiv);
                         nextdiv = domConstruct.create("div", { "class": "esriCTNext" }, prevNextdiv);
 
-                        this.own(on(prevdiv, "click", lang.hitch(this, function (value) {
+                        this.own(on(prevdiv, "click", lang.hitch(this, function () {
                             imageCount--;
                             if (imageCount < 0) {
                                 imageCount = dataSelected.attachmentData.length - 1;
                             }
                             domAttr.set(attachmentImageClickDiv, "src", dataSelected.attachmentData[imageCount].url);
                         })));
-                        this.own(on(nextdiv, "click", lang.hitch(this, function (value) {
+                        this.own(on(nextdiv, "click", lang.hitch(this, function () {
                             imageCount++;
                             if (imageCount === dataSelected.attachmentData.length) {
                                 imageCount = 0;
@@ -439,22 +447,24 @@ define([
                     }
                 }
             }
+            // call download drop down handler based on tab selection
             this._downloadDropDown(appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.DownloadSettings, attachmentNode);
-            resultSelectionQuerytask = new QueryTask(this.opeartionLayer.url);
+            resultSelectionQuerytask = new QueryTask(this.operationalLayer.url);
             resultSelectQuery = new Query();
             resultSelectQuery.returnGeometry = true;
             resultSelectQuery.outSpatialReference = this.map.spatialReference;
-            resultSelectQuery.objectIds = [dataSelected.featureData[this.opeartionLayer.objectIdField]];
+            resultSelectQuery.objectIds = [dataSelected.featureData[this.operationalLayer.objectIdField]];
             for (i = 0; i < appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayFields.length; i++) {
                 outfields.push(appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayFields[i].FieldName);
             }
             resultSelectQuery.outFields = outfields;
             resultSelectionQuerytask.execute(resultSelectQuery, lang.hitch(this, function (featureSet) {
                 var symbol, graphic, arraProperyDisplayData = [], isGeoenriched = false, enrichIndex;
+                // set simpleMarkerSymbol to display selected feature on map
                 if (featureSet.features[0].geometry.getExtent()) {
                     symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0, 0.65]), 3), new Color([255, 0, 0, 0.35]));
                     graphic = new Graphic(featureSet.features[0].geometry, symbol, {}, null);
-                    graphic.attributes.layerURL = this.opeartionLayer.url;
+                    graphic.attributes.layerURL = this.operationalLayer.url;
                     if (!this.isSharedExtent) {
                         this.map.setExtent(featureSet.features[0].geometry.getExtent());
                     }
@@ -462,7 +472,7 @@ define([
                 } else {
                     symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, appGlobals.configData.LocatorRippleSize, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([parseInt(appGlobals.configData.RippleColor.split(",")[0], 10), parseInt(appGlobals.configData.RippleColor.split(",")[1], 10), parseInt(appGlobals.configData.RippleColor.split(",")[2], 10), 0.65]), 4), new Color([0, 0, 0, 0.2]));
                     graphic = new Graphic(featureSet.features[0].geometry, symbol, {}, null);
-                    graphic.attributes.layerURL = this.opeartionLayer.url;
+                    graphic.attributes.layerURL = this.operationalLayer.url;
                     if (!this.isSharedExtent) {
                         this.map.setLevel(appGlobals.configData.ZoomLevel);
                         this.map.centerAt(featureSet.features[0].geometry);
@@ -472,7 +482,7 @@ define([
                 this.map.getLayer("esriFeatureGraphicsLayer").clear();
                 this.featureGraphics[this.workflowCount] = graphic;
                 this.map.getLayer("esriFeatureGraphicsLayer").add(graphic);
-                if (this.opeartionLayer && this.opeartionLayer.visibleAtMapScale) {
+                if (this.operationalLayer && this.operationalLayer.visibleAtMapScale) {
                     this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].show();
                 } else {
                     this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].hide();
@@ -480,7 +490,7 @@ define([
                 propertyInfoDiv = domConstruct.create("div", { "class": "esriCTpropertyInfoDiv" }, attachmentNode);
                 propertyHeaderInfo = domConstruct.create("div", { "class": "esriCTHeaderInfoDiv" }, propertyInfoDiv);
                 domAttr.set(propertyHeaderInfo, "innerHTML", appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.DownloadSettings[0].DisplayOptionTitle);
-
+                // loop all the layer content based on configuration and check if the attribute data is null then replace it with "NA"
                 for (j = 0; j < appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayFields.length; j++) {
                     attributesInfo = featureSet.features[0].attributes[appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayFields[j].FieldName];
                     if (attributesInfo === null || attributesInfo === "") {
@@ -506,20 +516,21 @@ define([
                 this.arrReportDataJson[this.workflowCount].attachmentData = arrAttachmentURL;
                 if (this.arrGeoenrichData[this.workflowCount] !== null) {
                     for (enrichIndex = 0; enrichIndex < this.arrGeoenrichData[this.workflowCount].length; enrichIndex++) {
-                        if (this.arrGeoenrichData[this.workflowCount][enrichIndex].ID === dataSelected.featureData[this.opeartionLayer.objectIdField]) {
+                        if (this.arrGeoenrichData[this.workflowCount][enrichIndex].ID === dataSelected.featureData[this.operationalLayer.objectIdField]) {
                             this._geoEnrichmentRequestHandler(this.arrGeoenrichData[this.workflowCount][enrichIndex].data, this.arrGeoenrichData[this.workflowCount][enrichIndex].ID);
                             isGeoenriched = true;
                             break;
                         }
                     }
                     if (!isGeoenriched) {
-                        this.arrGeoenrichData[this.workflowCount].push({ ID: dataSelected.featureData[this.opeartionLayer.objectIdField] });
+                        this.arrGeoenrichData[this.workflowCount].push({ ID: dataSelected.featureData[this.operationalLayer.objectIdField] });
                     }
                 } else {
                     this.arrGeoenrichData[this.workflowCount] = [];
-                    this.arrGeoenrichData[this.workflowCount].push({ ID: dataSelected.featureData[[this.opeartionLayer.objectIdField]] });
+                    this.arrGeoenrichData[this.workflowCount].push({ ID: dataSelected.featureData[[this.operationalLayer.objectIdField]] });
                 }
                 if (!isGeoenriched) {
+                    // set geometry service URL and buffer parameter
                     geometryService = new GeometryService(appGlobals.configData.GeometryService);
                     params = new BufferParameters();
                     params.distances = [appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoenrichmentDistance.BufferDistance];
@@ -530,21 +541,23 @@ define([
                     geometryService.buffer(params, lang.hitch(this, function (geometries) {
                         topic.publish("showProgressIndicator");
                         this._enrichData(geometries, this.workflowCount, null);
-                    }), function (error) {
+                    }), function () {
                         topic.publish("hideProgressIndicator");
                     });
                 }
             }));
+            // click event of Back To Result text in building and sites tab to get search results
             this.own(on(backToResult, "click", lang.hitch(this, function () {
                 this._getBackToTab(attachmentNode, mainDivNode);
             })));
+            // click event of Back To Result icon in building and sites tab to get search results
             this.own(on(backwardImage, "click", lang.hitch(this, function () {
                 this._getBackToTab(attachmentNode, mainDivNode);
             })));
         },
 
         /**
-        * back button handler building tab
+        * back button handler in building and sites tab and displays the pagination panel for same
         * @param {object} attachment div node
         * @param {object} parent div node for attachment
         * @memberOf widgets/siteLocator/siteLocatorHelper
@@ -552,6 +565,7 @@ define([
         _getBackToTab: function (attachmentNode, mainDivNode) {
             domStyle.set(attachmentNode, "display", "none");
             domStyle.set(mainDivNode, "display", "block");
+            // clear graphic layer and feature graphic and call createDisplayList handler to display pagination panel for selected workflow
             this.map.getLayer("esriFeatureGraphicsLayer").clear();
             this.featureGraphics[this.workflowCount] = null;
             appGlobals.shareOptions.selectedObjectIndex[this.workflowCount] = undefined;
@@ -599,6 +613,26 @@ define([
             }
             return layer;
         },
+
+        /**
+        * clear text field in selected tab
+        * @memberOf widgets/siteLocator/siteLocator
+        */
+        clearTextValuesOfFilters: function () {
+            var node;
+            for (node in this.filterOptionsValues) {
+                if (this.filterOptionsValues.hasOwnProperty(node)) {
+                    if (this.filterOptionsValues[node].workflow === this.workflowCount) {
+                        if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
+                            // clear the to and from text box values
+                            this.filterOptionsValues[node].txtFrom.value = "";
+                            this.filterOptionsValues[node].txtTo.value = "";
+                        }
+                    }
+                }
+            }
+        },
+
 
         /**
         * Show hide widget container

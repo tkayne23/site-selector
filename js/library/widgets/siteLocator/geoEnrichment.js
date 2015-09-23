@@ -27,7 +27,6 @@ define([
     "dojo/i18n!application/js/library/nls/localizedStrings",
     "dojo/number",
     "dojo/on",
-    "dojo/query",
     "dojo/topic",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetBase",
@@ -41,7 +40,7 @@ define([
     "esri/tasks/query",
     "esri/tasks/QueryTask",
     "esri/tasks/RelationParameters"
-], function (array, declare, lang, domAttr, domClass, domConstruct, domStyle, sharedNls, number, on, query, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Polygon, esriRequest, GeometryService, Geoprocessor, PrintTask, Query, QueryTask, RelationParameters) {
+], function (array, declare, lang, domAttr, domClass, domConstruct, domStyle, sharedNls, number, on, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Polygon, esriRequest, GeometryService, Geoprocessor, PrintTask, Query, QueryTask, RelationParameters) {
     //========================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -56,9 +55,8 @@ define([
             appGlobals.shareOptions.communitySelectionFeature = value;
             queryTaskCommunities = new QueryTask(appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.LayerURL);
             queryCommunities = new Query();
-            queryCommunities.where = appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.OutFields[0].toString() + "='" + value + "'";
+            queryCommunities.where = appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.FilterFieldName + "='" + value + "'";
             queryCommunities.returnGeometry = true;
-            queryCommunities.outFields = appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.OutFields;
             //execute query on Communities
             queryTaskCommunities.execute(queryCommunities, lang.hitch(this, this._geometryForSelectedArea));
         },
@@ -153,6 +151,7 @@ define([
             var node, checkBox, arrayFeatures, hasValidValues = true;
             for (node in this.filterOptionsValues) {
                 if (this.filterOptionsValues.hasOwnProperty(node)) {
+                    // check the selected filters and workflow value
                     if (this.filterOptionsValues[node].workflow === 2) {
                         checkBox = this.filterOptionsValues[node].checkBox;
                         if (checkBox.checked && hasValidValues) {
@@ -162,6 +161,7 @@ define([
                                     if (this.filterOptionsValues.hasOwnProperty(node)) {
                                         if (this.filterOptionsValues[node].workflow === this.workflowCount) {
                                             if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
+                                                // clear from and to value text boxes in business tab
                                                 this.filterOptionsValues[node].txtFrom.value = "";
                                                 this.filterOptionsValues[node].txtTo.value = "";
                                             }
@@ -174,21 +174,32 @@ define([
                     }
                 }
             }
+            // if filters are valid then do query on filters and get the filtered data
             if (hasValidValues) {
                 arrayFeatures = this._checkForValue();
                 this._calculateSum(arrayFeatures);
-                this._setBusinessValues(arrayFeatures, this.mainResultDiv, this.enrichData);
+                this._setBusinessValues(arrayFeatures, this.mainResultDiv, this.enrichData, true);
             } else {
+                // reset previous buffer value and buffer state
                 this._resetBusinessBufferValueResult();
                 alert(sharedNls.errorMessages.invalidInput);
                 topic.publish("hideProgressIndicator");
             }
             //enable the clear filter button when filter button is clicked
             domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
+        },
+
+        /**
+        * clear filter icon click clear all filter and get buffer result in business tab
+        * @memberOf widgets/siteLocator/geoEnrichment
+        */
+        clearFilterBusinessClick: function () {
             this.own(on(this.clearFilterBusiness, "click", lang.hitch(this, function () {
                 if (domClass.contains(this.clearFilterBusiness, "esriCTClearFilterIconEnable")) {
                     topic.publish("showProgressIndicator");
+                    // reset previous buffer value and buffer state
                     this._resetBusinessBufferValueResult();
+                    // clear selected filter checkbox in business tab
                     this._clearFilterCheckBoxes();
                     domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
                     domClass.remove(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
@@ -197,7 +208,10 @@ define([
             })));
         },
 
-        //display buffer result when no filter is applied
+        /**
+        * display buffer result when no filter is applied
+        * @memberOf widgets/siteLocator/geoEnrichment
+        */
         _resetBusinessBufferValueResult: function () {
             this._calculateSum(this.businessData);
             this._setBusinessValues(this.businessData, this.mainResultDiv, this.enrichData);
@@ -209,7 +223,7 @@ define([
         * @param {object} fromValue
         * @param {object} toValue
         * @param {object} checkBox
-        * @return {array} hasValidValues
+        * @return {boolean} hasValidValues
         * @memberOf widgets/siteLocator/geoEnrichment
         */
         _validateBusinessFromToValues: function (fromValue, toValue, checkBox) {
@@ -307,6 +321,7 @@ define([
                     this._clearBusinessData();
                     this.showBuffer(geometry);
                 }
+                // initialize geometry service and set parameter of geometry service
                 geometryService = new GeometryService(appGlobals.configData.GeometryService.toString());
                 relationParams = new RelationParameters();
                 relationParams.relation = RelationParameters.SPATIAL_REL_INTERSECTION;
@@ -320,6 +335,8 @@ define([
                         this._clearCommunitiesAndBusinessResults(workflowCount);
                         alert(sharedNls.errorMessages.geometryIntersectError);
                         if (workflowCount === 2) {
+                            this._clearFilterCheckBoxes();
+                            appGlobals.shareOptions.toFromBussinessFilter = null;
                             domStyle.set(this.filterContainerBussiness, "display", "none");
                             domStyle.set(this.filterContainer, "display", "none");
                             domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
@@ -333,6 +350,7 @@ define([
                     this._clearCommunitiesAndBusinessResults(workflowCount);
                     alert(sharedNls.errorMessages.geometryIntersectError);
                     if (workflowCount === 2) {
+                        appGlobals.shareOptions.toFromBussinessFilter = null;
                         domStyle.set(this.filterContainerBussiness, "display", "none");
                         domStyle.set(this.filterContainer, "display", "none");
                         domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
@@ -342,6 +360,7 @@ define([
                     }
                 });
             } else {
+                // perform standard geographic query for communities tab
                 appGlobals.shareOptions.standardGeoQueryAttribute = standardSearchCandidate.attributes.CountryAbbr + "," + standardSearchCandidate.attributes.DataLayerID + "," + standardSearchCandidate.attributes.AreaID;
                 standardGeoQueryURL = appGlobals.configData.GeoEnrichmentService + "/StandardGeographyQuery/execute";
                 standardGeoQueryRequest = esriRequest({
@@ -626,8 +645,8 @@ define([
         },
 
         /**
-        * set analysis variable for Geoenrichment
-        * @param {array} field confugerd in config.js for geoenrichment variables
+        * set analysis variable for geoenrichment
+        * @param {array} field configured in config.js for geoenrichment variables
         * @return {Collection} geoenrichment variable for display field
         * @memberOf widgets/siteLocator/geoEnrichment
         */
@@ -702,14 +721,15 @@ define([
         },
 
         /**
-        * set geoenrichment result
-        * @param {object} Geoenrichment result
+        * set geoenrichment result for business tab
+        * @param {object} geoenrichment result
         * @memberOf widgets/siteLocator/geoEnrichment
         */
         _setResultData: function (enrichData) {
             var arrfiledString = [], value, i, j, k, strFieldName, revenue, employee, bus, key, revenueObject = {}, employeeObject = {}, busObject = {};
             this.arrBussinesResultData = [];
             this.totalArray = [];
+            // if result exist then enable the filter icon and filter text
             if (enrichData.results[0].value.FeatureSet[0].features[0].attributes) {
                 domClass.add(this.filterTextBusiness, "esriCTFilterTextEnable");
                 domStyle.set(this.filterContainerBussiness, "display", "block");
@@ -717,6 +737,7 @@ define([
                 domClass.remove(this.filterMainContainerBussiness, "esriCTFilterMainContainer");
 
             }
+            // set geoenrichment business data based on configuration parameter in business tab
             for (i = 0; i < appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields.length; i++) {
                 strFieldName = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[i].FieldName.split(".")[1];
                 this.divBusinessResult.children[i].children[0].innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[i].DisplayText;
@@ -794,54 +815,58 @@ define([
         * @param {object} geoenrichment result
         * @memberOf widgets/siteLocator/geoEnrichment
         */
-        _setBusinessValues: function (arrData, node, enrichData) {
+        _setBusinessValues: function (arrData, node, enrichData, notSorted) {
             var i, resultpanel, content, countRevenueEmpPanel, countRevenueEmp, count, countName, countValue, revenue, revenueName, revenuevalue, employee, empName, empValue;
             this._showBusinessTab();
             this.currentBussinessData = arrData;
+            // check the shared URL for "strBusinessSortData" to display sorted results in business tab while sharing
             if (window.location.toString().split("$strBusinessSortData=").length > 1 && !this.isSharedSort) {
                 this.isSharedSort = true;
                 this.selectSortOption.set("value", window.location.toString().split("$strBusinessSortData=")[1].split("$")[0]);
-            }
-            domConstruct.empty(node);
-            domConstruct.empty(this.downloadDiv);
-            this._downloadDropDown(appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.DownloadSettings, this.downloadDiv);
-            if (this.currentBussinessData) {
-                resultpanel = domConstruct.create("div", { "class": "esriCTSortPanelHead" }, node);
-                if (this.currentBussinessData.length !== 0) {
-                    domStyle.set(this.divBusinessResult, "display", "block");
-                    domStyle.set(this.sortByDiv, "display", "block");
-                    domStyle.set(this.downloadDiv, "display", "block");
-                    domStyle.set(this.resultDiv, "display", "block");
-                    for (i = 0; i < this.currentBussinessData.length; i++) {
-                        content = domConstruct.create("div", {}, resultpanel);
-                        content.innerHTML = this.currentBussinessData[i].DisplayField;
-                        countRevenueEmpPanel = domConstruct.create("div", { "class": "esriCTCountRevenueEmpPanel" }, content);
-                        countRevenueEmp = domConstruct.create("div", { "class": "esriCTCountRevenueEmp" }, countRevenueEmpPanel);
-                        count = domConstruct.create("div", { "class": "esriCTCount" }, countRevenueEmp);
-                        countName = domConstruct.create("div", {}, count);
-                        countName.innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].DisplayTextForBusinessCount;
-                        countValue = domConstruct.create("div", {}, count);
-                        countValue.innerHTML = number.format(this.currentBussinessData[i].Count, { places: 0 });
-                        revenue = domConstruct.create("div", { "class": "esriCTRevenue" }, countRevenueEmp);
-                        revenueName = domConstruct.create("div", {}, revenue);
-                        revenueName.innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[1].DisplayText;
-                        revenuevalue = domConstruct.create("div", {}, revenue);
-                        revenuevalue.innerHTML = this._getUnit(enrichData, appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[1].FieldName.split(".")[1]) + number.format(this.currentBussinessData[i].Revenue, { places: 0 });
-                        employee = domConstruct.create("div", { "class": "esriCTEmployee" }, countRevenueEmp);
-                        empName = domConstruct.create("div", { "class": "esriCTNoOfEmployeeHeader" }, employee);
-                        empName.innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[2].DisplayText;
-                        empValue = domConstruct.create("div", { "class": "esriCTNoOfEmployee" }, employee);
-                        empValue.innerHTML = number.format(this.currentBussinessData[i].Employees, { places: 0 });
+            } else if (notSorted && appGlobals.shareOptions.businessSortData) {
+                this._selectionChangeForSort(appGlobals.shareOptions.businessSortData);
+            } else {
+                domConstruct.empty(node);
+                domConstruct.empty(this.downloadDiv);
+                this._downloadDropDown(appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.DownloadSettings, this.downloadDiv);
+                if (this.currentBussinessData) {
+                    resultpanel = domConstruct.create("div", { "class": "esriCTSortPanelHead" }, node);
+                    if (this.currentBussinessData.length !== 0) {
+                        domStyle.set(this.divBusinessResult, "display", "block");
+                        domStyle.set(this.sortByDiv, "display", "block");
+                        domStyle.set(this.downloadDiv, "display", "block");
+                        domStyle.set(this.resultDiv, "display", "block");
+                        for (i = 0; i < this.currentBussinessData.length; i++) {
+                            content = domConstruct.create("div", {}, resultpanel);
+                            content.innerHTML = this.currentBussinessData[i].DisplayField;
+                            countRevenueEmpPanel = domConstruct.create("div", { "class": "esriCTCountRevenueEmpPanel" }, content);
+                            countRevenueEmp = domConstruct.create("div", { "class": "esriCTCountRevenueEmp" }, countRevenueEmpPanel);
+                            count = domConstruct.create("div", { "class": "esriCTCount" }, countRevenueEmp);
+                            countName = domConstruct.create("div", {}, count);
+                            countName.innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].DisplayTextForBusinessCount;
+                            countValue = domConstruct.create("div", {}, count);
+                            countValue.innerHTML = number.format(this.currentBussinessData[i].Count, { places: 0 });
+                            revenue = domConstruct.create("div", { "class": "esriCTRevenue" }, countRevenueEmp);
+                            revenueName = domConstruct.create("div", {}, revenue);
+                            revenueName.innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[1].DisplayText;
+                            revenuevalue = domConstruct.create("div", {}, revenue);
+                            revenuevalue.innerHTML = this._getUnit(enrichData, appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[1].FieldName.split(".")[1]) + number.format(this.currentBussinessData[i].Revenue, { places: 0 });
+                            employee = domConstruct.create("div", { "class": "esriCTEmployee" }, countRevenueEmp);
+                            empName = domConstruct.create("div", { "class": "esriCTNoOfEmployeeHeader" }, employee);
+                            empName.innerHTML = appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.GeoEnrichmentContents[0].BusinessSummaryFields[2].DisplayText;
+                            empValue = domConstruct.create("div", { "class": "esriCTNoOfEmployee" }, employee);
+                            empValue.innerHTML = number.format(this.currentBussinessData[i].Employees, { places: 0 });
+                        }
+                    } else {
+                        domStyle.set(this.divBusinessResult, "display", "none");
+                        domStyle.set(this.sortByDiv, "display", "none");
+                        domStyle.set(this.downloadDiv, "display", "none");
+                        domStyle.set(this.resultDiv, "display", "none");
+                        appGlobals.shareOptions.businessSortData = null;
+                        alert(sharedNls.errorMessages.invalidSearch);
                     }
-                } else {
-                    domStyle.set(this.divBusinessResult, "display", "none");
-                    domStyle.set(this.sortByDiv, "display", "none");
-                    domStyle.set(this.downloadDiv, "display", "none");
-                    domStyle.set(this.resultDiv, "display", "none");
-                    appGlobals.shareOptions.businessSortData = null;
-                    alert(sharedNls.errorMessages.invalidSearch);
+                    topic.publish("hideProgressIndicator");
                 }
-                topic.publish("hideProgressIndicator");
             }
         },
 
@@ -851,6 +876,7 @@ define([
         */
         _downloadDropDown: function (arrDwnloadDisplayFieldValue, node) {
             var outerDownloadDiv, selectDownloadList, innerDownloadDiv, innerDownloadLabel, selectedValue, sortContentDivDownload, i, selectForDownload, sortingDivDwnload, areaSortBuildingDownload = [];
+            // create UI of download dropdown and element content of all tab
             if (this.workflowCount === 2) {
                 outerDownloadDiv = domConstruct.create("div", { "class": " esriCTouterDownloadDiv" }, node);
             } else {
@@ -868,15 +894,17 @@ define([
                     areaSortBuildingDownload.push({ "label": arrDwnloadDisplayFieldValue[i].DisplayOptionTitle, "value": i.toString() });
                 }
             }
+            // initialize dijit/form/Select for download
             selectDownloadList = new SelectList({
                 options: areaSortBuildingDownload,
                 maxHeight: 50
             }, selectForDownload);
-
+            // attach change event on download dropdown based on selected workflows
             this.own(on(selectDownloadList, "change", lang.hitch(this, function (value) {
                 selectedValue = value;
             })));
             selectedValue = 0;
+            // attach click event on download button
             this.own(on(innerDownloadDiv, "click", lang.hitch(this, function () {
                 var form, postData, fileTypeInput, reportInput, studyAreasInput, gp, params, webMapJsonData, spatialRefernceData, downloadWindow;
                 try {

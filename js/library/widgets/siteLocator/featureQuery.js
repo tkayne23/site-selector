@@ -27,7 +27,6 @@ define([
     "dojo/dom-style",
     "dojo/i18n!application/js/library/nls/localizedStrings",
     "dojo/on",
-    "dojo/query",
     "dojo/topic",
     "dijit/_WidgetBase",
     "dijit/_TemplatedMixin",
@@ -37,7 +36,7 @@ define([
     "esri/tasks/query",
     "esri/tasks/QueryTask",
     "../siteLocator/geoEnrichment"
-], function (array, declare, lang, all, domAttr, domClass, domConstruct, domStyle, sharedNls, on, query, topic, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, SelectList, GeometryService, Query, QueryTask, geoEnrichment) {
+], function (array, declare, lang, all, domAttr, domClass, domConstruct, domStyle, sharedNls, on, topic, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, SelectList, GeometryService, Query, QueryTask, geoEnrichment) {
     //========================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, geoEnrichment], {
@@ -48,18 +47,20 @@ define([
         * @param {object}from container node
         * @param {object}to container node
         * @param {object}check box object
-        * @param {integer}buffer distanve
+        * @param {integer}buffer distance
         * @memberOf widgets/siteLocator/featureQuery
         */
-        _fromToQuery: function (fromNode, toNode, chkBox, bufferDistance) {
+        _fromToQuery: function (fromNode, toNode, chkBox) {
             var isfilterRemoved = false, isValid = true;
             // check from node value and to node value and set the "AND" or "OR" query string
             if (Number(fromNode.value) >= 0 && Number(toNode.value) >= 0 && Number(fromNode.value) <= Number(toNode.value) && lang.trim(fromNode.value) !== "" && lang.trim(toNode.value) !== "") {
+                // check the range filter validation in building tab
                 if (this.workflowCount === 0) {
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
                         isfilterRemoved = true;
                     }
+                    // if checkbox state is checked then push the from and to value into "AND" query string
                     if (chkBox.checked) {
                         if (fromNode.value !== "" && toNode.value !== 0 && Number(fromNode.value) <= Number(toNode.value)) {
                             this.queryArrayBuildingAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " + chkBox.value + "<=" + Number(toNode.value));
@@ -115,6 +116,7 @@ define([
             } else {
                 fromNode.value = "";
                 toNode.value = "";
+                // check from node and to node invalid values and remove the item from query string for building tab and update the query string
                 if (this.workflowCount === 0) {
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
@@ -123,6 +125,7 @@ define([
                     this.orArr = this.queryArrayBuildingOR;
 
                 } else {
+                    // check from node and to node invalid values and remove the item from query string for sites tab and update the query string
                     if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
                     }
@@ -144,40 +147,46 @@ define([
         chkQueryHandler: function (chkBoxNode) {
             var arrAndQuery = [], arrOrQuery = [];
             appGlobals.shareOptions.sortingData = null;
+            // set drop down value as "select" in building tab
             if (this.workflowCount === 0) {
                 if (this.selectBusinessSortForBuilding) {
                     this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-                    this.selectedValue = null;
+                    this.selectedValue[this.workflowCount] = null;
                 }
                 arrAndQuery = this.queryArrayBuildingAND;
                 arrOrQuery = this.queryArrayBuildingOR;
             } else {
+                // set drop down value as "select" in sites tab
                 if (this.selectBusinessSortForSites) {
                     this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-                    this.selectedValue = null;
+                    this.selectedValue[this.workflowCount] = null;
                 }
                 arrAndQuery = this.queryArraySitesAND;
                 arrOrQuery = this.queryArraySitesOR;
             }
+            // if checkbox is checked("regularFilter") then add the checkbox name and value into "AndQuery" string
             if (chkBoxNode && chkBoxNode.target && chkBoxNode.target.checked) {
                 if (chkBoxNode.target.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
                     if (array.indexOf(arrAndQuery, chkBoxNode.target.name + "='" + chkBoxNode.target.value + "'") === -1) {
-                        arrAndQuery.push(chkBoxNode.target.name + "='" + chkBoxNode.target.value + "'");
+                        arrAndQuery.push("UPPER(" + chkBoxNode.target.name + ") ='" + chkBoxNode.target.value + "'");
                     }
                 } else {
+                    // if checkbox is checked("additionalFilter") then add the checkbox name and value into "OrQuery" string
                     if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')") === -1) {
                         arrOrQuery.push("UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')");
                     }
                 }
             } else if (chkBoxNode && chkBoxNode.checked) {
+                // check the filter values while sharing
                 if (chkBoxNode.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
                     if (array.indexOf(arrAndQuery, chkBoxNode.name + "='" + chkBoxNode.value + "'") === -1) {
-                        arrAndQuery.push(chkBoxNode.name + "='" + chkBoxNode.value + "'");
+                        arrAndQuery.push("UPPER(" + chkBoxNode.name + ") ='" + chkBoxNode.value + "'");
                     }
                 } else if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')") === -1) {
                     arrOrQuery.push("UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')");
                 }
             }
+            // update the query string according to workflow
             if (this.workflowCount === 0) {
                 this.queryArrayBuildingAND = arrAndQuery;
                 this.queryArrayBuildingOR = arrOrQuery;
@@ -252,8 +261,8 @@ define([
             dateObj = new Date().getTime().toString();
             this.lastGeometry[this.workflowCount] = geometry;
             this.showBuffer(geometry);
-            if (this.opeartionLayer && this.opeartionLayer.url) {
-                queryLayerTask = new QueryTask(this.opeartionLayer.url);
+            if (this.operationalLayer && this.operationalLayer.url) {
+                queryLayerTask = new QueryTask(this.operationalLayer.url);
                 queryLayer = new Query();
                 queryLayer.returnGeometry = false;
                 if (where !== null) {
@@ -300,7 +309,7 @@ define([
                                 domClass.add(this.filterMainContainerSites, "esriCTFilterMainContainer");
                             }
                         }
-                    }), lang.hitch(this, function (Error) {
+                    }), lang.hitch(this, function () {
                         topic.publish("hideProgressIndicator");
                         alert(sharedNls.errorMessages.geometryIntersectError);
                         if (this.workflowCount === 0) {
@@ -332,7 +341,7 @@ define([
         * @param {object} error object
         * @memberOf widgets/siteLocator/featureQuery
         */
-        _queryErrorHandler: function (error) {
+        _queryErrorHandler: function () {
             topic.publish("hideProgressIndicator");
         },
 
@@ -349,13 +358,10 @@ define([
                         domClass.remove(this.filterText, "esriCTDisableText");
                         domClass.add(this.filterText, "esriCTFilterTextEnable");
                         domStyle.set(this.filterContainer, "display", "block");
-                        if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
-                            domClass.add(this.filterIcon, "esriCTFilterEnabled");
-                            domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                        }
                     }
                     domStyle.set(this.outerDivForPegination, "display", "block");
                     this.buildingResultSet = featureSet;
+                    // check the shared URL for "paginationIndex" to display selected pagination page for selected workflow
                     if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
                         this._paginationForResults(Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
                     } else {
@@ -367,13 +373,10 @@ define([
                         domClass.remove(this.filterTextSites, "esriCTDisableText");
                         domClass.add(this.filterTextSites, "esriCTFilterTextEnable");
                         domStyle.set(this.filterContainerSites, "display", "block");
-                        if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
-                            domClass.add(this.filterIconSites, "esriCTFilterEnabled");
-                            domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                        }
                     }
                     domStyle.set(this.outerDivForPeginationSites, "display", "block");
                     this.sitesResultSet = featureSet;
+                    // check the shared URL for "paginationIndex" to display selected pagination page for selected workflow
                     if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
                         this._paginationForResultsSites(Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
                     } else {
@@ -381,9 +384,9 @@ define([
                     }
                 }
                 if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
-                    this.performQuery(this.opeartionLayer, featureSet, Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
+                    this.performQuery(this.operationalLayer, featureSet, Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
                 } else {
-                    this.performQuery(this.opeartionLayer, featureSet, 0);
+                    this.performQuery(this.operationalLayer, featureSet, 0);
                 }
             } else {
                 if (this.workflowCount === 0) {
@@ -391,8 +394,8 @@ define([
                     domStyle.set(this.outerDivForPegination, "display", "none");
                     domConstruct.empty(this.outerResultContainerBuilding);
                     domConstruct.empty(this.attachmentOuterDiv);
-                    if (this.selectedValue) {
-                        this.selectedValue = null;
+                    if (this.selectedValue[this.workflowCount]) {
+                        this.selectedValue[this.workflowCount] = null;
                         this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
                     }
 
@@ -401,25 +404,20 @@ define([
                     domConstruct.empty(this.outerResultContainerSites);
                     domConstruct.empty(this.attachmentOuterDivSites);
                     delete this.sitesTabData;
-                    if (this.selectedValue) {
-                        this.selectedValue = null;
+                    if (this.selectedValue[this.workflowCount]) {
+                        this.selectedValue[this.workflowCount] = null;
                         this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
                     }
 
                 }
+                // check the shared URL for "whereClause"(applied filters) to set the visibility of filter container according to workflows
                 if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
                     if (this.workflowCount === 0) {
-                        domClass.add(this.filterIcon, "esriCTFilterEnabled");
-                        domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                        domClass.add(this.filterText, "esriCTFilterTextEnable");
                         domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
                         if (domStyle.get(this.filterContainer, "display") === "none") {
                             domStyle.set(this.filterContainer, "display", "block");
                         }
                     } else {
-                        domClass.add(this.filterIconSites, "esriCTFilterEnabled");
-                        domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                        domClass.add(this.filterTextSites, "esriCTFilterTextEnable");
                         domClass.remove(this.filterMainContainerSites, "esriCTFilterMainContainer");
                         if (domStyle.get(this.filterContainerSites, "display") === "none") {
                             domStyle.set(this.filterContainerSites, "display", "block");
@@ -447,6 +445,7 @@ define([
                     appGlobals.shareOptions.paginationIndex = [null, null, null, null];
                     appGlobals.shareOptions.paginationIndex[this.workflowCount] = curentIndex;
                 }
+                // if feature set exist then loop all the feature set and check has attachment field in layer and configuration to perform query for attachment and data
                 if (featureSet.length !== 0) {
                     onCompleteArray = [];
                     finalIndex = curentIndex + 10;
@@ -455,6 +454,7 @@ define([
                     }
                     for (i = curentIndex; i < finalIndex; i++) {
                         arrIds.push(featureSet[i]);
+                        // check has attachment in layer and show attachment in configuration is exist
                         if (layer.hasAttachments && appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
                             this.itemquery(null, featureSet[i], layer, onCompleteArray);
                         }
@@ -505,8 +505,8 @@ define([
                 queryobject.outFields = oufields;
                 queryobject.returnGeometry = false;
                 queryobject.objectIds = arrIds;
-                if (this.selectedValue) {
-                    queryobject.orderByFields = [this.selectedValue];
+                if (this.selectedValue[this.workflowCount]) {
+                    queryobject.orderByFields = [this.selectedValue[this.workflowCount]];
                 }
                 queryOnRouteTask = queryObjectTask.execute(queryobject);
             } else if (objectId !== null) {
@@ -526,6 +526,7 @@ define([
             var arrTabData = [], i, j;
             topic.publish("hideProgressIndicator");
             for (i = 0; i < layerFeatureSet.features.length; i++) {
+                // add the feature data into an array
                 arrTabData.push({ featureData: layerFeatureSet.features[i].attributes });
                 for (j = 0; j < layerAttachmentInfos.length; j++) {
                     if (layerAttachmentInfos[j][0] && layerFeatureSet.features[i].attributes[layer.objectIdField] === layerAttachmentInfos[j][0].objectId) {
@@ -536,9 +537,11 @@ define([
             }
             if (this.workflowCount === 0) {
                 this.buildingTabData = arrTabData;
+                //creates list of objects to be displayed in pagination for building tab
                 this._createDisplayList(this.buildingTabData, this.outerResultContainerBuilding);
             } else {
                 this.sitesTabData = arrTabData;
+                //creates list of objects to be displayed in pagination for sites tab
                 this._createDisplayList(this.sitesTabData, this.outerResultContainerSites);
             }
         },
@@ -551,6 +554,7 @@ define([
         _paginationForResults: function (currentIndex) {
             var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForBuilding, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1, total, result, i, timeOut, strLastUpdate, selectedOption;
             domConstruct.empty(this.outerDivForPegination);
+            // create dynamic UI for pagination and set element content
             rangeDiv = domConstruct.create("div", { "class": "esriCTRangeDiv" }, this.outerDivForPegination);
             currentIndexNode = domConstruct.create("div", { "class": "esriCTIndex" }, rangeDiv);
             hyphen = domConstruct.create("div", { "class": "esriCTIndex" }, rangeDiv);
@@ -594,6 +598,7 @@ define([
             if (total <= 10) {
                 domClass.replace(leftArrow, "esriCTLeftArrow", "esriCTLeftArrowBlue");
             }
+            // attach keyup event on textbox of pagination
             this.own(on(firstIndex, "keyup", lang.hitch(this, function (value) {
                 if (value.keyCode === 13) {
                     domAttr.set(firstIndex, "innerHTML", strLastUpdate);
@@ -626,7 +631,7 @@ define([
                             } else {
                                 domClass.replace(rightArrow, "esriCTRightArrow", "esriCTRightArrowBlue");
                             }
-                            this.performQuery(this.opeartionLayer, this.buildingResultSet, currentIndex);
+                            this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
                         } else {
                             topic.publish("hideProgressIndicator");
                             domAttr.set(firstIndex, "innerHTML", currentPage);
@@ -637,6 +642,7 @@ define([
                     domAttr.set(firstIndex, "innerHTML", currentPage);
                 }
             })));
+            // initialize sort drop down and set the options value of drop down
             if (!this.areaSortBuilding) {
                 this.areaSortBuilding = [];
                 this.areaSortBuilding.push({ "label": sharedNls.titles.select, "value": sharedNls.titles.select, "selected": true });
@@ -648,29 +654,30 @@ define([
             }
 
             selectedOption = (this.selectBusinessSortForBuilding && this.selectBusinessSortForBuilding.value) || this.areaSortBuilding[0].value;
+            // check the shared URL for "strSortingData"(sorting field) to get the sorted result on shared URL for selected workflows
             if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
+                selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
+                this._selectionChangeForBuildingAndSitesSort(selectedOption);
                 this.isSharedSort = true;
                 this.buildingResultSet = null;
-                selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
             }
-
             this.selectBusinessSortForBuilding = new SelectList({
                 options: this.areaSortBuilding,
                 maxHeight: 100,
                 value: selectedOption
             }, selectForBuilding);
-
+            // attach change event on drop down of buildings tab
             this.own(on(this.selectBusinessSortForBuilding, "change", lang.hitch(this, function (value) {
                 if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
-                    this._selectionChangeForBuildingSort(value);
+                    this._selectionChangeForBuildingAndSitesSort(value);
                 }
             })));
-
+            // attach click event on left arrow of pagination
             this.own(on(leftArrow, "click", lang.hitch(this, function () {
                 if (currentIndex !== 0) {
                     topic.publish("showProgressIndicator");
                     currentIndex -= 10;
-                    this.performQuery(this.opeartionLayer, this.buildingResultSet, currentIndex);
+                    this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
                     if (this.buildingResultSet.length < currentIndex + 10) {
                         domAttr.set(tenthIndex, "innerHTML", this.buildingResultSet.length);
@@ -687,12 +694,12 @@ define([
                     }
                 }
             })));
-
+            // attach click event on right arrow of pagination
             this.own(on(rightArrow, "click", lang.hitch(this, function () {
                 if (result >= Number(firstIndex.innerHTML) + 1) {
                     topic.publish("showProgressIndicator");
                     currentIndex += 10;
-                    this.performQuery(this.opeartionLayer, this.buildingResultSet, currentIndex);
+                    this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
                     if (this.buildingResultSet.length < currentIndex + 10) {
                         domAttr.set(tenthIndex, "innerHTML", this.buildingResultSet.length);
@@ -718,6 +725,7 @@ define([
         _paginationForResultsSites: function (index) {
             var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForSites, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1, total, result, i, timeOut, currentIndexSites = index, strLastUpdate, selectedOption;
             domConstruct.empty(this.outerDivForPeginationSites);
+            // create dynamic UI for pagination and set element content
             rangeDiv = domConstruct.create("div", { "class": "esriCTRangeDiv" }, this.outerDivForPeginationSites);
             currentIndexNode = domConstruct.create("div", { "class": "esriCTIndex" }, rangeDiv);
             hyphen = domConstruct.create("div", { "class": "esriCTIndex" }, rangeDiv);
@@ -761,6 +769,7 @@ define([
             if (total <= 10) {
                 domClass.replace(leftArrow, "esriCTLeftArrow", "esriCTLeftArrowBlue");
             }
+            // attach keyup event on textbox of pagination
             this.own(on(firstIndex, "keyup", lang.hitch(this, function (value) {
                 if (value.keyCode === 13) {
                     domAttr.set(firstIndex, "innerHTML", strLastUpdate);
@@ -793,7 +802,7 @@ define([
                             } else {
                                 domClass.replace(rightArrow, "esriCTRightArrow", "esriCTRightArrowBlue");
                             }
-                            this.performQuery(this.opeartionLayer, this.sitesResultSet, currentIndexSites);
+                            this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
                         } else {
                             topic.publish("hideProgressIndicator");
                             domAttr.set(firstIndex, "innerHTML", currentPage);
@@ -804,6 +813,7 @@ define([
                     domAttr.set(firstIndex, "innerHTML", currentPage);
                 }
             })));
+            // initialize sort drop down and set the options value of drop down
             if (!this.areaSortSites) {
                 this.areaSortSites = [];
                 this.areaSortSites.push({
@@ -821,27 +831,30 @@ define([
                 }
             }
             selectedOption = (this.selectBusinessSortForSites && this.selectBusinessSortForSites.value) || this.areaSortSites[0].value;
+            // check the shared URL for "strSortingData"(sorting field) to get the sorted result on shared URL for selected workflows
             if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
+                selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
+                this._selectionChangeForBuildingAndSitesSort(selectedOption);
                 this.isSharedSort = true;
                 this.sitesResultSet = null;
-                selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
             }
             this.selectBusinessSortForSites = new SelectList({
                 options: this.areaSortSites,
                 maxHeight: 100,
                 value: selectedOption
             }, selectForSites);
-
+            // attach change event on drop down of sites tab
             this.own(on(this.selectBusinessSortForSites, "change", lang.hitch(this, function (value) {
                 if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
-                    this._selectionChangeForBuildingSort(value);
+                    this._selectionChangeForBuildingAndSitesSort(value);
                 }
             })));
+            // attach click event on left arrow of pagination
             this.own(on(leftArrow, "click", lang.hitch(this, function () {
                 if (currentIndexSites !== 0) {
                     topic.publish("showProgressIndicator");
                     currentIndexSites -= 10;
-                    this.performQuery(this.opeartionLayer, this.sitesResultSet, currentIndexSites);
+                    this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
                     if (this.sitesResultSet.length < currentIndexSites + 10) {
                         domAttr.set(tenthIndex, "innerHTML", this.sitesResultSet.length);
@@ -858,11 +871,12 @@ define([
                     }
                 }
             })));
+            // attach click event on right arrow of pagination
             this.own(on(rightArrow, "click", lang.hitch(this, function () {
                 if (result >= Number(firstIndex.innerHTML) + 1) {
                     topic.publish("showProgressIndicator");
                     currentIndexSites += 10;
-                    this.performQuery(this.opeartionLayer, this.sitesResultSet, currentIndexSites);
+                    this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
                     domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
                     if (this.sitesResultSet.length < currentIndexSites + 10) {
                         domAttr.set(tenthIndex, "innerHTML", this.sitesResultSet.length);
@@ -886,14 +900,18 @@ define([
         * @param {object} selection object
         * @memberOf widgets/siteLocator/featureQuery
         */
-        _selectionChangeForBuildingSort: function (value) {
+        _selectionChangeForBuildingAndSitesSort: function (value) {
             var querySort, queryTask, andString, orString, queryString;
             topic.publish("showProgressIndicator");
-            this.buildingResultSet = null;
-            this.sitesResultSet = null;
-            this.selectedValue = value;
-            appGlobals.shareOptions.sortingData = this.selectedValue;
-            queryTask = new QueryTask(this.opeartionLayer.url);
+            if (this.buildingResultSet && this.workflowCount === 0) {
+                this.buildingResultSet = null;
+            } else if (this.sitesResultSet && this.workflowCount === 1) {
+                this.sitesResultSet = null;
+            }
+            this.selectedValue[this.workflowCount] = value;
+            appGlobals.shareOptions.sortingData = this.selectedValue[this.workflowCount];
+            // initialize query task layer, query and set the query parameter for sorting and get the sorted object ids
+            queryTask = new QueryTask(this.operationalLayer.url);
             querySort = new Query();
             if (this.lastGeometry[this.workflowCount]) {
                 querySort.geometry = this.lastGeometry[this.workflowCount][0];
@@ -923,14 +941,14 @@ define([
                 }
             }
             if (queryString) {
-                queryString += " AND " + this.selectedValue + " <> '' AND " + this.selectedValue + " is not null";
+                queryString += " AND UPPER(" + value + ") <> '' AND " + value + " is not null";
             } else {
-                queryString = this.selectedValue + " <> '' AND " + this.selectedValue + " is not null";
+                queryString = "UPPER(" + value + ") <> '' AND " + value + " is not null";
             }
             querySort.where = queryString;
             querySort.returnGeometry = false;
-            querySort.orderByFields = [this.selectedValue];
-            queryTask.executeForIds(querySort, lang.hitch(this, this._queryLayerhandler), function (error) {
+            querySort.orderByFields = [value];
+            queryTask.executeForIds(querySort, lang.hitch(this, this._queryLayerhandler), function () {
                 alert(sharedNls.errorMessages.unableToSort);
                 topic.publish("hideProgressIndicator");
             });

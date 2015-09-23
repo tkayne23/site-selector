@@ -1554,7 +1554,7 @@ input[type="text"]
 {
     width: 100%;
     position: relative;
-    float: left;
+    float: none;
     height: auto;
 }
 
@@ -1694,8 +1694,7 @@ input[type="text"]
 
 .esriCTOuterResultDiv
 {
-    float: left;
-    width: 100%;
+   width: 100%;
 }
 
 .esriCTOuterContent
@@ -2156,7 +2155,7 @@ label.css-label
     height: -webkit-calc(100% - 90px);
     height: -o-calc(100% - 90px);
     position: absolute;
-    top: 87px;
+    top: 86px;
     width: 100%;
 }
 

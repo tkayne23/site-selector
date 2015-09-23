@@ -77,7 +77,9 @@ define([
                 domClass.add(obj.txtAddress, "esriCTColorChange");
             })));
             this.own(on(obj.close, "click", lang.hitch(this, function () {
-                this._hideText(obj);
+                if (!domClass.contains(obj.close, "esriCTDisabledAddressColorChange")) {
+                    this._hideText(obj);
+                }
             })));
 
             topic.subscribe("geoLocation-Complete", lang.hitch(this, function (mapPoint) {
@@ -93,12 +95,12 @@ define([
                     // when user clicks on geolocation icon in header panel, close the search panel if it is open and perform geolocation operation.
                     if (html.coords(this.applicationHeaderSearchContainer).h > 0) {
                         appGlobals.shareOptions.arrAddressMapPoint[this.workflowCount] = mapPoint.x + "," + mapPoint.y;
-                        this._geoLocationQuery(obj, mapPoint);
                         appGlobals.shareOptions.strGeoLocationMapPoint = null;
                     } else {
                         topic.publish("hideProgressIndicator");
                         appGlobals.shareOptions.strGeoLocationMapPoint = mapPoint.x + "," + mapPoint.y;
                     }
+                    this._geoLocationQuery(obj, mapPoint);
                 }
             }));
         },
@@ -128,7 +130,7 @@ define([
                         topic.publish("showProgressIndicator");
                         this._enrichData([mapPoint], this.workflowCount, null);
                     } else {
-                        // in other Workflow, create buffer.
+                        // in building, sites and business workflow, create buffer.
                         this._createBuffer(mapPoint, null, true);
                     }
                     appGlobals.shareOptions.arrStrAdderss[this.workflowCount] = evt.address.address.Address;
@@ -254,13 +256,17 @@ define([
         * @memberOf widgets/SiteLocator/UnifiedSearch
         */
         _getAddressSearchResults: function (deferredArray, searchText, obj) {
-            var addressField = {}, options, searchFieldName, baseMapExtent, locator, locatorDef, deferred, basemapId;
+            var addressField = {}, options, searchFieldName, baseMapExtent, locator, locatorDef, deferred, basemapId, selectedBasemap = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex];
             // call locator service specified in configuration file
             locator = new Locator(appGlobals.configData.LocatorSettings.LocatorURL);
             searchFieldName = appGlobals.configData.LocatorSettings.LocatorParameters.SearchField;
             addressField[searchFieldName] = searchText;
-            //get selected basemap id
-            basemapId = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex].basemapId;
+            //get full extent of selected basemap
+            if (selectedBasemap.length) {
+                basemapId = selectedBasemap[0].BasemapId;
+            } else {
+                basemapId = selectedBasemap.BasemapId;
+            }
             if (this.map.getLayer(basemapId)) {
                 baseMapExtent = this.map.getLayer(basemapId).fullExtent;
             }
@@ -356,7 +362,7 @@ define([
                             domStyle.set(obj.imgSearchLoader, "display", "none");
                             domStyle.set(obj.close, "display", "block");
                             addrList.push(divAddressSearchCell);
-                            this._toggleAddressList(addrList, addrListCount, obj);
+                            this._toggleAddressList(addrList, addrListCount);
                             addrListCount++;
                             listContainer = domConstruct.create("div", { "class": "listContainer esriCTHideAddressList" }, obj.divAddressResults);
                             for (i = 0; i < candidates[candidateName].length; i++) {
@@ -381,10 +387,9 @@ define([
         * perform search by address if search type is address search
         * @param {array} array of address
         * @param {number} count of address in address list
-        * @param {object} Nodes and other variable for all workflows
         * @memberOf widgets/Sitelocator/UnifiedSearch
         */
-        _toggleAddressList: function (addressList, idx, obj) {
+        _toggleAddressList: function (addressList, idx) {
             on(addressList[idx], "click", function () {
                 var listStatusSymbol, outputContainer, plusMinusContainer;
                 outputContainer = query(".listContainer", this.parentElement.parentElement)[idx];
@@ -447,15 +452,6 @@ define([
         */
         _locateAddress: function (obj, launchImmediately) {
             var searchText = lang.trim(obj.txtAddress.value);
-            // check the selected value contains sorted strings then set the dropdown value to select for workflows
-            if (this.selectedValue && this.selectBusinessSortForBuilding) {
-                this.selectedValue = null;
-                this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-            }
-            if (this.selectedValue && this.selectBusinessSortForSites) {
-                this.selectedValue = null;
-                this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-            }
             if (launchImmediately || this.lastSearchString !== searchText) {
                 this.lastSearchString = searchText;
                 // clear any staged search
@@ -521,7 +517,7 @@ define([
                     domStyle.set(obj.divAddressScrollContent, "display", "none");
                     this._enrichData(null, obj.addressWorkflowCount, candidate);
                 } else {
-                // check the infowindow is visible on map
+                    // check the infowindow is visible on map
                     if (this.map.infoWindow) {
                         this.map.infoWindow.hide();
                     }
@@ -539,6 +535,22 @@ define([
                     if (isValid) {
                         obj.txtAddress.value = candidateAddress.innerHTML;
                         domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
+
+                        // check the selected value contains sorted strings then set the dropdown value to select for workflows
+                        if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForBuilding && this.workflowCount === 0) {
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
+                        } else if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites && this.workflowCount === 1) {
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+                        } else if (this.selectSortOption && this.totalArray && this.workflowCount === 2) {
+                            this.totalArray = [];
+                            appGlobals.shareOptions.toFromBussinessFilter = null;
+                            this.selectSortOption.set("value", sharedNls.titles.select);
+                        }
+
                     }
                     if (candidate.attributes.location) {
                         target = evt.currentTarget || evt.srcElement;
@@ -623,6 +635,9 @@ define([
             } else {
                 obj.txtAddress.value = obj.lastSearchString;
                 alert(sharedNls.errorMessages.invalidInput);
+                if (this.workflowCount === 0 || this.workflowCount === 1 || this.workflowCount === 2) {
+                    this.clearTextValuesOfFilters();
+                }
                 topic.publish("hideProgressIndicator");
             }
         },
@@ -723,10 +738,9 @@ define([
         * reset target value for unified search
         * @param {object} target
         * @param {object} title
-        * @param {object} obj contains data for selected workflow
         * @memberOf widgets/SiteLocator/UnifiedSearch
         */
-        _resetTargetValue: function (target, title, obj) {
+        _resetTargetValue: function (target, title) {
             if (target.value === '' && domAttr.get(target, title)) {
                 target.value = target.title;
                 if (target.title === "") {
@@ -764,6 +778,7 @@ define([
             domStyle.set(obj.close, "display", "none");
             domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
             standardGeoQueryURL = appGlobals.configData.GeoEnrichmentService + "/StandardGeographyQuery/execute";
+            // set standard geographic query  parameter
             standardGeoQueryRequest = esriRequest({
                 url: standardGeoQueryURL,
                 content: {

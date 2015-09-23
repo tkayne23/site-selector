@@ -595,8 +595,7 @@ define([], function () {
                     FilterLayer: {
                         Title: "Municipalities",
                         QueryLayerId: "2",
-                        FilterFieldName: "COUNTY",
-                        OutFields: ["COUNTY"]
+                        FilterFieldName: "COUNTY"
                     },
                     InfoPanelSettings: {
                         GeoEnrichmentContents: {
