@@ -57,10 +57,6 @@ define([
             basemapDeferred = new Deferred();
             this._fetchBasemapCollection(basemapDeferred);
             basemapDeferred.then(lang.hitch(this, function (baseMapLayers) {
-                if (baseMapLayers.length === 0) {
-                    alert(sharedNls.errorMessages.noBasemap);
-                    return;
-                }
                 appGlobals.configData.BaseMapLayers = baseMapLayers;
                 if (appGlobals.configData.SplashScreen && appGlobals.configData.SplashScreen.IsVisible && window.location.toString().split("extent=").length <= 1) {
                     splashScreen = new SplashScreen();
@@ -107,13 +103,12 @@ define([
                 deferredArray.push(deferred.promise);
             });
 
-            all(deferredArray).then(lang.hitch(this, function (result) {
+            all(deferredArray).then(lang.hitch(this, function () {
                 try {
                     /**
                     * create application header
                     */
                     this._createApplicationHeader(widgets);
-                    topic.publish("update511InfoOnLoad", mapInstance.extent);
                 } catch (ex) {
                     alert(sharedNls.errorMessages.widgetNotLoaded);
                 }
@@ -140,7 +135,7 @@ define([
         },
 
         _fetchBasemapCollection: function (basemapDeferred) {
-            var groupUrl, searchUrl, webmapRequest, groupRequest, deferred, agolBasemapsCollection, thumbnailSrc, baseMapArray = [], deferredArray = [], self = this;
+            var groupUrl, searchUrl, webmapRequest, groupRequest, deferred, agolBasemapsCollection, thumbnailSrc, baseMapArray = [], deferredArray = [], self = this, basemapId;
             /**
             * If group owner & title are configured, create request to fetch the group id
             */
@@ -174,7 +169,10 @@ define([
                                 */
                                 if (info.type === "Map Service") {
                                     thumbnailSrc = (groupInfo.results[index].thumbnail === null) ? appGlobals.configData.NoThumbnail : appGlobals.configData.PortalAPIURL + "content/items/" + info.id + "/info/" + info.thumbnail;
+                                    basemapId = groupInfo.results[index].name || groupInfo.results[index].id;
+
                                     baseMapArray.push({
+                                        BasemapId: basemapId,
                                         ThumbnailSource: thumbnailSrc,
                                         Name: info.title,
                                         MapURL: info.url
@@ -204,7 +202,7 @@ define([
                                     /**
                                     * Else for each items in the webmap, create the object and push it into "baseMapArray"
                                     */
-                                    array.forEach(res, function (data, innerIdx) {
+                                    array.forEach(res, function (data) {
                                         self._filterRedundantBasemap(data, baseMapArray, false);
                                     });
                                     basemapDeferred.resolve(baseMapArray);
@@ -282,7 +280,7 @@ define([
                     }
                     bmLayerData[0].url = bmLayerData[0].id;
                 }
-                if (this._isUniqueBasemap(baseMapArray, bmLayerData, isWorkFlowBasemap)) {
+                if (this._isUniqueBasemap(baseMapArray, bmLayerData)) {
                     if (isWorkFlowBasemap || bmLayerData[0].visibility) {
                         appGlobals.shareOptions.selectedBasemapIndex = baseMapArray.length;
                     }
@@ -316,7 +314,7 @@ define([
         * check new basemap exists in basemap array or not
         * @memberOf coreLibrary/widgetLoader
         */
-        _isUniqueBasemap: function (baseMapArray, bmLayerData, isWorkFlowBasemap) {
+        _isUniqueBasemap: function (baseMapArray, bmLayerData) {
             var i, j, k, pushBasemap = true, count = 1;
             for (i = 0; i < baseMapArray.length; i++) {
                 if (!baseMapArray[i].length) {
@@ -371,7 +369,7 @@ define([
                     layerType = bmLayer.type;
                 }
                 baseMapArray.push({
-                    basemapId: bmLayer.basemapId,
+                    BasemapId: bmLayer.basemapId,
                     ThumbnailSource: thumbnailSrc,
                     Name: bmLayer.title,
                     MapURL: bmLayer.url,
@@ -388,24 +386,32 @@ define([
         _fetchBasemapFromGallery: function (agolBasemapsCollection, baseMapArray, basemapDeferred) {
             var deferred, deferredArray = [];
             array.forEach(agolBasemapsCollection.basemaps, lang.hitch(this, function (basemap) {
-                var basemapRequest, basemapLayersArray = [];
+                var basemapRequest, basemapLayersArray = [], basemapId, layerType;
                 basemapRequest = basemap.getLayers();
-                basemapRequest.then(function () {
-                    /**
-                    *If array contains only single layer object, push it into "baseMapArray"
-                    */
+                basemapRequest.then(lang.hitch(this, function () {
+                    //If array contains only single layer object, push it into "baseMapArray"
                     if (basemap.layers.length === 1) {
+                        basemapId = basemap.id || "defaultBasemapId";
+                        layerType = basemap.layers[0].type || basemap.layers[0].layerType;
                         baseMapArray.push({
+                            BasemapId: basemapId,
                             ThumbnailSource: basemap.thumbnailUrl,
                             Name: basemap.title,
-                            MapURL: basemap.layers[0].url
+                            MapURL: basemap.layers[0].url,
+                            isWorkFlowBasemap: false,
+                            layerType: layerType
                         });
                     } else {
-                        array.forEach(basemap.layers, lang.hitch(this, function (basemapLayers) {
+                        array.forEach(basemap.layers, lang.hitch(this, function (basemapLayers, index) {
+                            basemapId = basemap.id + index;
+                            layerType = basemapLayers.type || basemapLayers.layerType;
                             basemapLayersArray.push({
+                                BasemapId: basemapId,
                                 ThumbnailSource: basemap.thumbnailUrl,
                                 Name: basemap.title,
-                                MapURL: basemapLayers.url
+                                MapURL: basemapLayers.url,
+                                isWorkFlowBasemap: false,
+                                layerType: layerType
                             });
                         }));
                         baseMapArray.push(basemapLayersArray);
@@ -414,10 +420,10 @@ define([
                     and push it into "basemapLayersArray", finally push "basemapLayersArray" into "baseMapArray" */
                     deferred = new Deferred();
                     deferred.resolve();
-                });
+                }));
                 deferredArray.push(basemapRequest);
             }));
-            all(deferredArray).then(function (res) {
+            all(deferredArray).then(function () {
                 basemapDeferred.resolve(baseMapArray);
             });
         }

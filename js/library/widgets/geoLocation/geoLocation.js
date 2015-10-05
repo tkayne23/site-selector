@@ -88,9 +88,15 @@ define([
                 * @param {object} newPoint Map point of device location in spatialReference of map
                 */
                 geometryService.project([mapPoint], self.map.spatialReference).then(function (newPoint) {
-                    var basemapId = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex].basemapId;
+                    var selectedBasemap, basemapId;
+                    selectedBasemap = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex];
+                    if (selectedBasemap.length) {
+                        basemapId = selectedBasemap[0].BasemapId;
+                    } else {
+                        basemapId = selectedBasemap.BasemapId;
+                    }
                     if (self.map.getLayer(basemapId)) {
-                        currentBaseMap = self.map.getLayer(basemapId).fullExtent;
+                        currentBaseMap = self.map.getLayer(basemapId);
                     }
 
                     if (currentBaseMap && currentBaseMap.visible) {

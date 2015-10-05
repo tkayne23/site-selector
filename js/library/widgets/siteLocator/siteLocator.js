@@ -71,7 +71,7 @@ define([
         arrBussinesResultData: [],
         businessData: [],
         enrichData: null,
-        opeartionLayer: null,
+        operationalLayer: null,
         unitValues: [null, null, null, null],
         arrStudyAreas: [null, null, null],
         featureGraphics: [null, null, null, null],
@@ -138,10 +138,10 @@ define([
             */
             dom.byId("esriCTParentDivContainer").appendChild(this.applicationHeaderSearchContainer);
             this._setTabVisibility();
-            this._attachLocatorEvents({ divSearch: this.divSearchBuilding, checkBox: null, imgSearchLoader: this.imgSearchLoaderBuilding, txtAddress: this.txtAddressBuilding, close: this.closeBuilding, divAddressResults: this.divAddressResultsBuilding, divAddressScrollContainer: this.divAddressScrollContainerBuilding, divAddressScrollContent: this.divAddressScrollContentBuilding, addressWorkflowCount: 0, searchContent: this.searchContentBuilding, lastSearchString: this.lastSearchStringBuilding, locatorScrollBar: this.locatorScrollbarBuilding });
-            this._attachLocatorEvents({ divSearch: this.divSearchSites, checkBox: null, imgSearchLoader: this.imgSearchLoaderSites, txtAddress: this.txtAddressSites, close: this.closeSites, divAddressResults: this.divAddressResultsSites, divAddressScrollContainer: this.divAddressScrollContainerSites, divAddressScrollContent: this.divAddressScrollContentSites, addressWorkflowCount: 1, searchContent: this.searchContentSites, lastSearchString: this.lastSearchStringSites, locatorScrollBar: this.locatorScrollbarSites });
-            this._attachLocatorEvents({ divSearch: this.divSearchBusiness, checkBox: { checked: true }, imgSearchLoader: this.imgSearchLoaderBusiness, txtAddress: this.txtAddressBusiness, close: this.closeBusiness, divAddressResults: this.divAddressResultsBusiness, divAddressScrollContainer: this.divAddressScrollContainerBusiness, divAddressScrollContent: this.divAddressScrollContentBusiness, addressWorkflowCount: 2, searchContent: this.searchContentBusiness, lastSearchString: this.lastSearchStringBusiness, locatorScrollBar: this.locatorScrollbarBusiness });
-            this._attachLocatorEvents({ divSearch: this.divSearchCommunities, checkBox: this.rdoCommunitiesAddressSearch, imgSearchLoader: this.imgSearchLoaderCommunities, txtAddress: this.txtAddressCommunities, close: this.closeCommunities, divAddressResults: this.divAddressResultsCommunities, divAddressScrollContainer: this.divAddressScrollContainerCommunities, divAddressScrollContent: this.divAddressScrollContentCommunities, addressWorkflowCount: 3, searchContent: this.searchContentCommunities, lastSearchString: this.lastSearchStringCommunities, locatorScrollBar: this.locatorScrollbarCommunities });
+            this._attachLocatorEvents({ divSearch: this.divSearchBuilding, checkBox: null, imgSearchLoader: this.imgSearchLoaderBuilding, txtAddress: this.txtAddressBuilding, close: this.closeBuilding, divAddressResults: this.divAddressResultsBuilding, divAddressScrollContainer: this.divAddressScrollContainerBuilding, divAddressScrollContent: this.divAddressScrollContentBuilding, addressWorkflowCount: 0, searchContent: this.searchContentBuilding, lastSearchString: this.lastSearchStringBuilding });
+            this._attachLocatorEvents({ divSearch: this.divSearchSites, checkBox: null, imgSearchLoader: this.imgSearchLoaderSites, txtAddress: this.txtAddressSites, close: this.closeSites, divAddressResults: this.divAddressResultsSites, divAddressScrollContainer: this.divAddressScrollContainerSites, divAddressScrollContent: this.divAddressScrollContentSites, addressWorkflowCount: 1, searchContent: this.searchContentSites, lastSearchString: this.lastSearchStringSites });
+            this._attachLocatorEvents({ divSearch: this.divSearchBusiness, checkBox: { checked: true }, imgSearchLoader: this.imgSearchLoaderBusiness, txtAddress: this.txtAddressBusiness, close: this.closeBusiness, divAddressResults: this.divAddressResultsBusiness, divAddressScrollContainer: this.divAddressScrollContainerBusiness, divAddressScrollContent: this.divAddressScrollContentBusiness, addressWorkflowCount: 2, searchContent: this.searchContentBusiness, lastSearchString: this.lastSearchStringBusiness });
+            this._attachLocatorEvents({ divSearch: this.divSearchCommunities, checkBox: this.rdoCommunitiesAddressSearch, imgSearchLoader: this.imgSearchLoaderCommunities, txtAddress: this.txtAddressCommunities, close: this.closeCommunities, divAddressResults: this.divAddressResultsCommunities, divAddressScrollContainer: this.divAddressScrollContainerCommunities, divAddressScrollContent: this.divAddressScrollContentCommunities, addressWorkflowCount: 3, searchContent: this.searchContentCommunities, lastSearchString: this.lastSearchStringCommunities });
 
             this._setInnerHtmlStrings();
 
@@ -185,7 +185,9 @@ define([
                 this._showDemographicInfoTab();
             })));
             this.own(on(this.selectSortOption, "change", lang.hitch(this, function (value) {
-                this._selectionChangeForSort(value);
+                if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
+                    this._selectionChangeForSort(value);
+                }
             })));
 
             this.own(on(this.rdoCommunityPlaceName, "click", lang.hitch(this, function () {
@@ -199,7 +201,7 @@ define([
             // extent change event for map
             this.map.on("extent-change", lang.hitch(this, function () {
                 if (this.map.getLayer("esriFeatureGraphicsLayer").graphics[0]) {
-                    if (this.opeartionLayer && this.opeartionLayer.visibleAtMapScale && this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].attributes.layerURL === this.opeartionLayer.url) {
+                    if (this.operationalLayer && this.operationalLayer.visibleAtMapScale && this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].attributes.layerURL === this.operationalLayer.url) {
                         this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].show();
                     } else {
                         this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].hide();
@@ -359,6 +361,7 @@ define([
         */
         _setDefaultAddress: function () {
             var sharedAddress, sharedWorkFlow;
+            // check the shared URL for "address" and "workflowCount" and set the address in address search
             if (window.location.toString().split("$address=").length > 1 && window.location.toString().split("$workflowCount=").length > 1) {
                 sharedAddress = decodeURIComponent(decodeURIComponent(window.location.toString().split("$address=")[1].split("$")[0].toString()));
                 sharedWorkFlow = Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]);
@@ -392,7 +395,7 @@ define([
         */
         _checkSharedParameters: function () {
             var timeOut, mapPoint, standerdGeoAttribute;
-            // check the shared URL for "addressMapPoint" to perform unified search
+            // check the shared URL for "addressMapPoint" to perform address search
             if (window.location.toString().split("$addressMapPoint=").length > 1) {
                 mapPoint = new Point(window.location.toString().split("$addressMapPoint=")[1].split("$")[0].split(",")[0], window.location.toString().split("$addressMapPoint=")[1].split("$")[0].split(",")[1], this.map.spatialReference);
                 clearTimeout(timeOut);
@@ -471,15 +474,15 @@ define([
 
         /**
         * create filter UI(dynamic) for buildings, sites and business tab based on configuration parameter
-        * @param {array}
-        * @param {containerNode}
-        * @param {array} workflow index
+        * @param {array} array of filters based on configuration parameter
+        * @param {node} container node
+        * @param {integer} workflow index
         * @memberOf widgets/siteLocator/siteLocator
         */
         _createFilter: function (arrFilter, node, index) {
             this.filteredData = [];
-            var divBusinessRevenue, leftDivSites, leftDivSitesContainer, checkBoxAreaSites, chkAreaSites, areaText,
-                rightDivSites, spanTextFrom, spanTextFromDes, txtFrom, spanTextTo, spanTextToDes, txtTo, i;
+            var divBusinessRevenue, leftDivSites, leftDivSitesContainer, checkBoxAreaSites, chkAreaSites, areaText, checkBoxFieldName,
+                rightDivSites, spanTextFrom, spanTextFromDes, txtFrom, spanTextTo, spanTextToDes, txtTo, sharedFilter, sharedWhereClause;
             //create UI for each value in arrFilter based on config parameter
             array.forEach(arrFilter, lang.hitch(this, function (value) {
                 divBusinessRevenue = domConstruct.create("div", { "class": "esriCTDivFromTo" }, node);
@@ -487,14 +490,10 @@ define([
                 leftDivSites = domConstruct.create("div", { "class": "esriCTOptionRow" }, leftDivSitesContainer);
                 checkBoxAreaSites = domConstruct.create("div", { "class": "esriCTCheckBox" }, leftDivSites);
                 // if filter range fields in filter setting exist (based on config parameter) then create checkbox and label
-                if (value.FieldName) {
-                    chkAreaSites = domConstruct.create("input", { "type": "checkbox", "class": "esriCTChkBox esriCheckBoxInput", id: value.FieldName.toString() + index.toString(), "value": value.FieldName }, checkBoxAreaSites);
-                    domConstruct.create("label", { "class": "css-label", "for": value.FieldName.toString() + index.toString() }, checkBoxAreaSites);
-                } else {
-                    chkAreaSites = domConstruct.create("input", { "type": "checkbox", "class": "esriCTChkBox esriCheckBoxInput", id: value.VariableNameSuffix.toString() + index.toString(), "value": value.VariableNameSuffix }, checkBoxAreaSites);
-                    domConstruct.create("label", { "class": "css-label", "for": value.VariableNameSuffix.toString() + index.toString() }, checkBoxAreaSites);
+                checkBoxFieldName = value.FieldName || value.VariableNameSuffix;
+                chkAreaSites = domConstruct.create("input", { "type": "checkbox", "class": "esriCTChkBox esriCheckBoxInput", id: checkBoxFieldName.toString() + index.toString(), "value": checkBoxFieldName }, checkBoxAreaSites);
+                domConstruct.create("label", { "class": "css-label", "for": checkBoxFieldName.toString() + index.toString() }, checkBoxAreaSites);
 
-                }
                 areaText = domConstruct.create("div", { "class": "esriCTChkLabel" }, leftDivSites);
                 rightDivSites = domConstruct.create("div", { "class": "esriCTRightFromTO" }, divBusinessRevenue);
                 spanTextFrom = domConstruct.create("span", { "class": "esriCTText" }, rightDivSites);
@@ -506,30 +505,40 @@ define([
                 domAttr.set(spanTextFrom, "innerHTML", sharedNls.titles.fromText);
                 domAttr.set(spanTextTo, "innerHTML", sharedNls.titles.toText);
                 domAttr.set(areaText, "innerHTML", value.DisplayText);
-                if (value.VariableNameSuffix) {
-                    this.filterOptionsValues[value.VariableNameSuffix] = { "txtFrom": txtFrom, "txtTo": txtTo, "checkBox": chkAreaSites, "workflow": index };
-                } else {
-                    this.filterOptionsValues[value.FieldName] = { "txtFrom": txtFrom, "txtTo": txtTo, "checkBox": chkAreaSites, "workflow": index };
-                }
-                if ((window.location.toString().split(value.FieldName).length > 1 || window.location.toString().split(value.VariableNameSuffix).length > 1) && !appGlobals.shareOptions.arrWhereClause[this.workflowCount] && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
-                    chkAreaSites.checked = true;
-                    if (value.FieldName) {
-                        if (window.location.href.toString().replace(/%20/g, " ").replace(/%27/g, "'").replace(/%3E/g, ">").replace(/%3C/g, "<").split(value.FieldName + ">=")[1]) {
-                            txtFrom.value = Number(window.location.href.toString().replace(/%20/g, " ").replace(/%27/g, "'").replace(/%3E/g, ">").replace(/%3C/g, "<").split(value.FieldName + ">=")[1].split(" ")[0]);
-                            txtTo.value = Number(window.location.href.toString().replace(/%20/g, " ").replace(/%27/g, "'").replace(/%3E/g, ">").replace(/%3C/g, "<").split(value.FieldName + "<=")[1].split(" ")[0].split("$")[0]);
-                        }
-                    } else if (value.VariableNameSuffix) {
-                        appGlobals.shareOptions.toFromBussinessFilter = window.location.href.toString().split("$toFromBussinessFilter=")[1];
-                        for (i = 0; i < window.location.href.toString().split("$toFromBussinessFilter=")[1].split("$").length; i++) {
-                            if (window.location.href.toString().split("$toFromBussinessFilter=")[1].split("$")[i].split(value.VariableNameSuffix).length > 1) {
-                                chkAreaSites.checked = true;
-                                txtFrom.value = Number(window.location.href.toString().split("$toFromBussinessFilter=")[1].split("$")[i].split(",")[1]);
-                                txtTo.value = Number(window.location.href.toString().split("$toFromBussinessFilter=")[1].split("$")[i].split(",")[2]);
-                                domClass.add(this.filterIconBusiness, "esriCTFilterEnabled");
-                                domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
+                //push filter input controls in array
+                this.filterOptionsValues[checkBoxFieldName] = { "txtFrom": txtFrom, "txtTo": txtTo, "checkBox": chkAreaSites, "workflow": index };
+
+                // check the shared URL for "whereClause" to get the filtered result on business tab
+                if ((window.location.toString().split("$whereClause=").length > 1 || window.location.toString().split("$toFromBussinessFilter=").length > 1) && !appGlobals.shareOptions.arrWhereClause[this.workflowCount] && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
+                    if (window.location.toString().split("$whereClause=").length > 1) {
+                        sharedWhereClause = decodeURIComponent(window.location.toString().split("$whereClause=")[1].split('$')[0]);
+                    } else {
+                        sharedWhereClause = decodeURIComponent(window.location.toString().split("$toFromBussinessFilter=")[1]);
+                    }
+
+                    if (sharedWhereClause.split(value.FieldName).length > 1) {
+                        chkAreaSites.checked = true;
+                        if (sharedWhereClause.split(value.FieldName + ">=")[1]) {
+                            txtFrom.value = Number(sharedWhereClause.split(value.FieldName + ">=")[1].split(" ")[0]);
+                            txtTo.value = Number(sharedWhereClause.split(value.FieldName + "<=")[1].split(" ")[0].split("$")[0]);
+                            if (this.workflowCount === 0) {
+                                domClass.add(this.filterIcon, "esriCTFilterEnabled");
+                                domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                            } else {
+                                domClass.add(this.filterIconSites, "esriCTFilterEnabled");
+                                domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
                             }
                         }
+                    } else if (sharedWhereClause.split(value.VariableNameSuffix).length > 1) {
+                        appGlobals.shareOptions.toFromBussinessFilter = sharedWhereClause;
+                        sharedFilter = sharedWhereClause.split(value.VariableNameSuffix)[1].split('$')[0];
+                        chkAreaSites.checked = true;
+                        txtFrom.value = sharedFilter.split(',')[1];
+                        txtTo.value = sharedFilter.split(',')[2];
+                        domClass.add(this.filterIconBusiness, "esriCTFilterEnabled");
+                        domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
                     }
+                    // set from and to value of textbox in business tab
                     txtFrom.setAttribute("FieldValue", Number(txtFrom.value));
                     txtTo.setAttribute("FieldValue", Number(txtTo.value));
                 } else {
@@ -562,9 +571,16 @@ define([
 
                 nodeValue = arrFields[i].DisplayText + index;
                 this.filterOptionsValues[nodeValue] = { "checkBox": checkBox, "workflow": index };
-
-                if (window.location.toString().replace(/%20/g, " ").replace(/%27/g, "'").split(arrFields[i].FieldName).length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
-                    checkedValue = window.location.toString().replace(/%20/g, " ").replace(/%27/g, "'").split(arrFields[i].FieldName + "=");
+                // check the shared URL for "whereClause" to perform layer search and get the filtered data for "RegularFilterOptionFields" on selected fields in building and sites tab
+                if (decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName).length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
+                    checkedValue = decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName + "=");
+                    if (this.workflowCount === 0) {
+                        domClass.add(this.filterIcon, "esriCTFilterEnabled");
+                        domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                    } else {
+                        domClass.add(this.filterIconSites, "esriCTFilterEnabled");
+                        domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                    }
                     if (checkedValue.length < 3 && window.location.toString().split("$strSortingData=").length < 1) {
                         checkedValue = checkedValue.pop();
                         if (checkedValue.split(" AND ") && checkedValue.split(" AND ").length > 1) {
@@ -613,8 +629,16 @@ define([
                     //check if checkbox value is true in shared URL
                     nodeValue = arrAdditionalFields.FilterOptions[j].DisplayText + index;
                     this.filterOptionsValues[nodeValue] = { "checkBox": additionalCheckBox, "workflow": index };
-                    if (window.location.toString().replace(/%20/g, " ").replace(/%27/g, "'").split("UPPER('PERCENT" + arrAdditionalFields.FilterOptions[j].FieldValue + "PERCENT')").length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
+                    // check the shared URL for "AdditionalFilterOptions" to perform layer search and get the filtered data for "AdditionalFilterOptions" on selected fields in building and sites tab
+                    if (decodeURIComponent(window.location.toString()).split("UPPER('PERCENT" + arrAdditionalFields.FilterOptions[j].FieldValue + "PERCENT')").length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
                         additionalCheckBox.checked = true;
+                        if (this.workflowCount === 0) {
+                            domClass.add(this.filterIcon, "esriCTFilterEnabled");
+                            domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
+                        } else {
+                            domClass.add(this.filterIconSites, "esriCTFilterEnabled");
+                            domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
+                        }
                     }
                     additionalFieldCheckBox.setAttribute("isRegularFilterOptionFields", false);
                     additionalFieldDisplayText = domConstruct.create("div", { "class": "esriCTChkLabel" }, checkBoxAdditionalWithText);
@@ -622,7 +646,6 @@ define([
                     this.own(on(additionalCheckBox, "click", lang.hitch(this, this._onCheckBoxClicked)));
                 }
             }
-
         },
 
         /**
@@ -635,7 +658,7 @@ define([
                 //check if no filter option is selected
                 if (this._validateFilterOptions()) {
                     switch (this.workflowCount) {
-                        //disable the filter icon
+                    //disable the filter icon
                     case 0:
                         domClass.remove(this.filterIcon, "esriCTFilterEnabled");
                         if (domClass.contains(this.clearFilterBuilding, "esriCTClearFilterIconEnable")) {
@@ -643,6 +666,11 @@ define([
                             topic.publish("showProgressIndicator");
                             this.queryArrayBuildingOR = [];
                             this.queryArrayBuildingAND = [];
+                            if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForBuilding) {
+                                this.selectedValue[this.workflowCount] = null;
+                                appGlobals.shareOptions.sortingData = null;
+                                this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
+                            }
                             // clear filter query string and retained the buffer results for building tab
                             this._clearFilter();
                         } else {
@@ -656,6 +684,11 @@ define([
                             topic.publish("showProgressIndicator");
                             this.queryArraySitesAND = [];
                             this.queryArraySitesOR = [];
+                            if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites) {
+                                this.selectedValue[this.workflowCount] = null;
+                                appGlobals.shareOptions.sortingData = null;
+                                this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+                            }
                             // clear filter query string and retained the buffer results for sites tab
                             this._clearFilter();
                         } else {
@@ -666,7 +699,13 @@ define([
                         domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
                         if (domClass.contains(this.clearFilterBusiness, "esriCTClearFilterIconEnable")) {
                             domClass.remove(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
+                            appGlobals.shareOptions.toFromBussinessFilter = null;
                             this._clearFilterCheckBoxes();
+                            if (this.selectSortOption) {
+                                appGlobals.shareOptions.businessSortData = null;
+                                this.selectSortOption.set("value", sharedNls.titles.select);
+                            }
+                            // clear filtered results and retained the buffer results for business tab
                             this._resetBusinessBufferValueResult();
                         } else {
                             this._clearFilterCheckBoxes();
@@ -682,13 +721,13 @@ define([
                     }
                 }
             } else {
-                //when checkBox is selected
+                //when checkBox is selected and invalid
                 if (this.filterOptionsValues[evt.currentTarget.value]) {
                     this.filterOptionsValues[evt.currentTarget.value].txtFrom.disabled = !evt.currentTarget.checked;
                     this.filterOptionsValues[evt.currentTarget.value].txtTo.disabled = !evt.currentTarget.checked;
                 }
                 switch (this.workflowCount) {
-                    //enable the filter icon
+                //enable the filter icon
                 case 0:
                     domClass.add(this.filterIcon, "esriCTFilterEnabled");
                     break;
@@ -745,13 +784,16 @@ define([
                         topic.publish("showProgressIndicator");
                         this.queryArrayBuildingOR = [];
                         this.queryArrayBuildingAND = [];
+                        if (this.selectBusinessSortForBuilding) {
+                            if (this.selectedValue[this.workflowCount]) {
+                                this.selectedValue[this.workflowCount] = null;
+                            }
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
+                        }
                         this._clearFilter();
                         domClass.remove(this.filterIcon, "esriCTFilterEnabled");
                         domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                        if (this.selectedValue && this.selectBusinessSortForBuilding) {
-                            this.selectedValue = null;
-                            this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-                        }
                     }
                 })));
             }
@@ -775,13 +817,17 @@ define([
                         topic.publish("showProgressIndicator");
                         this.queryArraySitesAND = [];
                         this.queryArraySitesOR = [];
+                        if (this.selectBusinessSortForSites) {
+                            if (this.selectedValue[this.workflowCount]) {
+                                this.selectedValue[this.workflowCount] = null;
+                            }
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+                        }
                         this._clearFilter();
                         domClass.remove(this.filterIconSites, "esriCTFilterEnabled");
                         domClass.remove(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                        if (this.selectedValue && this.selectBusinessSortForSites) {
-                            this.selectedValue = null;
-                            this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-                        }
+
                     }
                 })));
             }
@@ -801,6 +847,21 @@ define([
                         }
                     }
                 }));
+                // clear filter icon click clear all filter values and get the buffer result of business tab
+                this.own(on(this.clearFilterBusiness, "click", lang.hitch(this, function () {
+                    if (domClass.contains(this.clearFilterBusiness, "esriCTClearFilterIconEnable")) {
+                        topic.publish("showProgressIndicator");
+                        if (this.selectSortOption) {
+                            appGlobals.shareOptions.businessSortData = null;
+                            this.selectSortOption.set("value", sharedNls.titles.select);
+                        }
+                        this._resetBusinessBufferValueResult();
+                        this._clearFilterCheckBoxes();
+                        domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
+                        domClass.remove(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
+                        appGlobals.shareOptions.toFromBussinessFilter = null;
+                    }
+                })));
             }
         },
 
@@ -825,6 +886,7 @@ define([
                 if (this.filterOptionsValues.hasOwnProperty(node)) {
                     if (this.filterOptionsValues[node].workflow === this.workflowCount) {
                         if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
+                            // clear and disable the to and from text box values
                             this.filterOptionsValues[node].txtFrom.value = "";
                             this.filterOptionsValues[node].txtTo.value = "";
                             this.filterOptionsValues[node].txtFrom.disabled = true;
@@ -837,7 +899,7 @@ define([
         },
 
         /**
-        * validate range filter values in building, sites and business tab
+        * validate range filter values in building, sites and business tab and return the boolean value
         * @memberOf widgets/siteLocator/siteLocator
         */
         _validateRangeFilterValues: function () {
@@ -848,7 +910,8 @@ define([
                     if (isValid) {
                         if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
                             if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
-                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom, this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox, false);
+                                // validate from and to text box value
+                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom, this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
                                 if (!isValid) {
                                     break;
                                 }
@@ -875,7 +938,8 @@ define([
                     if (isValid) {
                         if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
                             if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
-                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom, this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox, bufferDistance);
+                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom, this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
+                                // if to and from values is invalid then clear values of from and to textbox of selected workflows
                                 if (!isValid) {
                                     for (node in this.filterOptionsValues) {
                                         if (this.filterOptionsValues.hasOwnProperty(node)) {
@@ -898,7 +962,7 @@ define([
                 }
             }
             if (isValid) {
-                this._callAndOrQuery(this.andArr, this.orArr, bufferDistance);
+                this._callAndOrQuery(this.andArr, this.orArr);
             } else {
                 alert(sharedNls.errorMessages.invalidInput);
             }
@@ -938,7 +1002,7 @@ define([
                     where: '1 = 1',
                     returnGeometry: false,
                     returnDistinctValues: true,
-                    outFields: JSON.stringify(appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.OutFields)
+                    outFields: appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.FilterFieldName
                 }
             });
             // success handler for communities county field
@@ -967,31 +1031,25 @@ define([
         * @memberOf widgets/siteLocator/siteLocator
         */
         _selectionChangeForSort: function (value) {
-            var isSorted = false;
             appGlobals.shareOptions.businessSortData = value;
             if (this.currentBussinessData) {
                 this.currentBussinessData.sort(lang.hitch(this, function (a, b) {
                     // a greater than b
                     if (a[value] > b[value]) {
-                        isSorted = true;
                         return 1;
                     }
                     // a less than b
                     if (a[value] < b[value]) {
-                        isSorted = true;
                         return -1;
                     }
                     // a must be equal to b
                     if (a[value] !== 0 && b[value] !== 0) {
-                        isSorted = true;
                         return 0;
                     }
                 }));
             }
-            if (isSorted) {
-                this.isSharedSort = true;
-                this._setBusinessValues(this.currentBussinessData, this.mainResultDiv, this.enrichData);
-            }
+            this.isSharedSort = true;
+            this._setBusinessValues(this.currentBussinessData, this.mainResultDiv, this.enrichData);
         },
 
         /**
@@ -1021,11 +1079,9 @@ define([
                 } else if (domClass.contains(selectedPanel, "esriCTsearchContainerBusiness")) {
                     slider = dijit.byId("sliderhorizontalSliderContainerBusiness");
                     sliderDistance = slider.value;
-                } else {
-                    sliderDistance = slider.value;
                 }
                 geometryService = new GeometryService(appGlobals.configData.GeometryService);
-                if (Math.round(sliderDistance) !== 0) {
+                if (sliderDistance && Math.round(sliderDistance) !== 0) {
                     if (geometry && geometry.type === "point") {
                         //setup the buffer parameters
                         params = new BufferParameters();
@@ -1085,6 +1141,14 @@ define([
             } else {
                 if (isValidAddressSelected) {
                     alert(sharedNls.errorMessages.invalidInput);
+                    if (this.workflowCount === 0 || this.workflowCount === 1 || this.workflowCount === 2) {
+                        this.clearTextValuesOfFilters();
+                    }
+                }
+                if (this.workflowCount === 2) {
+                    if (domClass.contains(this.filterIconBusiness, "esriCTFilterEnabled")) {
+                        domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
+                    }
                 }
                 this._sliderCollection[this.workflowCount].slider.setValue(appGlobals.shareOptions.arrBufferDistance[this.workflowCount]);
                 domAttr.set(this._sliderCollection[this.workflowCount].divSliderValue, "innerHTML", Math.round(this._sliderCollection[this.workflowCount].slider.value).toString() + " " + appGlobals.configData.DistanceUnitSettings.DistanceUnitName);
@@ -1099,9 +1163,8 @@ define([
         * @memberOf widgets/siteLocator/siteLocator
         */
         showBuffer: function (bufferedGeometries) {
-            var self, symbol;
+            var symbol, self = this;
             this.map.getLayer("esriBufferGraphicsLayer").clear();
-            self = this;
             // set the simple fill symbol parameter
             symbol = new SimpleFillSymbol(
                 SimpleFillSymbol.STYLE_SOLID,
