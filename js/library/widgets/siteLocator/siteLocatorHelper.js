@@ -21,6 +21,7 @@ define([
     "dojo/dom-construct",
     "dojo/on",
     "dojo/topic",
+    "dojo/_base/array",
     "dojo/_base/html",
     "dojo/_base/lang",
     "dojo/dom-style",
@@ -36,6 +37,7 @@ define([
     "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/PictureMarkerSymbol",
     "esri/graphic",
+    "esri/layers/GraphicsLayer",
     "esri/tasks/BufferParameters",
     "dijit/_WidgetBase",
     "dijit/_TemplatedMixin",
@@ -45,7 +47,7 @@ define([
     "dijit/form/HorizontalRule",
     "../siteLocator/unifiedSearch"
 
-], function (declare, domConstruct, on, topic, html, lang, domStyle, domAttr, query, domClass, Color, Query, QueryTask, GeometryService, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic, BufferParameters, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, sharedNls, HorizontalSlider, HorizontalRule, unifiedSearch) {
+], function (declare, domConstruct, on, topic, array, html, lang, domStyle, domAttr, query, domClass, Color, Query, QueryTask, GeometryService, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic, GraphicsLayer, BufferParameters, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, sharedNls, HorizontalSlider, HorizontalRule, unifiedSearch) {
 
     //========================================================================================================================//
 
@@ -149,6 +151,7 @@ define([
                                     appGlobals.shareOptions.sortingData = null;
                                     _self.selectBusinessSortForSites.set("value", sharedNls.titles.select);
                                 } else if (_self.workflowCount === 2 && _self.selectSortOption) {
+                                    appGlobals.shareOptions.sortingData = null;
                                     _self.selectSortOption.set("value", sharedNls.titles.select);
                                 } else {
                                     appGlobals.shareOptions.arrBufferDistance[_self.workflowCount] = Math.round(value);
@@ -200,9 +203,11 @@ define([
                     switch (appGlobals.configData.Workflows[j].Name) {
                     case appGlobals.configData.Workflows[0].Name:
                         arrEnabledTab.push({ Container: this.esriCTsearchContainerBuilding, Content: this.searchContentBuilding });
+                        this._createFilteredFeatureLayer(j);
                         break;
                     case appGlobals.configData.Workflows[1].Name:
                         arrEnabledTab.push({ Container: this.esriCTsearchContainerSites, Content: this.searchContentSites });
+                        this._createFilteredFeatureLayer(j);
                         break;
                     case appGlobals.configData.Workflows[2].Name:
                         arrEnabledTab.push({ Container: this.esriCTsearchContainerBusiness, Content: this.searchContentBusiness });
@@ -239,6 +244,25 @@ define([
         },
 
         /**
+        * create graphic layer to display results
+        * @param {int} tabIndex is workflow index
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _createFilteredFeatureLayer: function (tabIndex) {
+            var filteredFeatureLayer, rendererObject = {}, layer;
+            //create graphic layer instance and add it to the map
+            filteredFeatureLayer = new GraphicsLayer();
+            filteredFeatureLayer.id = "filteredFeatureLayer" + tabIndex;
+            this.map.addLayer(filteredFeatureLayer);
+            layer = this.getCurrentOperationalLayer(tabIndex);
+            if (layer) {
+                //set the layer renderer for graphics layer according to the respective workflow's layer
+                lang.mixin(rendererObject, layer.renderer, layer.webmapRenderer);
+                filteredFeatureLayer.setRenderer(rendererObject);
+            }
+        },
+
+        /**
         * show tab based on selected tab
         * @param {object} node for tab container
         * @param {object} node for tab content
@@ -252,7 +276,11 @@ define([
                     domStyle.set(this.TabContentContainer.children[i], "display", "block");
                     this.workflowCount = i;
                     appGlobals.shareOptions.workflowCount = i;
+                    //set selected sorting option in appGlobals for selected workflow
+                    appGlobals.shareOptions.sortingData = this.selectedValue[this.workflowCount];
                     this.map.graphics.clear();
+                    //hide info window
+                    topic.publish("hideInfoWindow");
                     this.map.getLayer("esriFeatureGraphicsLayer").clear();
                     this.map.getLayer("esriGraphicsLayerMapSettings").clear();
                     this.map.getLayer("esriBufferGraphicsLayer").clear();
@@ -274,6 +302,7 @@ define([
                     if (appGlobals.configData.Workflows[this.workflowCount].SearchSettings) {
                         this.operationalLayer = this.getCurrentOperationalLayer(this.workflowCount);
                     }
+                    this._toggleFeatureLayer(i);
                 } else {
                     domStyle.set(this.TabContentContainer.children[i], "display", "none");
                 }
@@ -286,6 +315,113 @@ define([
                     if (this.arrTabClass.length === this.divDirectionContainer.children.length) {
                         domClass.replace(this.divDirectionContainer.children[i], this.arrTabClass[i], "esriCTsearchContainerSitesSelected");
                     }
+                }
+            }
+        },
+
+        /**
+        * set visibility of operational layer and filtered graphics layer according to selected tab
+        * @param {int} tabIndex is workflow index
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _toggleFeatureLayer: function (tabIndex) {
+            //hide operational layer and graphics layer of workflows except selected workflow
+            if (tabIndex === 0) {
+                this._setOperationalLayerVisibility(1, false, true);
+                this._setFilteredLayerVisibility(1, false);
+            } else if (tabIndex === 1) {
+                this._setOperationalLayerVisibility(0, false, true);
+                this._setFilteredLayerVisibility(0, false);
+            } else {
+                this._setOperationalLayerVisibility(0, true, false);
+                this._setOperationalLayerVisibility(1, true, false);
+                this._setFilteredLayerVisibility(0, false);
+                this._setFilteredLayerVisibility(1, false);
+            }
+            //do not display operational layer if graphics layer has filtered graphics
+            if (this.lastGeometry[tabIndex]) {
+                this._setOperationalLayerVisibility(tabIndex, false, false);
+                this._setFilteredLayerVisibility(tabIndex, true);
+            } else {
+                //display respective operational if filter has not applied and hide graphics layer for filtered features
+                this._setOperationalLayerVisibility(tabIndex, true, false);
+                this._setFilteredLayerVisibility(tabIndex, false);
+            }
+        },
+
+        /**
+        * set visibility for workflow's layer on map
+        * @param {int} tabIndex is workflow index
+        * @param {boolean} isVisible flag to set visibility
+        * @param {boolean} isHideInfoWindow flag to show/hide infoWindow
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _setOperationalLayerVisibility: function (tabIndex, isVisible, isHideInfoWindow) {
+            var layerObject, layer, layerUrl, lastChar, mapLayerUrl, layerUrlIndex, visibleLayers, visibleLayerIndex;
+            layerObject = this.getCurrentOperationalLayer(tabIndex);
+            if (layerObject) {
+                layerObject.hideInfo = isHideInfoWindow;
+                layerUrl = layerObject.url;
+                layerUrlIndex = layerUrl.split('/');
+                layerUrlIndex = layerUrlIndex[layerUrlIndex.length - 1];
+                for (layer in this.map._layers) {
+                    if (this.map._layers.hasOwnProperty(layer)) {
+                        //check layer visibility on current map scale
+                        if (this.map._layers[layer].url === layerUrl) {
+                            this.map._layers[layer].setVisibility(isVisible);
+                        } else if (this.map._layers[layer].visibleLayers) {
+                            //check map server layer visibility on current map scale
+                            lastChar = this.map._layers[layer].url[this.map._layers[layer].url.length - 1];
+                            if (lastChar === "/") {
+                                mapLayerUrl = this.map._layers[layer].url + layerUrlIndex;
+                            } else {
+                                mapLayerUrl = this.map._layers[layer].url + "/" + layerUrlIndex;
+                            }
+                            if (mapLayerUrl === layerUrl) {
+                                visibleLayers = this.map._layers[layer].visibleLayers;
+                                visibleLayerIndex = array.indexOf(visibleLayers, parseInt(layerUrlIndex, 10));
+                                if (isVisible) {
+                                    if (visibleLayerIndex === -1) {
+                                        visibleLayers.push(parseInt(layerUrlIndex, 10));
+                                    }
+                                } else {
+                                    if (visibleLayerIndex !== -1) {
+                                        visibleLayers.splice(visibleLayerIndex, 1);
+                                    }
+                                }
+                                this.map._layers[layer].setVisibleLayers(visibleLayers);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        /**
+        * set visibility for workflow's filtered graphics layer on map
+        * @param {int} tabIndex is workflow index
+        * @param {boolean} isVisible flag to set visibility
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _setFilteredLayerVisibility: function (tabIndex, isVisible) {
+            var filteredFeatureLayer = this.map.getLayer("filteredFeatureLayer" + tabIndex);
+            if (filteredFeatureLayer) {
+                filteredFeatureLayer.setVisibility(isVisible);
+            }
+        },
+
+        /**
+        * add features on graphics layer to display only filtered features
+        * @param {object} features contains query results
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _addFeaturesOnFilteredLayer: function (features) {
+            var i, filteredFeatureLayer = this.map.getLayer("filteredFeatureLayer" + this.workflowCount);
+            if (filteredFeatureLayer) {
+                filteredFeatureLayer.clear();
+                //loop through all the resulted features to add them as graphic on graphic layer
+                for (i = 0; i < features.length; i++) {
+                    filteredFeatureLayer.add(features[i]);
                 }
             }
         },
@@ -604,11 +740,18 @@ define([
         * @memberOf widgets/siteLocator/siteLocatorHelper
         */
         getCurrentOperationalLayer: function (tabCount) {
-            var layer, i;
-            for (i = 0; i < appGlobals.operationalLayers.length; i++) {
-                if (appGlobals.operationalLayers[i].url === appGlobals.configData.Workflows[tabCount].SearchSettings[0].QueryURL) {
-                    layer = appGlobals.operationalLayers[i].layerObject;
-                    break;
+            var layer, layerURL, i;
+            if (appGlobals.configData.Workflows[tabCount].SearchSettings) {
+                layerURL = appGlobals.configData.Workflows[tabCount].SearchSettings[0].QueryURL;
+            } else if (appGlobals.configData.Workflows[tabCount].FilterSettings) {
+                layerURL = appGlobals.configData.Workflows[tabCount].FilterSettings.FilterLayer && appGlobals.configData.Workflows[tabCount].FilterSettings.FilterLayer.LayerURL;
+            }
+            if (layerURL) {
+                for (i = 0; i < appGlobals.operationalLayers.length; i++) {
+                    if (appGlobals.operationalLayers[i].url === layerURL) {
+                        layer = appGlobals.operationalLayers[i].layerObject;
+                        break;
+                    }
                 }
             }
             return layer;

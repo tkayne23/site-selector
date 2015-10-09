@@ -64,7 +64,6 @@ define([
                 appGlobals.shareOptions.mapPointForInfowindow = null;
                 domUtils.hide(this.domNode);
                 appGlobals.shareOptions.infoWindowIsShowing = false;
-                topic.publish("clearSelectedFeature");
             })));
 
             topic.subscribe("setMap", lang.hitch(this, function (map) {
