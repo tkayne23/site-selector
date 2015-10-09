@@ -83,12 +83,15 @@ define([
                 appGlobals.shareOptions.webMapExtent = new GeometryExtent(response.map.extent.xmin, response.map.extent.ymin, response.map.extent.xmax, response.map.extent.ymax, this.map.spatialReference);
                 appGlobals.shareOptions.selectedBasemapIndex = null;
                 topic.publish("filterRedundantBasemap", response.itemInfo);
+                //subscribe event to display customized infowindow on map
                 topic.subscribe("setInfoWindowOnMap", lang.hitch(this, function (infoTitle, divInfoDetailsTab, screenPoint, infoPopupWidth, infoPopupHeight) {
                     this._onSetInfoWindowPosition(infoTitle, divInfoDetailsTab, screenPoint, infoPopupWidth, infoPopupHeight);
                 }));
+                //subscribe event to hide customized infowindow
+                topic.subscribe("hideInfoWindow", lang.hitch(this, this._hideInfoWindow));
+                //initialize customized infowindow widget
                 this.infoWindowPanel = new InfoWindow({ infoWindowWidth: appGlobals.configData.InfoPopupWidth, infoWindowHeight: appGlobals.configData.InfoPopupHeight });
                 this._fetchWebMapData(response);
-                topic.publish("setMap", this.map);
                 topic.publish("hideProgressIndicator");
                 this._mapOnLoad();
                 appGlobals.shareOptions.isInfoPopupShared = false;
@@ -118,7 +121,7 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _onSetMapTipPosition: function () {
-            if (this.selectedMapPoint) {
+            if (appGlobals.shareOptions.infoWindowIsShowing && this.selectedMapPoint) {
                 var screenPoint = this.map.toScreen(this.selectedMapPoint);
                 screenPoint.y = this.map.height - screenPoint.y;
                 this.infoWindowPanel.setLocation(screenPoint);
@@ -148,10 +151,22 @@ define([
                 appGlobals.operationalLayers = [];
                 for (i = 0; i < results.length; i++) {
                     if (results[i]) {
+                        //set webmap edited renderer in layer object
+                        if (results[i].layerDefinition) {
+                            if (results[i].layerDefinition.drawingInfo) {
+                                results[i].layerObject.webmapRenderer = results[i].layerDefinition.drawingInfo.renderer;
+                            }
+                            //set layer's definitionExpression
+                            if (results[i].layerDefinition.definitionExpression) {
+                                results[i].layerObject.webmapDefinitionExpression = results[i].layerDefinition.definitionExpression;
+                            }
+                        }
                         appGlobals.operationalLayers.push(results[i]);
                         this._createLayerURL(results[i]);
                     }
                 }
+                //publish event when required data is fetched from map layers
+                topic.publish("setMap", this.map);
             }));
         },
 
@@ -235,13 +250,14 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _showInfoWindowOnMap: function (mapPoint) {
-            var onMapFeaturArray = [], featureArray, j, i;
+            var onMapFeaturArray = [], featureArray = [], j, i;
             for (i = 0; i < appGlobals.operationalLayers.length; i++) {
                 if (appGlobals.operationalLayers[i].layerObject.visibleAtMapScale && appGlobals.operationalLayers[i].popupInfo) {
-                    this._executeQueryTask(i, mapPoint, appGlobals.operationalLayers[i].url, onMapFeaturArray);
+                    if (!appGlobals.operationalLayers[i].layerObject.hideInfo) {
+                        this._executeQueryTask(i, mapPoint, appGlobals.operationalLayers[i].url, onMapFeaturArray);
+                    }
                 }
             }
-            featureArray = [];
             all(onMapFeaturArray).then(lang.hitch(this, function (result) {
                 if (result) {
                     for (j = 0; j < result.length; j++) {
@@ -262,6 +278,18 @@ define([
             }));
         },
 
+        /**
+        * hide infoWindow
+        * @memberOf widgets/mapSettings/mapSettings
+        */
+        _hideInfoWindow: function () {
+            //check if infoWindow is opened
+            if (appGlobals.shareOptions.infoWindowIsShowing && this.infoWindowPanel) {
+                this.infoWindowPanel.hide();
+                appGlobals.shareOptions.infoWindowIsShowing = false;
+                appGlobals.shareOptions.mapPointForInfowindow = null;
+            }
+        },
         /**
         * fetch infoWindow data from query task result
         * @memberOf widgets/mapSettings/mapSettings
@@ -305,11 +333,16 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _executeQueryTask: function (index, mapPoint, QueryURL, onMapFeaturArray) {
-            var esriQuery, queryTask, queryOnRouteTask, currentTime, layerIndex = index;
+            var esriQuery, queryTask, queryOnRouteTask, currentTime, layerIndex = index, queryString;
             queryTask = new QueryTask(QueryURL);
             esriQuery = new Query();
-            currentTime = new Date();
-            esriQuery.where = currentTime.getTime() + index.toString() + "=" + currentTime.getTime() + index.toString();
+            currentTime = new Date().getTime() + index.toString();
+            queryString = currentTime + "=" + currentTime;
+            //set where clause to honor definition expression configured in webmap
+            if (appGlobals.operationalLayers[index].layerObject.webmapDefinitionExpression) {
+                queryString += " AND " + appGlobals.operationalLayers[index].layerObject.webmapDefinitionExpression;
+            }
+            esriQuery.where = queryString;
             esriQuery.returnGeometry = true;
             esriQuery.geometry = this._extentFromPoint(mapPoint);
             esriQuery.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;

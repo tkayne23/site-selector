@@ -146,21 +146,11 @@ define([
         */
         chkQueryHandler: function (chkBoxNode) {
             var arrAndQuery = [], arrOrQuery = [];
-            appGlobals.shareOptions.sortingData = null;
-            // set drop down value as "select" in building tab
+            //set query string for applied Regular filters
             if (this.workflowCount === 0) {
-                if (this.selectBusinessSortForBuilding) {
-                    this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-                    this.selectedValue[this.workflowCount] = null;
-                }
                 arrAndQuery = this.queryArrayBuildingAND;
                 arrOrQuery = this.queryArrayBuildingOR;
             } else {
-                // set drop down value as "select" in sites tab
-                if (this.selectBusinessSortForSites) {
-                    this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-                    this.selectedValue[this.workflowCount] = null;
-                }
                 arrAndQuery = this.queryArraySitesAND;
                 arrOrQuery = this.queryArraySitesOR;
             }
@@ -257,7 +247,7 @@ define([
         * @memberOf widgets/siteLocator/featureQuery
         */
         doLayerQuery: function (geometry, where) {
-            var queryLayer, queryLayerTask, geometryService, dateObj;
+            var queryLayer, queryLayerTask, geometryService, dateObj, queryString;
             dateObj = new Date().getTime().toString();
             this.lastGeometry[this.workflowCount] = geometry;
             this.showBuffer(geometry);
@@ -265,14 +255,19 @@ define([
                 queryLayerTask = new QueryTask(this.operationalLayer.url);
                 queryLayer = new Query();
                 queryLayer.returnGeometry = false;
+                queryString = dateObj + "=" + dateObj;
                 if (where !== null) {
-                    queryLayer.where = dateObj + "=" + dateObj + " AND " + where;
+                    queryString += " AND " + where;
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] = where;
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] = appGlobals.shareOptions.arrWhereClause[this.workflowCount].toString().replace(/%/g, "PERCENT");
                 } else {
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] = "1=1";
-                    queryLayer.where = dateObj + "=" + dateObj;
                 }
+                //set where clause to honor definition expression configured in webmap
+                if (this.operationalLayer.webmapDefinitionExpression) {
+                    queryString += " AND " + this.operationalLayer.webmapDefinitionExpression;
+                }
+                queryLayer.where = queryString;
                 if (geometry !== null) {
                     geometryService = new GeometryService(appGlobals.configData.GeometryService.toString());
                     geometryService.intersect(geometry, appGlobals.shareOptions.webMapExtent, lang.hitch(this, function (interSectGeometry) {
@@ -351,7 +346,16 @@ define([
         * @memberOf widgets/siteLocator/featureQuery
         */
         _queryLayerhandler: function (featureSet) {
+            var paginationIndex = 0;
+            // check the shared URL for "paginationIndex" to display selected pagination page for selected workflow
+            if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
+                paginationIndex = Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]);
+            }
             if (featureSet !== null && featureSet.length > 0) {
+                //display filtered features on graphic layers
+                this._setFilteredLayerVisibility(this.workflowCount, true);
+                //hide operational ayer
+                this._setOperationalLayerVisibility(this.workflowCount, false, false);
                 if (this.workflowCount === 0) {
                     if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                         domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
@@ -361,12 +365,7 @@ define([
                     }
                     domStyle.set(this.outerDivForPegination, "display", "block");
                     this.buildingResultSet = featureSet;
-                    // check the shared URL for "paginationIndex" to display selected pagination page for selected workflow
-                    if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
-                        this._paginationForResults(Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
-                    } else {
-                        this._paginationForResults(0);
-                    }
+                    this._paginationForResults(paginationIndex);
                 } else if (this.workflowCount === 1) {
                     if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                         domClass.remove(this.filterMainContainerSites, "esriCTFilterMainContainer");
@@ -376,19 +375,11 @@ define([
                     }
                     domStyle.set(this.outerDivForPeginationSites, "display", "block");
                     this.sitesResultSet = featureSet;
-                    // check the shared URL for "paginationIndex" to display selected pagination page for selected workflow
-                    if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
-                        this._paginationForResultsSites(Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
-                    } else {
-                        this._paginationForResultsSites(0);
-                    }
-                }
-                if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
-                    this.performQuery(this.operationalLayer, featureSet, Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]));
-                } else {
-                    this.performQuery(this.operationalLayer, featureSet, 0);
+                    this._paginationForResultsSites(paginationIndex);
                 }
             } else {
+                //hide filtered graphics layer
+                this._setFilteredLayerVisibility(this.workflowCount, false);
                 if (this.workflowCount === 0) {
                     delete this.buildingTabData;
                     domStyle.set(this.outerDivForPegination, "display", "none");
@@ -503,7 +494,7 @@ define([
                 }
                 oufields.push(layer.fields[0].name);
                 queryobject.outFields = oufields;
-                queryobject.returnGeometry = false;
+                queryobject.returnGeometry = true;
                 queryobject.objectIds = arrIds;
                 if (this.selectedValue[this.workflowCount]) {
                     queryobject.orderByFields = [this.selectedValue[this.workflowCount]];
@@ -525,6 +516,7 @@ define([
         mergeItemData: function (layerFeatureSet, layerAttachmentInfos, layer) {
             var arrTabData = [], i, j;
             topic.publish("hideProgressIndicator");
+            this._addFeaturesOnFilteredLayer(layerFeatureSet.features);
             for (i = 0; i < layerFeatureSet.features.length; i++) {
                 // add the feature data into an array
                 arrTabData.push({ featureData: layerFeatureSet.features[i].attributes });
@@ -653,69 +645,71 @@ define([
                 }
             }
 
-            selectedOption = (this.selectBusinessSortForBuilding && this.selectBusinessSortForBuilding.value) || this.areaSortBuilding[0].value;
+            selectedOption = this.selectedValue[this.workflowCount] || this.areaSortBuilding[0].value;
             // check the shared URL for "strSortingData"(sorting field) to get the sorted result on shared URL for selected workflows
             if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
                 selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
                 this._selectionChangeForBuildingAndSitesSort(selectedOption);
                 this.isSharedSort = true;
                 this.buildingResultSet = null;
+            } else {
+                this.selectBusinessSortForBuilding = new SelectList({
+                    options: this.areaSortBuilding,
+                    maxHeight: 100,
+                    value: selectedOption
+                }, selectForBuilding);
+                // attach change event on drop down of buildings tab
+                this.own(on(this.selectBusinessSortForBuilding, "change", lang.hitch(this, function (value) {
+                    if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
+                        this._selectionChangeForBuildingAndSitesSort(value);
+                    }
+                })));
+                // attach click event on left arrow of pagination
+                this.own(on(leftArrow, "click", lang.hitch(this, function () {
+                    if (currentIndex !== 0) {
+                        topic.publish("showProgressIndicator");
+                        currentIndex -= 10;
+                        this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
+                        domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
+                        if (this.buildingResultSet.length < currentIndex + 10) {
+                            domAttr.set(tenthIndex, "innerHTML", this.buildingResultSet.length);
+                        } else {
+                            domAttr.set(tenthIndex, "innerHTML", currentIndex + 10);
+                        }
+                        currentPage = currentPage - 1;
+                        domAttr.set(firstIndex, "innerHTML", currentPage);
+                        if (currentPage === 1) {
+                            domClass.replace(leftArrow, "esriCTLeftArrow", "esriCTLeftArrowBlue");
+                        }
+                        if (currentPage < result) {
+                            domClass.replace(rightArrow, "esriCTRightArrow", "esriCTRightArrowBlue");
+                        }
+                    }
+                })));
+                // attach click event on right arrow of pagination
+                this.own(on(rightArrow, "click", lang.hitch(this, function () {
+                    if (result >= Number(firstIndex.innerHTML) + 1) {
+                        topic.publish("showProgressIndicator");
+                        currentIndex += 10;
+                        this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
+                        domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
+                        if (this.buildingResultSet.length < currentIndex + 10) {
+                            domAttr.set(tenthIndex, "innerHTML", this.buildingResultSet.length);
+                        } else {
+                            domAttr.set(tenthIndex, "innerHTML", currentIndex + 10);
+                        }
+                        currentPage = Math.ceil((currentIndex / 10) + 1);
+                        domAttr.set(firstIndex, "innerHTML", currentPage);
+                        if (currentPage > 1) {
+                            domClass.replace(leftArrow, "esriCTLeftArrowBlue", "esriCTLeftArrow");
+                        }
+                        if (currentPage === result) {
+                            domClass.replace(rightArrow, "esriCTRightArrowBlue", "esriCTRightArrow");
+                        }
+                    }
+                })));
+                this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
             }
-            this.selectBusinessSortForBuilding = new SelectList({
-                options: this.areaSortBuilding,
-                maxHeight: 100,
-                value: selectedOption
-            }, selectForBuilding);
-            // attach change event on drop down of buildings tab
-            this.own(on(this.selectBusinessSortForBuilding, "change", lang.hitch(this, function (value) {
-                if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
-                    this._selectionChangeForBuildingAndSitesSort(value);
-                }
-            })));
-            // attach click event on left arrow of pagination
-            this.own(on(leftArrow, "click", lang.hitch(this, function () {
-                if (currentIndex !== 0) {
-                    topic.publish("showProgressIndicator");
-                    currentIndex -= 10;
-                    this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
-                    domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
-                    if (this.buildingResultSet.length < currentIndex + 10) {
-                        domAttr.set(tenthIndex, "innerHTML", this.buildingResultSet.length);
-                    } else {
-                        domAttr.set(tenthIndex, "innerHTML", currentIndex + 10);
-                    }
-                    currentPage = currentPage - 1;
-                    domAttr.set(firstIndex, "innerHTML", currentPage);
-                    if (currentPage === 1) {
-                        domClass.replace(leftArrow, "esriCTLeftArrow", "esriCTLeftArrowBlue");
-                    }
-                    if (currentPage < result) {
-                        domClass.replace(rightArrow, "esriCTRightArrow", "esriCTRightArrowBlue");
-                    }
-                }
-            })));
-            // attach click event on right arrow of pagination
-            this.own(on(rightArrow, "click", lang.hitch(this, function () {
-                if (result >= Number(firstIndex.innerHTML) + 1) {
-                    topic.publish("showProgressIndicator");
-                    currentIndex += 10;
-                    this.performQuery(this.operationalLayer, this.buildingResultSet, currentIndex);
-                    domAttr.set(currentIndexNode, "innerHTML", currentIndex + 1);
-                    if (this.buildingResultSet.length < currentIndex + 10) {
-                        domAttr.set(tenthIndex, "innerHTML", this.buildingResultSet.length);
-                    } else {
-                        domAttr.set(tenthIndex, "innerHTML", currentIndex + 10);
-                    }
-                    currentPage = Math.ceil((currentIndex / 10) + 1);
-                    domAttr.set(firstIndex, "innerHTML", currentPage);
-                    if (currentPage > 1) {
-                        domClass.replace(leftArrow, "esriCTLeftArrowBlue", "esriCTLeftArrow");
-                    }
-                    if (currentPage === result) {
-                        domClass.replace(rightArrow, "esriCTRightArrowBlue", "esriCTRightArrow");
-                    }
-                }
-            })));
         },
 
         /**
@@ -830,69 +824,71 @@ define([
                     }
                 }
             }
-            selectedOption = (this.selectBusinessSortForSites && this.selectBusinessSortForSites.value) || this.areaSortSites[0].value;
+            selectedOption = this.selectedValue[this.workflowCount] || this.areaSortSites[0].value;
             // check the shared URL for "strSortingData"(sorting field) to get the sorted result on shared URL for selected workflows
             if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
                 selectedOption = window.location.toString().split("$strSortingData=")[1].split("$")[0];
                 this._selectionChangeForBuildingAndSitesSort(selectedOption);
                 this.isSharedSort = true;
                 this.sitesResultSet = null;
+            } else {
+                this.selectBusinessSortForSites = new SelectList({
+                    options: this.areaSortSites,
+                    maxHeight: 100,
+                    value: selectedOption
+                }, selectForSites);
+                // attach change event on drop down of sites tab
+                this.own(on(this.selectBusinessSortForSites, "change", lang.hitch(this, function (value) {
+                    if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
+                        this._selectionChangeForBuildingAndSitesSort(value);
+                    }
+                })));
+                // attach click event on left arrow of pagination
+                this.own(on(leftArrow, "click", lang.hitch(this, function () {
+                    if (currentIndexSites !== 0) {
+                        topic.publish("showProgressIndicator");
+                        currentIndexSites -= 10;
+                        this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
+                        domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
+                        if (this.sitesResultSet.length < currentIndexSites + 10) {
+                            domAttr.set(tenthIndex, "innerHTML", this.sitesResultSet.length);
+                        } else {
+                            domAttr.set(tenthIndex, "innerHTML", currentIndexSites + 10);
+                        }
+                        currentPage = currentPage - 1;
+                        domAttr.set(firstIndex, "innerHTML", currentPage);
+                        if (currentPage === 1) {
+                            domClass.replace(leftArrow, "esriCTLeftArrow", "esriCTLeftArrowBlue");
+                        }
+                        if (currentPage < result) {
+                            domClass.replace(rightArrow, "esriCTRightArrow", "esriCTRightArrowBlue");
+                        }
+                    }
+                })));
+                // attach click event on right arrow of pagination
+                this.own(on(rightArrow, "click", lang.hitch(this, function () {
+                    if (result >= Number(firstIndex.innerHTML) + 1) {
+                        topic.publish("showProgressIndicator");
+                        currentIndexSites += 10;
+                        this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
+                        domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
+                        if (this.sitesResultSet.length < currentIndexSites + 10) {
+                            domAttr.set(tenthIndex, "innerHTML", this.sitesResultSet.length);
+                        } else {
+                            domAttr.set(tenthIndex, "innerHTML", currentIndexSites + 10);
+                        }
+                        currentPage = Math.ceil((currentIndexSites / 10) + 1);
+                        domAttr.set(firstIndex, "innerHTML", currentPage);
+                        if (currentPage > 1) {
+                            domClass.replace(leftArrow, "esriCTLeftArrowBlue", "esriCTLeftArrow");
+                        }
+                        if (currentPage === result) {
+                            domClass.replace(rightArrow, "esriCTRightArrowBlue", "esriCTRightArrow");
+                        }
+                    }
+                })));
+                this.performQuery(this.operationalLayer, this.sitesResultSet, index);
             }
-            this.selectBusinessSortForSites = new SelectList({
-                options: this.areaSortSites,
-                maxHeight: 100,
-                value: selectedOption
-            }, selectForSites);
-            // attach change event on drop down of sites tab
-            this.own(on(this.selectBusinessSortForSites, "change", lang.hitch(this, function (value) {
-                if (value.toLowerCase() !== sharedNls.titles.select.toLowerCase()) {
-                    this._selectionChangeForBuildingAndSitesSort(value);
-                }
-            })));
-            // attach click event on left arrow of pagination
-            this.own(on(leftArrow, "click", lang.hitch(this, function () {
-                if (currentIndexSites !== 0) {
-                    topic.publish("showProgressIndicator");
-                    currentIndexSites -= 10;
-                    this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
-                    domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
-                    if (this.sitesResultSet.length < currentIndexSites + 10) {
-                        domAttr.set(tenthIndex, "innerHTML", this.sitesResultSet.length);
-                    } else {
-                        domAttr.set(tenthIndex, "innerHTML", currentIndexSites + 10);
-                    }
-                    currentPage = currentPage - 1;
-                    domAttr.set(firstIndex, "innerHTML", currentPage);
-                    if (currentPage === 1) {
-                        domClass.replace(leftArrow, "esriCTLeftArrow", "esriCTLeftArrowBlue");
-                    }
-                    if (currentPage < result) {
-                        domClass.replace(rightArrow, "esriCTRightArrow", "esriCTRightArrowBlue");
-                    }
-                }
-            })));
-            // attach click event on right arrow of pagination
-            this.own(on(rightArrow, "click", lang.hitch(this, function () {
-                if (result >= Number(firstIndex.innerHTML) + 1) {
-                    topic.publish("showProgressIndicator");
-                    currentIndexSites += 10;
-                    this.performQuery(this.operationalLayer, this.sitesResultSet, currentIndexSites);
-                    domAttr.set(currentIndexNode, "innerHTML", currentIndexSites + 1);
-                    if (this.sitesResultSet.length < currentIndexSites + 10) {
-                        domAttr.set(tenthIndex, "innerHTML", this.sitesResultSet.length);
-                    } else {
-                        domAttr.set(tenthIndex, "innerHTML", currentIndexSites + 10);
-                    }
-                    currentPage = Math.ceil((currentIndexSites / 10) + 1);
-                    domAttr.set(firstIndex, "innerHTML", currentPage);
-                    if (currentPage > 1) {
-                        domClass.replace(leftArrow, "esriCTLeftArrowBlue", "esriCTLeftArrow");
-                    }
-                    if (currentPage === result) {
-                        domClass.replace(rightArrow, "esriCTRightArrowBlue", "esriCTRightArrow");
-                    }
-                }
-            })));
         },
 
         /**
@@ -934,6 +930,7 @@ define([
                 queryString = andString;
             }
             if (orString) {
+                orString = "(" + orString + ")";
                 if (queryString) {
                     queryString += " AND " + orString;
                 } else {
@@ -944,6 +941,10 @@ define([
                 queryString += " AND UPPER(" + value + ") <> '' AND " + value + " is not null";
             } else {
                 queryString = "UPPER(" + value + ") <> '' AND " + value + " is not null";
+            }
+            //set where clause to honor definition expression configured in webmap
+            if (this.operationalLayer.webmapDefinitionExpression) {
+                queryString += " AND " + this.operationalLayer.webmapDefinitionExpression;
             }
             querySort.where = queryString;
             querySort.returnGeometry = false;

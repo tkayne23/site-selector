@@ -819,12 +819,12 @@ define([
             var i, resultpanel, content, countRevenueEmpPanel, countRevenueEmp, count, countName, countValue, revenue, revenueName, revenuevalue, employee, empName, empValue;
             this._showBusinessTab();
             this.currentBussinessData = arrData;
-            // check the shared URL for "strBusinessSortData" to display sorted results in business tab while sharing
-            if (window.location.toString().split("$strBusinessSortData=").length > 1 && !this.isSharedSort) {
+            // check the shared URL for "strSortingData" to display sorted results in business tab while sharing
+            if (window.location.toString().split("$strSortingData=").length > 1 && !this.isSharedSort) {
                 this.isSharedSort = true;
-                this.selectSortOption.set("value", window.location.toString().split("$strBusinessSortData=")[1].split("$")[0]);
-            } else if (notSorted && appGlobals.shareOptions.businessSortData) {
-                this._selectionChangeForSort(appGlobals.shareOptions.businessSortData);
+                this.selectSortOption.set("value", window.location.toString().split("$strSortingData=")[1].split("$")[0]);
+            } else if (notSorted && appGlobals.shareOptions.sortingData) {
+                this._selectionChangeForSort(appGlobals.shareOptions.sortingData);
             } else {
                 domConstruct.empty(node);
                 domConstruct.empty(this.downloadDiv);
@@ -862,7 +862,7 @@ define([
                         domStyle.set(this.sortByDiv, "display", "none");
                         domStyle.set(this.downloadDiv, "display", "none");
                         domStyle.set(this.resultDiv, "display", "none");
-                        appGlobals.shareOptions.businessSortData = null;
+                        appGlobals.shareOptions.sortingData = null;
                         alert(sharedNls.errorMessages.invalidSearch);
                     }
                     topic.publish("hideProgressIndicator");

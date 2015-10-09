@@ -804,6 +804,8 @@ define([
             }), function (error) {
                 alert(error.message);
                 topic.publish("hideProgressIndicator");
+                domStyle.set(obj.imgSearchLoader, "display", "none");
+                domStyle.set(obj.close, "display", "block");
             });
         }
     });

@@ -25,7 +25,6 @@ define([
     "dojo/_base/array",
     "dojo/dom-attr",
     "dojo/dom",
-    "dojo/on",
     "dojo/_base/lang",
     "dojo/Deferred",
     "esri/request",
@@ -33,9 +32,8 @@ define([
     "dojo/promise/all",
     "dojo/i18n!application/js/library/nls/localizedStrings",
     "dojo/topic",
-    "esri/dijit/BasemapGallery",
     "dojo/domReady!"
-], function (declare, _WidgetBase, Map, AppHeader, SplashScreen, array, domAttr, dom, on, lang, Deferred, esriRequest, esriUtils, all, sharedNls, topic, BasemapGallery) {
+], function (declare, _WidgetBase, Map, AppHeader, SplashScreen, array, domAttr, dom, lang, Deferred, esriRequest, esriUtils, all, sharedNls, topic) {
 
     //========================================================================================================================//
 
@@ -135,7 +133,7 @@ define([
         },
 
         _fetchBasemapCollection: function (basemapDeferred) {
-            var groupUrl, searchUrl, webmapRequest, groupRequest, deferred, agolBasemapsCollection, thumbnailSrc, baseMapArray = [], deferredArray = [], self = this, basemapId;
+            var groupUrl, searchUrl, webmapRequest, groupRequest, deferred, thumbnailSrc, baseMapArray = [], deferredArray = [], self = this, basemapId;
             /**
             * If group owner & title are configured, create request to fetch the group id
             */
@@ -220,22 +218,7 @@ define([
                     alert(sharedNls.errorMessages.portalUrlNotFound);
                 }
             } else {
-                /**
-                * If group owner & title are not configured, fetch the basemap collections from AGOL using BasemapGallery widget
-                */
-                agolBasemapsCollection = new BasemapGallery({
-                    showArcGISBasemaps: true
-                });
-                on(agolBasemapsCollection, "load", function () {
-                    /**
-                    * onLoad, loop through each basemaps in the basemap gallery and push it into "baseMapArray"
-                    */
-                    deferred = new Deferred();
-                    self._fetchBasemapFromGallery(agolBasemapsCollection, baseMapArray, deferred);
-                    deferred.then(function () {
-                        basemapDeferred.resolve(baseMapArray);
-                    });
-                });
+                basemapDeferred.resolve(baseMapArray);
             }
         },
 
@@ -307,7 +290,6 @@ define([
             bmLayerData.thumbnail = bmLayers.item.thumbnail;
             bmLayerData.title = bmLayers.itemData.baseMap.title;
             this._storeUniqueBasemap(bmLayerData, baseMapArray);
-
         },
 
         /**
@@ -377,55 +359,6 @@ define([
                     layerType: layerType
                 });
             }
-        },
-
-        /**
-        * get basemap from basmeap gallery
-        * @memberOf coreLibrary/widgetLoader
-        */
-        _fetchBasemapFromGallery: function (agolBasemapsCollection, baseMapArray, basemapDeferred) {
-            var deferred, deferredArray = [];
-            array.forEach(agolBasemapsCollection.basemaps, lang.hitch(this, function (basemap) {
-                var basemapRequest, basemapLayersArray = [], basemapId, layerType;
-                basemapRequest = basemap.getLayers();
-                basemapRequest.then(lang.hitch(this, function () {
-                    //If array contains only single layer object, push it into "baseMapArray"
-                    if (basemap.layers.length === 1) {
-                        basemapId = basemap.id || "defaultBasemapId";
-                        layerType = basemap.layers[0].type || basemap.layers[0].layerType;
-                        baseMapArray.push({
-                            BasemapId: basemapId,
-                            ThumbnailSource: basemap.thumbnailUrl,
-                            Name: basemap.title,
-                            MapURL: basemap.layers[0].url,
-                            isWorkFlowBasemap: false,
-                            layerType: layerType
-                        });
-                    } else {
-                        array.forEach(basemap.layers, lang.hitch(this, function (basemapLayers, index) {
-                            basemapId = basemap.id + index;
-                            layerType = basemapLayers.type || basemapLayers.layerType;
-                            basemapLayersArray.push({
-                                BasemapId: basemapId,
-                                ThumbnailSource: basemap.thumbnailUrl,
-                                Name: basemap.title,
-                                MapURL: basemapLayers.url,
-                                isWorkFlowBasemap: false,
-                                layerType: layerType
-                            });
-                        }));
-                        baseMapArray.push(basemapLayersArray);
-                    }
-                    /** If array contains more than one layer object, loop through each layer, create object for each one of them
-                    and push it into "basemapLayersArray", finally push "basemapLayersArray" into "baseMapArray" */
-                    deferred = new Deferred();
-                    deferred.resolve();
-                }));
-                deferredArray.push(basemapRequest);
-            }));
-            all(deferredArray).then(function () {
-                basemapDeferred.resolve(baseMapArray);
-            });
         }
     });
 });

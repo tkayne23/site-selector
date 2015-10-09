@@ -701,8 +701,9 @@ define([
                             domClass.remove(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
                             appGlobals.shareOptions.toFromBussinessFilter = null;
                             this._clearFilterCheckBoxes();
-                            if (this.selectSortOption) {
-                                appGlobals.shareOptions.businessSortData = null;
+                            if (this.selectedValue[this.workflowCount] && this.selectSortOption) {
+                                this.selectedValue[this.workflowCount] = null;
+                                appGlobals.shareOptions.sortingData = null;
                                 this.selectSortOption.set("value", sharedNls.titles.select);
                             }
                             // clear filtered results and retained the buffer results for business tab
@@ -774,6 +775,12 @@ define([
                         this.queryArrayBuildingAND = [];
                         this.andArr = [];
                         this.orArr = [];
+                        //set drop down value as "select" in building tab
+                        if (this.selectBusinessSortForBuilding) {
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
+                        }
                         this._applyFilterForBuildingAndSites();
                     }
                 }));
@@ -785,9 +792,7 @@ define([
                         this.queryArrayBuildingOR = [];
                         this.queryArrayBuildingAND = [];
                         if (this.selectBusinessSortForBuilding) {
-                            if (this.selectedValue[this.workflowCount]) {
-                                this.selectedValue[this.workflowCount] = null;
-                            }
+                            this.selectedValue[this.workflowCount] = null;
                             appGlobals.shareOptions.sortingData = null;
                             this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
                         }
@@ -807,6 +812,12 @@ define([
                         this.orArr = [];
                         this.queryArraySitesAND = [];
                         this.queryArraySitesOR = [];
+                        //set drop down value as "select" in sites tab
+                        if (this.selectBusinessSortForSites) {
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+                        }
                         this._applyFilterForBuildingAndSites();
                     }
                 }));
@@ -818,9 +829,7 @@ define([
                         this.queryArraySitesAND = [];
                         this.queryArraySitesOR = [];
                         if (this.selectBusinessSortForSites) {
-                            if (this.selectedValue[this.workflowCount]) {
-                                this.selectedValue[this.workflowCount] = null;
-                            }
+                            this.selectedValue[this.workflowCount] = null;
                             appGlobals.shareOptions.sortingData = null;
                             this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
                         }
@@ -837,6 +846,12 @@ define([
                     var node;
                     if (domClass.contains(this.filterIconBusiness, "esriCTFilterEnabled")) {
                         topic.publish("showProgressIndicator");
+                        //set drop down value as "select" in bussiness tab
+                        if (this.selectSortOption) {
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
+                            this.selectSortOption.set("value", sharedNls.titles.select);
+                        }
                         for (node in this.filterOptionsValues) {
                             if (this.filterOptionsValues.hasOwnProperty(node)) {
                                 if (this.filterOptionsValues[node].txtFrom && !this.filterOptionsValues[node].txtFrom.disabled) {
@@ -852,7 +867,8 @@ define([
                     if (domClass.contains(this.clearFilterBusiness, "esriCTClearFilterIconEnable")) {
                         topic.publish("showProgressIndicator");
                         if (this.selectSortOption) {
-                            appGlobals.shareOptions.businessSortData = null;
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
                             this.selectSortOption.set("value", sharedNls.titles.select);
                         }
                         this._resetBusinessBufferValueResult();
@@ -993,20 +1009,30 @@ define([
         * @memberOf widgets/siteLocator/siteLocator
         */
         _searchCommunitySelectNames: function () {
-            var queryCommunityNames;
-            // use esriRequest method and service parameter to retrieve data from a web server.
-            queryCommunityNames = esriRequest({
-                url: appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.LayerURL + "/query",
-                content: {
-                    f: "pjson",
-                    where: '1 = 1',
-                    returnGeometry: false,
-                    returnDistinctValues: true,
-                    outFields: appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.FilterFieldName
+            var queryCommunityNames, layer, queryString, currentTime = new Date().getTime();
+            if (appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.LayerURL) {
+                layer = this.getCurrentOperationalLayer(3);
+                queryString = currentTime + "=" + currentTime;
+                //set where clause to honor definition expression configured in webmap
+                if (layer && layer.webmapDefinitionExpression) {
+                    queryString += " AND " + layer.webmapDefinitionExpression;
                 }
-            });
-            // success handler for communities county field
-            queryCommunityNames.then(lang.hitch(this, this._showResultsearchCommunitySelectNames));
+                // use esriRequest method and service parameter to retrieve data from a web server.
+                queryCommunityNames = esriRequest({
+                    url: appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.LayerURL + "/query",
+                    content: {
+                        f: "pjson",
+                        where: queryString,
+                        returnGeometry: false,
+                        returnDistinctValues: true,
+                        outFields: appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.FilterFieldName
+                    }
+                });
+                // success handler for communities county field
+                queryCommunityNames.then(lang.hitch(this, this._showResultsearchCommunitySelectNames));
+            } else {
+                domStyle.set(this.divDropDownSearch, "display", "none");
+            }
         },
 
         /**
@@ -1031,7 +1057,8 @@ define([
         * @memberOf widgets/siteLocator/siteLocator
         */
         _selectionChangeForSort: function (value) {
-            appGlobals.shareOptions.businessSortData = value;
+            appGlobals.shareOptions.sortingData = value;
+            this.selectedValue[this.workflowCount] = value;
             if (this.currentBussinessData) {
                 this.currentBussinessData.sort(lang.hitch(this, function (a, b) {
                     // a greater than b
@@ -1092,6 +1119,9 @@ define([
                         params.unit = GeometryService[this.unitValues[this.workflowCount]];
                         geometryService.buffer(params, lang.hitch(this, function (geometries) {
                             this.lastGeometry[this.workflowCount] = geometries;
+                            //reset sort value on buffer change
+                            this.selectedValue[this.workflowCount] = null;
+                            appGlobals.shareOptions.sortingData = null;
                             // for business tab clear all scrollbar and call enrich data handler
                             if (this.workflowCount === 2) {
                                 this.revenueData = [];
