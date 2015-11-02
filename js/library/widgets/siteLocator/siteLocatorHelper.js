@@ -113,8 +113,8 @@ define([
             }
 
             domStyle.set(horizontalRule.domNode.lastChild, "text-align", "right");
-            domStyle.set(horizontalRule.domNode.lastChild, "width", "318px");
-            domStyle.set(horizontalRule.domNode.lastChild, "left", "0");
+            domStyle.set(horizontalRule.domNode.lastChild, "width", "100%");
+            domStyle.set(horizontalRule.domNode.lastChild, "left", "initial");
             domAttr.set(divSliderValue, "distanceUnit", appGlobals.configData.DistanceUnitSettings.DistanceUnitName.toString());
             domAttr.set(divSliderValue, "innerHTML", horizontalSlider.value.toString() + " " + appGlobals.configData.DistanceUnitSettings.DistanceUnitName);
             _self = this;
@@ -451,7 +451,7 @@ define([
         */
         _createDisplayList: function (listData, containerNode) {
             if (listData) {
-                var contentNode, attr, i, contentOuter, attchImages, featureInfo, j, k;
+                var contentNode, attr, i, contentOuter, attchImages, featureInfo, j, k, attachmentImageClickDiv;
                 topic.publish("hideProgressIndicator");
                 domConstruct.empty(containerNode);
                 // loop all the data in list and check null values and replace it with "NA"
@@ -477,12 +477,9 @@ define([
                     // if "hasattachment" tag in layer and show attachment tag in config are true then show the image in pagination panel in building ans sites tab
                     if (this.operationalLayer.hasAttachments && appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
                         attchImages = domConstruct.create("div", { "class": "esriCTAttchImages" }, contentOuter);
-                        if (listData[i].attachmentData) {
-                            domConstruct.create("img", { "src": listData[i].attachmentData[0].url }, attchImages);
-                        } else {
-                            // if attachment not found in layer then set not available image in pagination panel in building and sites tab
-                            domConstruct.create("img", { "src": dojoConfig.baseURL + "/js/library/themes/images/not-available.png" }, attchImages);
-                        }
+                        attachmentImageClickDiv = domConstruct.create("img", { "class": "esriCTAutoWidth" }, attchImages);
+                        on(attachmentImageClickDiv, "load", lang.hitch(this, this._onImageLoad));
+                        this._setAttachmentIcon(listData[i], attachmentImageClickDiv, 0);
                         featureInfo = domConstruct.create("div", { "class": "esriCTFeatureInfoAttachment" }, contentOuter);
                         this.own(on(contentOuter, "click", lang.hitch(this, this._getAttchmentImageAndInformation)));
 
@@ -554,7 +551,8 @@ define([
             // check if selected index has attachment then create html structure to display image and layer content
             if (dataSelected.attachmentData) {
                 attachmentDiv = domConstruct.create("div", { "class": "esriCTAttachmentDiv" }, attachmentNode);
-                attachmentImageClickDiv = domConstruct.create("img", { "src": dataSelected.attachmentData[0].url }, attachmentDiv);
+                attachmentImageClickDiv = domConstruct.create("img", {}, attachmentDiv);
+                this._setAttachmentIcon(dataSelected, attachmentImageClickDiv, 0);
                 // if attachment length is greater than 0 then push the attachment URL into an array
                 if (dataSelected.attachmentData.length > 0) {
                     for (k = 0; k < dataSelected.attachmentData.length; k++) {
@@ -571,16 +569,22 @@ define([
                             if (imageCount < 0) {
                                 imageCount = dataSelected.attachmentData.length - 1;
                             }
-                            domAttr.set(attachmentImageClickDiv, "src", dataSelected.attachmentData[imageCount].url);
+                            this._setAttachmentIcon(dataSelected, attachmentImageClickDiv, imageCount);
                         })));
                         this.own(on(nextdiv, "click", lang.hitch(this, function () {
                             imageCount++;
                             if (imageCount === dataSelected.attachmentData.length) {
                                 imageCount = 0;
                             }
-                            domAttr.set(attachmentImageClickDiv, "src", dataSelected.attachmentData[imageCount].url);
+                            this._setAttachmentIcon(dataSelected, attachmentImageClickDiv, imageCount);
                         })));
                     }
+                    //attach click event on attachment icon to download the attachment
+                    this.own(on(attachmentImageClickDiv, "click", lang.hitch(this, function (evt) {
+                        if (dataSelected.attachmentData[imageCount].contentType.indexOf("image") === -1) {
+                            window.open(evt.target.alt);
+                        }
+                    })));
                 }
             }
             // call download drop down handler based on tab selection
@@ -693,6 +697,77 @@ define([
         },
 
         /**
+        * set attachment icon in result panel
+        * @param {object} dataSelected contains attachment data
+        * @param {object} attachmentImageClickDiv div node for attachment
+        * @param {int} imageCount is the index of selected attachment
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _setAttachmentIcon: function (dataSelected, attachmentImageClickDiv, imageCount) {
+            var imagePath = dojoConfig.baseURL + "/js/library/themes/images/not-available.png";
+            if (dataSelected.attachmentData && dataSelected.attachmentData[imageCount]) {
+                if (dataSelected.attachmentData[imageCount].contentType.indexOf("image") > -1) {
+                    domClass.remove(attachmentImageClickDiv, "esriCTDefaultAttachmentIcon");
+                    imagePath = dataSelected.attachmentData[imageCount].url;
+                    domAttr.set(attachmentImageClickDiv, "alt", imagePath);
+                } else {
+                    //set default attachment icon
+                    imagePath = dojoConfig.baseURL + "/js/library/themes/images/attachment.png";
+                    domClass.add(attachmentImageClickDiv, "esriCTDefaultAttachmentIcon");
+                    domAttr.set(attachmentImageClickDiv, "alt", dataSelected.attachmentData[imageCount].url);
+                }
+            }
+            domAttr.set(attachmentImageClickDiv, "src", imagePath);
+        },
+
+        /**
+        * set image dimensions when image gets loaded
+        * @param {object} evt 
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _onImageLoad: function (evt) {
+            this._setImageDimensions(evt.currentTarget, true);
+        },
+
+        /**
+        * resize attachment icon
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _resizeImages: function () {
+            var images = query('.esriCTAttchImages img');
+            array.forEach(images, lang.hitch(this, function (imgModule) {
+                this._setImageDimensions(imgModule);
+            }));
+        },
+
+        /**
+        * set height and width of attachment icon
+        * @memberOf widgets/siteLocator/siteLocatorHelper
+        */
+        _setImageDimensions: function (imgModule, isOnLoad) {
+            var aspectRatio, newWidth, newHeight, imgWidth, imgContainer = imgModule.parentElement;
+            if (isOnLoad && imgModule && imgModule.offsetHeight > 0) {
+                //set original dimensions of image as it max dimensions.
+                domAttr.set(imgModule, "originalWidth", imgModule.offsetWidth);
+                domStyle.set(imgModule, "maxHeight", imgModule.offsetHeight + 'px');
+                domStyle.set(imgModule, "maxWidth", imgModule.offsetWidth + 'px');
+            }
+            imgWidth = parseFloat(domAttr.get(imgModule, "originalWidth"));
+            if ((imgWidth > 0 && imgContainer.offsetWidth > 0) && (imgContainer.offsetWidth < imgModule.offsetWidth || imgWidth > imgContainer.offsetWidth)) {
+                //change dimensions of image if it is larger/smaller than its parent container.
+                //calculate aspect ratio of image.
+                aspectRatio = imgModule.offsetWidth / imgModule.offsetHeight;
+                //calculate new dimensions according to aspect ratio of image.
+                newWidth = imgContainer.offsetWidth - 2;
+                newHeight = Math.floor(newWidth / aspectRatio);
+                domClass.remove(imgModule, "esriCTAutoWidth");
+                //set new dimensions to image.
+                domStyle.set(imgModule, "width", newWidth + 'px');
+                domStyle.set(imgModule, "height", newHeight + 'px');
+            }
+        },
+
+        /**
         * back button handler in building and sites tab and displays the pagination panel for same
         * @param {object} attachment div node
         * @param {object} parent div node for attachment
@@ -775,7 +850,6 @@ define([
                 }
             }
         },
-
 
         /**
         * Show hide widget container

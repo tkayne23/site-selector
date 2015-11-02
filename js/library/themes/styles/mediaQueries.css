@@ -56,6 +56,9 @@
     .esriCTContentTab
     {
         top: 99px !important;
+        height: calc(100% - 105px);
+        height: -moz-calc(100% - 105px);
+        height: -webkit-calc(100% - 105px);
     }
 }
 
@@ -151,6 +154,11 @@
     .esriCTContentTab
     {
         top: 99px !important;
+    }
+
+    .esriCTCarouselcount
+    {
+        padding-top: 0px;
     }
 }
 
@@ -259,14 +267,17 @@
         margin-left: 2px;
     }
 
-    .esriCTFirstIndex
-    {
-        height: 16px !important;
-    }
-
     .esriCTContentTab
     {
         top: 99px !important;
+        height: calc(100% - 105px);
+        height: -moz-calc(100% - 105px);
+        height: -webkit-calc(100% - 105px);
+    }
+
+    .esriCTCarouselcount
+    {
+        padding-top: 0px;
     }
 }
 
@@ -380,18 +391,18 @@
         margin-left: 2px;
     }
 
-    .esriCTFirstIndex
-    {
-        height: 16px !important;
-    }
-
     .esriCTContentTab
     {
         top: 99px !important;
     }
+
+    .esriCTCarouselcount
+    {
+        padding-top: 0px;
+    }
 }
 
-@media screen and (min-width:0px) and (max-width: 680px)
+@media screen and (min-width:0px) and (max-width: 767px)
 {
     html, body
     {
@@ -401,6 +412,16 @@
     input
     {
         font-size: 14px !important;
+    }
+
+    .esriCTHeaderSearchContainer
+    {
+        width: 100%;
+    }
+
+    .esriCTlayerList
+    {
+        display: none;
     }
 
     .esriCTAreaOfInterestTab .esriCTReportTab
@@ -440,8 +461,8 @@
 
     .esriCTSplashScreenDialog
     {
-        height: 90% !important;
-        width: 93% !important;
+        width: 93%;
+        height: 80%;
     }
 
     .esriCTHeaderSearch, .esriCTHeaderSearchSelected, .esriCTTdGeolocation, .esriCTImgSocialMediaSelected, .esriCTImgSocialMedia, .esriCTHelpImg
@@ -451,6 +472,14 @@
         background-size: 44px !important;
         width: 25% !important;
         margin: 8px 0 !important;
+    }
+
+    .esriCTFacebook, .esriCTTwitter, .esriCTEmail, .esriCTEmbedding
+    {
+        height: 44px !important;
+        width: 44px !important;
+        padding: 8px 0 !important;
+        background-size: 44px;
     }
 
     .esriCTRightTab
@@ -480,7 +509,51 @@
     .esriCTContentTab
     {
         top: 99px !important;
+        height: calc(100% - 105px);
+        height: -moz-calc(100% - 105px);
+        height: -webkit-calc(100% - 105px);
+    }
+
+    .esriCTCarouselcount
+    {
+        padding-top: 0px;
+    }
+
+    .esriCTHeaderSearchContainer
+    {
+        width: 100%;
+    }
+
+    .esriCTlayerList
+    {
+        display: none;
+    }
+
+    .esriCTDivAppContainer, .esriCTDivAppHolder, .esriCTDivShareContainer
+    {
+        width: 100%;
     }
 }
 
 /* Landscape */
+
+@media screen and (max-width: 380px)
+{
+    .esriCTBusinessInfoTabSelected, .esriCTDemographicInfoTabSelected
+    {
+        width: 48.3% !important;
+    }
+
+    .esriCTAttchImages img
+    {
+        width: 140px;
+    }
+}
+
+@media screen and (max-height: 310px)
+{
+    .esriCTSplashScreenDialog
+    {
+        height: 175px;
+    }
+}

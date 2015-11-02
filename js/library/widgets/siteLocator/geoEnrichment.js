@@ -730,7 +730,7 @@ define([
             this.arrBussinesResultData = [];
             this.totalArray = [];
             // if result exist then enable the filter icon and filter text
-            if (enrichData.results[0].value.FeatureSet[0].features[0].attributes) {
+            if (enrichData.results[0].value.FeatureSet[0] && enrichData.results[0].value.FeatureSet[0].features[0].attributes) {
                 domClass.add(this.filterTextBusiness, "esriCTFilterTextEnable");
                 domStyle.set(this.filterContainerBussiness, "display", "block");
                 domClass.add(this.filterContainerBussiness, "esriCTFilterMainContainer");

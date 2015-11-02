@@ -543,4 +543,8 @@ div.esriCTPrev
     border-bottom: 1px solid #007AC2;
 }
 
-
+.esriCTDefaultAttachmentIcon
+{
+    background-color: #007AC2;
+    border: 1px solid #007AC2;
+}
