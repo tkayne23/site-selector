@@ -271,6 +271,8 @@ define([
             } else {
                 domStyle.set(this.filterMainContainerBussiness, "display", "none");
             }
+            //event handler to resize attachment images when window gets resized
+            on(window, "resize", lang.hitch(this, this._resizeImages));
         },
 
         /**

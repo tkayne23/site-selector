@@ -254,7 +254,7 @@ define([
             if (this.operationalLayer && this.operationalLayer.url) {
                 queryLayerTask = new QueryTask(this.operationalLayer.url);
                 queryLayer = new Query();
-                queryLayer.returnGeometry = false;
+                queryLayer.returnGeometry = true;
                 queryString = dateObj + "=" + dateObj;
                 if (where !== null) {
                     queryString += " AND " + where;
@@ -268,12 +268,13 @@ define([
                     queryString += " AND " + this.operationalLayer.webmapDefinitionExpression;
                 }
                 queryLayer.where = queryString;
+                queryLayer.outFields = [this.operationalLayer.objectIdField];
                 if (geometry !== null) {
                     geometryService = new GeometryService(appGlobals.configData.GeometryService.toString());
                     geometryService.intersect(geometry, appGlobals.shareOptions.webMapExtent, lang.hitch(this, function (interSectGeometry) {
                         if (interSectGeometry[0].rings.length > 0) {
                             queryLayer.geometry = geometry[0];
-                            queryLayerTask.executeForIds(queryLayer, lang.hitch(this, this._queryLayerhandler), lang.hitch(this, this._queryErrorHandler));
+                            queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._queryErrorHandler));
                         } else {
                             topic.publish("hideProgressIndicator");
                             if (this.workflowCount === 0) {
@@ -324,7 +325,7 @@ define([
                         }
                     }));
                 } else {
-                    queryLayerTask.executeForIds(queryLayer, lang.hitch(this, this._queryLayerhandler), lang.hitch(this, this._queryErrorHandler));
+                    queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._queryErrorHandler));
                 }
             } else {
                 topic.publish("hideProgressIndicator");
@@ -341,6 +342,23 @@ define([
         },
 
         /**
+        * add resulted features to the graphics layer 
+        * @param {object} result data of query
+        * @memberOf widgets/siteLocator/featureQuery
+        */
+        _queryFeaturesHandler: function (featureSet) {
+            var featureIdsArr = [];
+            if (featureSet && featureSet.features) {
+                array.forEach(featureSet.features, lang.hitch(this, function (feature) {
+                    featureIdsArr.push(feature.attributes[this.operationalLayer.objectIdField]);
+                }));
+                //add resulted features on filter graphics layer       
+                this._addFeaturesOnFilteredLayer(featureSet.features);
+            }
+            this._queryLayerhandler(featureIdsArr);
+        },
+
+        /**
         * call back for query performed on selected layer
         * @param {object} result data of query
         * @memberOf widgets/siteLocator/featureQuery
@@ -351,11 +369,11 @@ define([
             if (window.location.toString().split("$paginationIndex=").length > 1 && !appGlobals.shareOptions.paginationIndex) {
                 paginationIndex = Number(window.location.toString().split("$paginationIndex=")[1].split("$")[0]);
             }
+            //hide operational layer
+            this._setOperationalLayerVisibility(this.workflowCount, false, false);
             if (featureSet !== null && featureSet.length > 0) {
-                //display filtered features on graphic layers
+                //display filtered graphics layers
                 this._setFilteredLayerVisibility(this.workflowCount, true);
-                //hide operational ayer
-                this._setOperationalLayerVisibility(this.workflowCount, false, false);
                 if (this.workflowCount === 0) {
                     if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                         domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
@@ -494,7 +512,7 @@ define([
                 }
                 oufields.push(layer.fields[0].name);
                 queryobject.outFields = oufields;
-                queryobject.returnGeometry = true;
+                queryobject.returnGeometry = false;
                 queryobject.objectIds = arrIds;
                 if (this.selectedValue[this.workflowCount]) {
                     queryobject.orderByFields = [this.selectedValue[this.workflowCount]];
@@ -516,7 +534,6 @@ define([
         mergeItemData: function (layerFeatureSet, layerAttachmentInfos, layer) {
             var arrTabData = [], i, j;
             topic.publish("hideProgressIndicator");
-            this._addFeaturesOnFilteredLayer(layerFeatureSet.features);
             for (i = 0; i < layerFeatureSet.features.length; i++) {
                 // add the feature data into an array
                 arrTabData.push({ featureData: layerFeatureSet.features[i].attributes });
