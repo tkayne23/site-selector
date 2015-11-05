@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "fcab8a1779694d1fbc4630a9d29ff009",
+        WebMapId: "edf7bf1ac0e14b16b0d79774ed26211a",
         Workflows: [
             {
                 Name: "Buildings",
@@ -204,13 +204,9 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayFields: [
                             {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME",
-                                SortingEnabled: true
-                            }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR",
                                 SortingEnabled: false
@@ -235,13 +231,10 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayTitle: "Property Information",
                         DisplayFields: [
                             {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME"
-                            }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR"
                             }, {
@@ -366,7 +359,7 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayFields: [
                             {
                                 DisplayText: "Name:",
@@ -392,7 +385,7 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayTitle: "Site Information",
                         DisplayFields: [
                             {
@@ -595,7 +588,7 @@ define([], function () {
                     FilterLayer: {
                         Title: "Municipalities",
                         QueryLayerId: "2",
-                        FilterFieldName: "COUNTY"
+                        FilterFieldName: "COUNTYNAME"
                     },
                     InfoPanelSettings: {
                         GeoEnrichmentContents: {
