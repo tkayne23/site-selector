@@ -556,7 +556,10 @@ define([
                 // if attachment length is greater than 0 then push the attachment URL into an array
                 if (dataSelected.attachmentData.length > 0) {
                     for (k = 0; k < dataSelected.attachmentData.length; k++) {
+                      //show attachments of only image types in report
+                      if (dataSelected.attachmentData[k].contentType.indexOf("image") > -1) {
                         arrAttachmentURL.push(dataSelected.attachmentData[k].url);
+                      }
                     }
                     // if attachment length is greater than one then display previous and next arrow
                     if (dataSelected.attachmentData.length > 1) {
@@ -629,7 +632,7 @@ define([
                 }
                 propertyInfoDiv = domConstruct.create("div", { "class": "esriCTpropertyInfoDiv" }, attachmentNode);
                 propertyHeaderInfo = domConstruct.create("div", { "class": "esriCTHeaderInfoDiv" }, propertyInfoDiv);
-                domAttr.set(propertyHeaderInfo, "innerHTML", appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.DownloadSettings[0].DisplayOptionTitle);
+                domAttr.set(propertyHeaderInfo, "innerHTML", appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayTitle);
                 // loop all the layer content based on configuration and check if the attribute data is null then replace it with "NA"
                 for (j = 0; j < appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayFields.length; j++) {
                     attributesInfo = featureSet.features[0].attributes[appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.LayerContents.DisplayFields[j].FieldName];
