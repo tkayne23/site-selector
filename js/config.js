@@ -313,6 +313,10 @@ define([], function () {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
                             Filetype: "PDF" //allowed PDF or XLSX
+						}, {
+                            DisplayOptionTitle: "Demographic and Income Profile",
+                            GeoEnrichmentReportName: "dandi",
+                            Filetype: "PDF" //allowed PDF or XLSX
                         }
                     ]
                 }
@@ -470,6 +474,10 @@ define([], function () {
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
+                            Filetype: "PDF" //allowed PDF or XLSX
+						}, {
+                            DisplayOptionTitle: "Demographic and Income Profile",
+                            GeoEnrichmentReportName: "dandi",
                             Filetype: "PDF" //allowed PDF or XLSX
                         }
                     ]
