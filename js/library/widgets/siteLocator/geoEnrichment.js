@@ -85,14 +85,12 @@ define([
             areaListOptions.splice(0, 0, { "label": sharedNls.titles.select, "value": sharedNls.titles.select });
             this.comAreaList = new SelectList({
                 options: areaListOptions,
-                "id": "areaList",
-                maxHeight: 100
+                "id": "areaList"
             }, this.searchContainerComm);
 
             if (window.location.toString().split("$communitySelectionFeature=").length > 1) {
                 this.comAreaList.disabled = false;
-                this.comAreaList.set("displayedValue", window.location.toString().split("$communitySelectionFeature=")[1].split("$")[0]);
-
+                this.comAreaList.set("displayedValue", decodeURIComponent(window.location.toString()).split("$communitySelectionFeature=")[1].split("$")[0]);
             } else {
                 this.comAreaList.disabled = "disabled";
             }
@@ -896,8 +894,7 @@ define([
             }
             // initialize dijit/form/Select for download
             selectDownloadList = new SelectList({
-                options: areaSortBuildingDownload,
-                maxHeight: 50
+                options: areaSortBuildingDownload
             }, selectForDownload);
             // attach change event on download dropdown based on selected workflows
             this.own(on(selectDownloadList, "change", lang.hitch(this, function (value) {

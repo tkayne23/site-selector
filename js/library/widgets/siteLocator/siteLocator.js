@@ -575,7 +575,7 @@ define([
                 this.filterOptionsValues[nodeValue] = { "checkBox": checkBox, "workflow": index };
                 // check the shared URL for "whereClause" to perform layer search and get the filtered data for "RegularFilterOptionFields" on selected fields in building and sites tab
                 if (decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName).length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
-                    checkedValue = decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName + "=");
+                    checkedValue = decodeURIComponent(window.location.toString()).split("UPPER(" + arrFields[i].FieldName + ") =");
                     if (this.workflowCount === 0) {
                         domClass.add(this.filterIcon, "esriCTFilterEnabled");
                         domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
