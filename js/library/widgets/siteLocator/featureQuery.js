@@ -342,7 +342,7 @@ define([
         },
 
         /**
-        * add resulted features to the graphics layer 
+        * add resulted features to the graphics layer
         * @param {object} result data of query
         * @memberOf widgets/siteLocator/featureQuery
         */
@@ -352,7 +352,7 @@ define([
                 array.forEach(featureSet.features, lang.hitch(this, function (feature) {
                     featureIdsArr.push(feature.attributes[this.operationalLayer.objectIdField]);
                 }));
-                //add resulted features on filter graphics layer       
+                //add resulted features on filter graphics layer
                 this._addFeaturesOnFilteredLayer(featureSet.features);
             }
             this._queryLayerhandler(featureIdsArr);
@@ -672,7 +672,6 @@ define([
             } else {
                 this.selectBusinessSortForBuilding = new SelectList({
                     options: this.areaSortBuilding,
-                    maxHeight: 100,
                     value: selectedOption
                 }, selectForBuilding);
                 // attach change event on drop down of buildings tab
@@ -851,7 +850,6 @@ define([
             } else {
                 this.selectBusinessSortForSites = new SelectList({
                     options: this.areaSortSites,
-                    maxHeight: 100,
                     value: selectedOption
                 }, selectForSites);
                 // attach change event on drop down of sites tab
