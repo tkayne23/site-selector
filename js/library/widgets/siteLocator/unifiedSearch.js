@@ -307,6 +307,8 @@ define([
             if (layerobject.QueryURL) {
                 queryTask = new QueryTask(layerobject.QueryURL);
                 queryLayer = new Query();
+                //insert single quote(') as an escape character to allow single quote(') in query string
+                searchText = searchText.replace(/'/g, "''");
                 queryLayer.where = string.substitute(layerobject.SearchExpression, [searchText]);
                 queryLayer.outSpatialReference = this.map.spatialReference;
                 // set return geometry true if object id field  is not available in layer

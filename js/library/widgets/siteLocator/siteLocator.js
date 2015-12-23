@@ -565,6 +565,10 @@ define([
             var i, j, divBusinessRevenue, checkBoxWithText, divCheckBox, checkBox, fieldContent, divAdditionalField, checkBoxAdditionalWithText, additionalFieldCheckBox, additionalCheckBox, additionalFieldDisplayText, checkedValueForFilter, checkedValue, k, nodeValue;
             // check length of RegularFilterOptionFields from config and create UI
             for (i = 0; i < arrFields.length; i++) {
+                if (arrFields[i].FieldValue) {
+                    //insert single quote(') as an escape character to allow single quote(') in query string
+                    arrFields[i].FieldValue = arrFields[i].FieldValue.replace(/'/g, "''");
+                }
                 divBusinessRevenue = domConstruct.create("div", { "class": "esriCTDivFilterOption" }, node);
                 checkBoxWithText = domConstruct.create("div", { "class": "esriCTCheckBoxWithText" }, divBusinessRevenue);
                 divCheckBox = domConstruct.create("div", { "class": "esriCTCheckBox" }, checkBoxWithText);
@@ -623,6 +627,10 @@ define([
             if (arrAdditionalFields && arrAdditionalFields.Enabled && arrAdditionalFields.FilterOptions.length) {
                 // create additional filter options UI(dynamic) for configurable fields in buildings and sites tab
                 for (j = 0; j < arrAdditionalFields.FilterOptions.length; j++) {
+                    if (arrAdditionalFields.FilterOptions[j].FieldValue) {
+                        //insert single quote(') as an escape character to allow single quote(') in query string
+                        arrAdditionalFields.FilterOptions[j].FieldValue = arrAdditionalFields.FilterOptions[j].FieldValue.replace(/'/g, "''");
+                    }
                     divAdditionalField = domConstruct.create("div", { "class": "esriCTDivAdditionalOpt" }, additionalFieldsNode);
                     checkBoxAdditionalWithText = domConstruct.create("div", { "class": "esriCTCheckBoxWithText" }, divAdditionalField);
                     additionalFieldCheckBox = domConstruct.create("div", { "class": "esriCTCheckBox" }, checkBoxAdditionalWithText);

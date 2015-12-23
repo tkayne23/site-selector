@@ -55,10 +55,12 @@ define([
             appGlobals.shareOptions.communitySelectionFeature = value;
             queryTaskCommunities = new QueryTask(appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.LayerURL);
             queryCommunities = new Query();
+            //insert single quote(') as an escape character to allow single quote(') in query string
+            value = value.replace(/'/g, "''");
             queryCommunities.where = appGlobals.configData.Workflows[3].FilterSettings.FilterLayer.FilterFieldName + "='" + value + "'";
             queryCommunities.returnGeometry = true;
             //execute query on Communities
-            queryTaskCommunities.execute(queryCommunities, lang.hitch(this, this._geometryForSelectedArea));
+            queryTaskCommunities.execute(queryCommunities, lang.hitch(this, this._geometryForSelectedArea), lang.hitch(this, this._errorHandler));
         },
 
         /**
@@ -545,12 +547,7 @@ define([
                 * @param {object} result data for geoenrichment request
                 * @memberOf widgets/siteLocator/geoEnrichment
                 */
-                geoEnrichmentRequest.then(lang.hitch(this, this._geoEnrichmentRequestHandler),
-                    function (error) {
-                        topic.publish("hideProgressIndicator");
-                        alert(error.message);
-                    }
-                        );
+            geoEnrichmentRequest.then(lang.hitch(this, this._geoEnrichmentRequestHandler), lang.hitch(this, this._errorHandler));
             } catch (Error) {
                 topic.publish("hideProgressIndicator");
             }
