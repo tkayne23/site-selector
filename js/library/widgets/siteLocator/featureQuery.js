@@ -274,7 +274,7 @@ define([
                     geometryService.intersect(geometry, appGlobals.shareOptions.webMapExtent, lang.hitch(this, function (interSectGeometry) {
                         if (interSectGeometry[0].rings.length > 0) {
                             queryLayer.geometry = geometry[0];
-                            queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._queryErrorHandler));
+                            queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._errorHandler));
                         } else {
                             topic.publish("hideProgressIndicator");
                             if (this.workflowCount === 0) {
@@ -325,7 +325,7 @@ define([
                         }
                     }));
                 } else {
-                    queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._queryErrorHandler));
+                    queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._errorHandler));
                 }
             } else {
                 topic.publish("hideProgressIndicator");
@@ -333,11 +333,15 @@ define([
         },
 
         /**
-        * error call back for query performed on selected layer
+        * error call back handler
         * @param {object} error object
         * @memberOf widgets/siteLocator/featureQuery
         */
-        _queryErrorHandler: function () {
+        _errorHandler: function (error) {
+            //display error message if available and hide the loading indicator
+            if (error && error.message) {
+                alert(error.message);
+            }
             topic.publish("hideProgressIndicator");
         },
 
@@ -482,9 +486,7 @@ define([
                             }
                         }
                         this.mergeItemData(layerFeatureSet, layerAttachmentInfos, layer);
-                    }), function (err) {
-                        alert(err.message);
-                    });
+                    }), lang.hitch(this, this._errorHandler));
                 } else {
                     if (this.workflowCount === 0) {
                         domConstruct.empty(this.outerResultContainerBuilding);
