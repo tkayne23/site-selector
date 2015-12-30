@@ -1,4 +1,4 @@
-﻿/*global dojo,define */
+/*global dojo,define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
  | Copyright 2013 Esri
@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "fcab8a1779694d1fbc4630a9d29ff009",
+        WebMapId: "751b99d469bf41668d0e59d69d1b3a9a",
         Workflows: [
             {
                 Name: "Buildings",
@@ -181,7 +181,7 @@ define([], function () {
                             ],
 
                             AdditionalFilterOptions: {
-                                Enabled: false,
+                                Enabled: true,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
                                     {
@@ -204,13 +204,9 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayFields: [
                             {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME",
-                                SortingEnabled: true
-                            }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR",
                                 SortingEnabled: false
@@ -235,13 +231,10 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayTitle: "Property Information",
                         DisplayFields: [
                             {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME"
-                            }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR"
                             }, {
@@ -366,7 +359,7 @@ define([], function () {
                 ],
                 InfoPanelSettings: {
                     ResultContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayFields: [
                             {
                                 DisplayText: "Name:",
@@ -392,7 +385,7 @@ define([], function () {
                         ]
                     },
                     LayerContents: {
-                        ShowAttachments: false,
+                        ShowAttachments: true,
                         DisplayTitle: "Site Information",
                         DisplayFields: [
                             {
