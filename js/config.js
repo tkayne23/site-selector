@@ -78,7 +78,7 @@ define([], function () {
         // ------------------------------------------------------------------------------------------------------------------------
         // Set options for basemap
         // Please note: All base-maps need to use the same spatial reference.
-        // Specify URL to ArcGIS Portal REST API
+        // Specify URL to ArcGIS Online REST API
         PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
         BasemapGroupTitle: "Basemaps",
@@ -86,7 +86,7 @@ define([], function () {
         BasemapGroupOwner: "GISITAdmin",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
-        // Specify path to image used to display the thumbnail for a basemap when portal does not provide it
+        // Specify path to image used to display the thumbnail for a basemap when ArcGIS Online does not provide it
         NoThumbnail: "js/library/themes/images/not-available.png",
 
         // Set geometry service URL
