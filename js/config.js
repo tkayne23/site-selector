@@ -78,7 +78,7 @@ define([], function () {
         // ------------------------------------------------------------------------------------------------------------------------
         // Set options for basemap
         // Please note: All base-maps need to use the same spatial reference.
-        // Specify URL to ArcGIS Portal REST API
+        // Specify URL to ArcGIS Online REST API
         PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
         BasemapGroupTitle: "Basemaps",
@@ -86,7 +86,7 @@ define([], function () {
         BasemapGroupOwner: "GISITAdmin",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
-        // Specify path to image used to display the thumbnail for a basemap when portal does not provide it
+        // Specify path to image used to display the thumbnail for a basemap when ArcGIS Online does not provide it
         NoThumbnail: "js/library/themes/images/not-available.png",
 
         // Set geometry service URL
@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "edf7bf1ac0e14b16b0d79774ed26211a",
+        WebMapId: "751b99d469bf41668d0e59d69d1b3a9a",
         Workflows: [
             {
                 Name: "Buildings",
@@ -181,7 +181,7 @@ define([], function () {
                             ],
 
                             AdditionalFilterOptions: {
-                                Enabled: false,
+                                Enabled: true,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
                                     {
