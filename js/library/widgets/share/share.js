@@ -23,11 +23,9 @@ define([
     "dojo/dom-attr",
     "dojo/on",
     "dojo/dom",
-    "dojo/query",
     "dojo/dom-class",
     "dojo/dom-geometry",
     "dojo/dom-style",
-    "dojo/string",
     "dojo/_base/html",
     "dojo/text!./templates/shareTemplate.html",
     "dijit/_WidgetBase",
@@ -35,9 +33,8 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "dojo/i18n!application/js/library/nls/localizedStrings",
     "dojo/topic",
-    "esri/request",
     "widgets/share/commonShare"
-], function (declare, domConstruct, lang, domAttr, on, dom, query, domClass, domGeom, domStyle, string, html, template, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, sharedNls, topic, esriRequest, commonShare) {
+], function (declare, domConstruct, lang, domAttr, on, dom, domClass, domGeom, domStyle, html, template, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, sharedNls, topic, commonShare) {
 
     //========================================================================================================================//
 
@@ -216,10 +213,6 @@ define([
             if (appGlobals.shareOptions.sortingData) {
                 urlStr += "$strSortingData=" + appGlobals.shareOptions.sortingData;
             }
-            if (appGlobals.shareOptions.businessSortData) {
-                urlStr += "$strBusinessSortData=" + appGlobals.shareOptions.businessSortData.toString();
-            }
-
             // Attempt the shrinking of the URL
             this.getTinyUrl = commonShare.getTinyLink(urlStr, appGlobals.configData.MapSharingOptions.TinyURLServiceURL);
         },

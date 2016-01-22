@@ -83,12 +83,15 @@ define([
                 appGlobals.shareOptions.webMapExtent = new GeometryExtent(response.map.extent.xmin, response.map.extent.ymin, response.map.extent.xmax, response.map.extent.ymax, this.map.spatialReference);
                 appGlobals.shareOptions.selectedBasemapIndex = null;
                 topic.publish("filterRedundantBasemap", response.itemInfo);
+                //subscribe event to display customized infowindow on map
                 topic.subscribe("setInfoWindowOnMap", lang.hitch(this, function (infoTitle, divInfoDetailsTab, screenPoint, infoPopupWidth, infoPopupHeight) {
                     this._onSetInfoWindowPosition(infoTitle, divInfoDetailsTab, screenPoint, infoPopupWidth, infoPopupHeight);
                 }));
+                //subscribe event to hide customized infowindow
+                topic.subscribe("hideInfoWindow", lang.hitch(this, this._hideInfoWindow));
+                //initialize customized infowindow widget
                 this.infoWindowPanel = new InfoWindow({ infoWindowWidth: appGlobals.configData.InfoPopupWidth, infoWindowHeight: appGlobals.configData.InfoPopupHeight });
                 this._fetchWebMapData(response);
-                topic.publish("setMap", this.map);
                 topic.publish("hideProgressIndicator");
                 this._mapOnLoad();
                 appGlobals.shareOptions.isInfoPopupShared = false;
@@ -118,7 +121,7 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _onSetMapTipPosition: function () {
-            if (this.selectedMapPoint) {
+            if (appGlobals.shareOptions.infoWindowIsShowing && this.selectedMapPoint) {
                 var screenPoint = this.map.toScreen(this.selectedMapPoint);
                 screenPoint.y = this.map.height - screenPoint.y;
                 this.infoWindowPanel.setLocation(screenPoint);
@@ -130,11 +133,13 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _fetchWebMapData: function (response) {
-            var webMapDetails = response.itemInfo.itemData, i, defArr = [], def;
+            var webMapDetails = response.itemInfo.itemData, i, defArr = [], def, mapServerData;
             for (i = 0; i < webMapDetails.operationalLayers.length; i++) {
-                if (webMapDetails.operationalLayers[i].visibility) {
-                    if (webMapDetails.operationalLayers[i].layers) {
-                        this._setDynamicOperationLayers(webMapDetails.operationalLayers[i], defArr);
+                // check for webmap mapserver and feature layer
+                if (webMapDetails.operationalLayers[i].visibility && webMapDetails.operationalLayers[i].layerObject) {
+                    mapServerData = webMapDetails.operationalLayers[i].resourceInfo.layers || webMapDetails.operationalLayers[i].layerObject.layerInfos;
+                    if (mapServerData) {
+                        this._setDynamicOperationLayers(webMapDetails.operationalLayers[i], mapServerData, defArr);
                     } else {
                         def = new Deferred();
                         defArr.push(def);
@@ -146,10 +151,22 @@ define([
                 appGlobals.operationalLayers = [];
                 for (i = 0; i < results.length; i++) {
                     if (results[i]) {
+                        //set webmap edited renderer in layer object
+                        if (results[i].layerDefinition) {
+                            if (results[i].layerDefinition.drawingInfo) {
+                                results[i].layerObject.webmapRenderer = results[i].layerDefinition.drawingInfo.renderer;
+                            }
+                            //set layer's definitionExpression
+                            if (results[i].layerDefinition.definitionExpression) {
+                                results[i].layerObject.webmapDefinitionExpression = results[i].layerDefinition.definitionExpression;
+                            }
+                        }
                         appGlobals.operationalLayers.push(results[i]);
                         this._createLayerURL(results[i]);
                     }
                 }
+                //publish event when required data is fetched from map layers
+                topic.publish("setMap", this.map);
             }));
         },
 
@@ -157,16 +174,15 @@ define([
         * set Dynamic Operation Layers
         * @memberOf widgets/mapSettings/mapSettings
         */
-        _setDynamicOperationLayers: function (operationalLayer, defArr) {
+        _setDynamicOperationLayers: function (operationalLayer, mapServerData, defArr) {
             var url, layerUrl, i, operationalLayerObj = {};
             url = operationalLayer.url;
-
-            for (i = 0; i < operationalLayer.layers.length; i++) {
-                //check the operational layer default visibility
-                if (array.indexOf(operationalLayer.layerObject.visibleLayers, operationalLayer.layers[i].id) !== -1) {
-                    operationalLayerObj = operationalLayer.layers[i];
+            for (i = 0; i < mapServerData.length; i++) {
+                //check visibility of operational layer
+                if (array.indexOf(operationalLayer.layerObject.visibleLayers, mapServerData[i].id) !== -1) {
+                    operationalLayerObj = this._getLayerObject(operationalLayer, mapServerData[i]);
                     operationalLayerObj.title = operationalLayer.title;
-                    layerUrl = url + "/" + operationalLayer.layers[i].id;
+                    layerUrl = url + "/" + mapServerData[i].id;
                     defArr.push(this._loadFeatureLayer(layerUrl, operationalLayerObj));
                 }
             }
@@ -183,11 +199,28 @@ define([
                 dynamicOperationalLayer = layerObject;
                 dynamicOperationalLayer.layerObject = evt.layer;
                 dynamicOperationalLayer.url = evt.layer.url;
+                dynamicOperationalLayer.layerObject.visibleAtMapScale = true;
                 def.resolve(dynamicOperationalLayer);
             }));
             return def;
         },
 
+        /**
+        * get layer object info
+        * @memberOf widgets/mapSettings/mapSettings
+        */
+        _getLayerObject: function (operationalLayer, layerData) {
+            var i;
+            if (operationalLayer.layers) {
+                for (i = 0; i < operationalLayer.layers.length; i++) {
+                    if (operationalLayer.layers[i].id === layerData.id) {
+                        layerData = operationalLayer.layers[i];
+                        break;
+                    }
+                }
+            }
+            return layerData;
+        },
         /**
         * activate events on map
         * @memberOf widgets/mapSettings/mapSettings
@@ -217,13 +250,14 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _showInfoWindowOnMap: function (mapPoint) {
-            var onMapFeaturArray = [], featureArray, j, i;
+            var onMapFeaturArray = [], featureArray = [], j, i;
             for (i = 0; i < appGlobals.operationalLayers.length; i++) {
                 if (appGlobals.operationalLayers[i].layerObject.visibleAtMapScale && appGlobals.operationalLayers[i].popupInfo) {
-                    this._executeQueryTask(i, mapPoint, appGlobals.operationalLayers[i].url, onMapFeaturArray);
+                    if (!appGlobals.operationalLayers[i].layerObject.hideInfo) {
+                        this._executeQueryTask(i, mapPoint, appGlobals.operationalLayers[i].url, onMapFeaturArray);
+                    }
                 }
             }
-            featureArray = [];
             all(onMapFeaturArray).then(lang.hitch(this, function (result) {
                 if (result) {
                     for (j = 0; j < result.length; j++) {
@@ -244,6 +278,18 @@ define([
             }));
         },
 
+        /**
+        * hide infoWindow
+        * @memberOf widgets/mapSettings/mapSettings
+        */
+        _hideInfoWindow: function () {
+            //check if infoWindow is opened
+            if (appGlobals.shareOptions.infoWindowIsShowing && this.infoWindowPanel) {
+                this.infoWindowPanel.hide();
+                appGlobals.shareOptions.infoWindowIsShowing = false;
+                appGlobals.shareOptions.mapPointForInfowindow = null;
+            }
+        },
         /**
         * fetch infoWindow data from query task result
         * @memberOf widgets/mapSettings/mapSettings
@@ -269,10 +315,10 @@ define([
                     domAttr.set(query(".esriCTdivInfoTotalFeatureCount")[0], "innerHTML", '/' + featureArray.length);
                     domStyle.set(headerPanel, "display", "block");
                     domClass.remove(headerPanelnew, "esriCTNewHeaderPanel");
-                    query(".esriCTdivInfoRightArrow")[0].onclick = lang.hitch(this, function (evt) {
+                    query(".esriCTdivInfoRightArrow")[0].onclick = lang.hitch(this, function () {
                         this._nextInfoContent(featureArray, point);
                     });
-                    query(".esriCTdivInfoLeftArrow")[0].onclick = lang.hitch(this, function (evt) {
+                    query(".esriCTdivInfoLeftArrow")[0].onclick = lang.hitch(this, function () {
                         this._previousInfoContent(featureArray, point);
                     });
                 }
@@ -287,11 +333,16 @@ define([
         * @memberOf widgets/mapSettings/mapSettings
         */
         _executeQueryTask: function (index, mapPoint, QueryURL, onMapFeaturArray) {
-            var esriQuery, queryTask, queryOnRouteTask, currentTime, layerIndex = index;
+            var esriQuery, queryTask, queryOnRouteTask, currentTime, layerIndex = index, queryString;
             queryTask = new QueryTask(QueryURL);
             esriQuery = new Query();
-            currentTime = new Date();
-            esriQuery.where = currentTime.getTime() + index.toString() + "=" + currentTime.getTime() + index.toString();
+            currentTime = new Date().getTime() + index.toString();
+            queryString = currentTime + "=" + currentTime;
+            //set where clause to honor definition expression configured in webmap
+            if (appGlobals.operationalLayers[index].layerObject.webmapDefinitionExpression) {
+                queryString += " AND " + appGlobals.operationalLayers[index].layerObject.webmapDefinitionExpression;
+            }
+            esriQuery.where = queryString;
             esriQuery.returnGeometry = true;
             esriQuery.geometry = this._extentFromPoint(mapPoint);
             esriQuery.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;

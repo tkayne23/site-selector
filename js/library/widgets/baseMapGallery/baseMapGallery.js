@@ -59,9 +59,12 @@ define([
             this.map.on("layer-add", lang.hitch(this, function (layer) {
                 this.enableToggling = true;
             }));
-            //add basemap toggle div in application parent div
-            dom.byId("esriCTParentDivContainer").appendChild(this.esriCTDivLayerContainer);
-            this.layerList.appendChild(this._createBaseMapElement());
+            //do not display basemap toggle if only one basemap is found
+            if (appGlobals.configData.BaseMapLayers.length > 1) {
+                dom.byId("esriCTParentDivContainer").appendChild(this.esriCTDivLayerContainer);
+                //add basemap toggle div in application parent div
+                this.layerList.appendChild(this._createBaseMapElement());
+            }
             this._loadSharedBasemap();
 
         },
@@ -109,7 +112,7 @@ define([
             //check if old basemap has multilayer
             if (basemapLayers.length) {
                 array.forEach(basemapLayers, lang.hitch(this, function (layer, index) {
-                    basemap = this.map.getLayer(layer.basemapId);
+                    basemap = this.map.getLayer(layer.BasemapId);
                     if (basemapLayers.length - 1 === index) {
                         this.enableToggling = true;
                     }
@@ -120,7 +123,7 @@ define([
                 }));
             } else {
                 //remove previous basemap layer from map
-                basemap = this.map.getLayer(basemapLayers.basemapId);
+                basemap = this.map.getLayer(basemapLayers.BasemapId);
                 if (basemap) {
                     this.enableToggling = true;
                     this.isBasemapLayerRemoved = true;
@@ -139,7 +142,7 @@ define([
             if (basemapLayers.length) {
                 array.forEach(basemapLayers, lang.hitch(this, function (basemap, index) {
                     this.enableToggling = false;
-                    layer = new ArcGISTiledMapServiceLayer(basemap.MapURL, { id: basemap.basemapId, visible: true });
+                    layer = new ArcGISTiledMapServiceLayer(basemap.MapURL, { id: basemap.BasemapId, visible: true });
                     this.map.addLayer(layer, index);
                 }));
             } else {
@@ -147,24 +150,24 @@ define([
                 //add basemap layer on map
                 if (basemapLayers.layerType === "OpenStreetMap") {
                     //add basemap as open street layer
-                    layer = new OpenStreetMapLayer({ id: basemapLayers.basemapId, visible: true });
+                    layer = new OpenStreetMapLayer({ id: basemapLayers.BasemapId, visible: true });
                 } else if (basemapLayers.layerType === "ArcGISMapServiceLayer") {
                     imageParameters = new ImageParameters();
                     layer = new ArcGISDynamicMapServiceLayer(basemapLayers.MapURL, {
                         "imageParameters": imageParameters,
-                        id: basemapLayers.basemapId
+                        id: basemapLayers.BasemapId
                     });
                 } else if (basemapLayers.layerType === "ArcGISImageServiceLayer") {
                     //add basemap as image service layer
                     params = new ImageServiceParameters();
                     layer = new ArcGISImageServiceLayer(basemapLayers.MapURL, {
                         imageServiceParameters: params,
-                        id: basemapLayers.basemapId,
+                        id: basemapLayers.BasemapId,
                         opacity: 0.75
                     });
                 } else {
                     //add basemap as tiled service layer
-                    layer = new ArcGISTiledMapServiceLayer(basemapLayers.MapURL, { id: basemapLayers.basemapId, visible: true });
+                    layer = new ArcGISTiledMapServiceLayer(basemapLayers.MapURL, { id: basemapLayers.BasemapId, visible: true });
                 }
                 this.map.addLayer(layer, 0);
             }
@@ -176,11 +179,17 @@ define([
         */
         _loadSharedBasemap: function () {
             //check if basemap is shared in app URL
-            if (window.location.toString().split("$selectedBasemapIndex=").length > 1) {
+            if (window.location.toString().split("$selectedBasemapIndex=").length > 1 && appGlobals.configData.BaseMapLayers.length > 1) {
+                var preLayerIndex;
                 //display shared basemap layer on map
-                var preLayerIndex = appGlobals.shareOptions.selectedBasemapIndex;
+                if (this.isWebmap) {
+                    preLayerIndex = appGlobals.shareOptions.selectedBasemapIndex;
+                }
                 appGlobals.shareOptions.selectedBasemapIndex = parseInt(window.location.toString().split("$selectedBasemapIndex=")[1].split("$")[0], 10);
-                this._changeBasemapThumbnail(preLayerIndex);
+                // check if shared basemap is already added on map
+                if (preLayerIndex !== appGlobals.shareOptions.selectedBasemapIndex) {
+                    this._changeBasemapThumbnail(preLayerIndex);
+                }
             } else if (!this.isWebmap) {
                 //add default basemap on map if it is not a webmap
                 this._addBasemapLayerOnMap();

@@ -1,4 +1,4 @@
-/*global dojo,define */
+﻿/*global dojo,define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
  | Copyright 2013 Esri
@@ -50,7 +50,7 @@ define([], function () {
         // GENERAL SETTINGS
         // ------------------------------------------------------------------------------------------------------------------------
         // Set application title
-        ApplicationName: "Site Selector",
+        ApplicationName: "Residential Comp Finder",
 
         // Set application icon path
         ApplicationIcon: "/js/library/themes/images/site-selector-logo.png",
@@ -66,7 +66,7 @@ define([], function () {
 
         // Set splash window content - Message that appears when the application starts
         SplashScreen: {
-            SplashScreenContent: "The <b>Site Selector</b> application helps business owners and corporations search for and locate available buildings and sites, and combine their property search with key community and business demographic information.   Access to this information facilitates better business decisions and helps to ensure that investments in the area are sustainable and align with their corporate vision.</br><br>Search for a building, site, or community to access detailed property or demographic information and generate reports that can be shared with others.",
+            SplashScreenContent: "The <b>Comp Finder</b> application helps citizens and real estate professionals search for and locate recent residential property sales, and combine their sales search with key community and business demographic information.   Access to this information facilitates better real estate decisions.",
             IsVisible: true
         },
 
@@ -118,19 +118,19 @@ define([], function () {
         DistanceUnitSettings: {
             DistanceUnitName: "Miles", // Allowed values for DistanceUnitName are "Miles", "Kilometers", "Meters" and "Feet".
             MinimumValue: 1,
-            MaximumValue: 50
+            MaximumValue: 5
         },
 
         // Set buffer symbology
         BufferSymbology: {
-            FillSymbolColor: "255,0,0",
-            FillSymbolTransparency: "0.20",
-            LineSymbolColor: "255,0,0",
+            FillSymbolColor: "0,171,169",
+            FillSymbolTransparency: "0.15",
+            LineSymbolColor: "42,106,255",
             LineSymbolTransparency: "0.30"
         },
 
         //Set the color of the circle around the selected point
-        RippleColor: "0,255,255",
+        RippleColor: "0,171,169",
 
         //Set the size of the circle around the selected point
         LocatorRippleSize: 40,
@@ -157,45 +157,57 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "751b99d469bf41668d0e59d69d1b3a9a",
-        Workflows: [
+        WebMapId: "ce4726a989e74f108202c75225c4d324",
+          Workflows: [
             {
-                Name: "Buildings",
+                Name: "Sales",
                 Enabled: true,
                 SearchSettings: [
                     {
-                        Title: "Buildings",
-                        QueryLayerId: "1",
-                        SearchDisplayTitle: "Buildings",
-                        SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
-                        SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
+                        Title: "Sales",
+                        QueryLayerId: "0",
+                        SearchDisplayTitle: "Parcel",
+                        SearchDisplayFields: "${PARCELID}",
+                        SearchExpression: "UPPER(PARCELID) LIKE UPPER('${0}%')",
 
                         FilterSettings: {
                             FilterRangeFields: [
                                 {
-                                    DisplayText: "Area (sqft)",
-                                    FieldName: "BLDGAREA"
-                                }
+                                    DisplayText: "Floor Area (sqft)",
+                                    FieldName: "RESFLRAREA"
+                                },
+								{
+                                    DisplayText: "Sale Price",
+                                    FieldName: "SALEAMNT"
+                                },
+								{
+                                    DisplayText: "Assessed Value",
+                                    FieldName: "CNTASSDVAL"
+                                },
+								{
+									DisplayText: "Year Built",
+                                    FieldName: "RESYRBLT"
+								}
                             ],
                             RegularFilterOptionFields: [
-                            ],
+								                       ],
 
                             AdditionalFilterOptions: {
                                 Enabled: true,
-                                FilterFieldName: "ZONEDESC",
+                                FilterFieldName: "RESSTRTYPE",
                                 FilterOptions: [
                                     {
-                                        DisplayText: "Agricultural",
-                                        FieldValue: "Agricultural"
+                                        DisplayText: "Colonial",
+                                        FieldValue: "Colonial"
                                     }, {
-                                        DisplayText: "Industrial",
-                                        FieldValue: "Industrial"
+                                        DisplayText: "Georgian",
+                                        FieldValue: "Georgian"
                                     }, {
-                                        DisplayText: "Office",
-                                        FieldValue: "Office"
+                                        DisplayText: "Bungalow",
+                                        FieldValue: "Bungalow"
                                     }, {
-                                        DisplayText: "Retail",
-                                        FieldValue: "Retail"
+                                        DisplayText: "Ranch",
+                                        FieldValue: "Ranch"
                                     }
                                 ]
                             }
@@ -207,24 +219,20 @@ define([], function () {
                         ShowAttachments: true,
                         DisplayFields: [
                             {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR",
+                                DisplayText: "Parcel Number:",
+                                FieldName: "PARCELID",
+                                SortingEnabled: true
+                            }, {
+                                DisplayText: "Site Address:",
+                                FieldName: "SITEADDRESS",
+                                SortingEnabled: true
+							}, {
+                                DisplayText: "Sale Price: $",
+                                FieldName: "SALEAMNT",
                                 SortingEnabled: false
                             }, {
-                                DisplayText: "Municipality:",
-                                FieldName: "MUNICIPALITY",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Area (sqft):",
-                                FieldName: "BLDGAREA",
+                                DisplayText: "Current Assessed Value: $",
+                                FieldName: "CNTASSDVAL",
                                 SortingEnabled: true
                             }
 
@@ -234,21 +242,38 @@ define([], function () {
                         ShowAttachments: true,
                         DisplayTitle: "Property Information",
                         DisplayFields: [
-                            {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR"
+                              {
+                                DisplayText: "Parcel Number:",
+                                FieldName: "PARCELID",
+                                SortingEnabled: true
                             }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY"
+                                DisplayText: "Site Address:",
+                                FieldName: "SITEADDRESS",
+                                SortingEnabled: true
+							}, {
+                                DisplayText: "Sale Price: $",
+                                FieldName: "SALEAMNT",
+                                SortingEnabled: false
                             }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP"
+                                DisplayText: "Current Assessed Value:",
+                                FieldName: "CNTASSDVAL",
+                                SortingEnabled: true
                             }, {
-                                DisplayText: "Type:",
-                                FieldName: "ZONEDESC"
+                                DisplayText: "Residential Floor Area (sq. ft):",
+                                FieldName: "RESFLRAREA",
+                                SortingEnabled: true
                             }, {
-                                DisplayText: "Area (sqft):",
-                                FieldName: "BLDGAREA"
+                                DisplayText: "Grantor:",
+                                FieldName: "GRANTOR",
+                                SortingEnabled: true
+                            }, {
+                                DisplayText: "Grantee:",
+                                FieldName: "GRANTEE",
+                                SortingEnabled: true
+                            }, {
+                                DisplayText: "Tax District:",
+                                FieldName: "CVTTXCD",
+                                SortingEnabled: true
                             }
                         ]
                     },
@@ -260,9 +285,24 @@ define([], function () {
                         DisplayTitle: "Neighborhood Information",
                         DisplayFields: [
                             {
-                                DisplayText: "Dominant Tapestry Segment",
-                                FieldName: "Policy.TSEGNAME"
+                                DisplayText: "Median Home Value",
+                                FieldName: "KeyUSFacts.MEDVAL_CY"
                             }, {
+                                DisplayText: "Average Home Value",
+                                FieldName: "KeyUSFacts.AVGVAL_CY"
+							}, {	
+								DisplayText: "Average Household Income",
+                                FieldName: "KeyUSFacts.AVGHINC_CY"
+                            }, {
+                                DisplayText: "Median Household Income",
+                                FieldName: "KeyUSFacts.MEDHINC_CY"
+                            }, {
+                                DisplayText: "Per Capita Income",
+                                FieldName: "KeyUSFacts.PCI_CY"
+							}, {
+								DisplayText: "Dominant Tapestry Segment",
+                                FieldName: "Policy.TSEGNAME"
+							}, {	
                                 DisplayText: "Labor Force Participation Rate",
                                 FieldName: "Industry.CIVLBFR_CY"
                             }, {
@@ -275,15 +315,6 @@ define([], function () {
                                 DisplayText: "Average Household Size",
                                 FieldName: "KeyUSFacts.AVGHHSZ_CY"
                             }, {
-                                DisplayText: "Average Household Income",
-                                FieldName: "KeyUSFacts.AVGHINC_CY"
-                            }, {
-                                DisplayText: "Median Household Income",
-                                FieldName: "KeyUSFacts.MEDHINC_CY"
-                            }, {
-                                DisplayText: "Per Capita Income",
-                                FieldName: "KeyUSFacts.PCI_CY"
-                            }, {
                                 DisplayText: "Total Housing Units",
                                 FieldName: "KeyUSFacts.TOTHU_FY"
                             }, {
@@ -295,12 +326,6 @@ define([], function () {
                             }, {
                                 DisplayText: "Vacant Housing Units",
                                 FieldName: "KeyUSFacts.VACANT_CY"
-                            }, {
-                                DisplayText: "Median Home Value",
-                                FieldName: "KeyUSFacts.MEDVAL_CY"
-                            }, {
-                                DisplayText: "Average Home Value",
-                                FieldName: "KeyUSFacts.AVGVAL_CY"
                             }
                         ]
                     },
@@ -313,7 +338,7 @@ define([], function () {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
                             Filetype: "PDF" //allowed PDF or XLSX
-			}, {
+						}, {
                             DisplayOptionTitle: "Demographic and Income Profile",
                             GeoEnrichmentReportName: "dandi",
                             Filetype: "PDF" //allowed PDF or XLSX
@@ -322,7 +347,7 @@ define([], function () {
                 }
             }, {
                 Name: "Sites",
-                Enabled: true,
+                Enabled: false,
                 SearchSettings: [
                     {
                         Title: "Sites",
@@ -475,7 +500,7 @@ define([], function () {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
                             Filetype: "PDF" //allowed PDF or XLSX
-			}, {
+						}, {
                             DisplayOptionTitle: "Demographic and Income Profile",
                             GeoEnrichmentReportName: "dandi",
                             Filetype: "PDF" //allowed PDF or XLSX
@@ -484,7 +509,7 @@ define([], function () {
                 }
             }, {
                 Name: "Business",
-                Enabled: true,
+                Enabled: false,
                 FilterSettings: {
                     BusinesSortOptions: { Option: "Count,Revenue,Employees" },
                     FilterRangeFields: [
@@ -588,7 +613,7 @@ define([], function () {
                 EnableDropdown: true,
                 FilterSettings: {
                     StandardGeographyQuery: {
-                        LocatorDefaultAddress: "Baltimore, MD",
+                        LocatorDefaultAddress: "Naperville, IL",
                         QueryField: "geographyQuery",
                         SourceCountry: "US",
                         FeatureLimit: 10
@@ -678,7 +703,7 @@ define([], function () {
                 height: 35
             },
             DisplayText: "Address",
-            LocatorDefaultAddress: "4401 Hartwick Rd, College Park, Maryland, 20740",
+            LocatorDefaultAddress: "23 S Julian St, Naperville, Illinois, USA",
             LocatorParameters: {
                 SearchField: "SingleLine",
                 SearchBoundaryField: "searchExtent"

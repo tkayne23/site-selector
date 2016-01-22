@@ -53,6 +53,7 @@ define([
             this.domNode = domConstruct.create("div", { "class": "esriGovtLoadSpashScreen" }, document.body);
             this.domNode.appendChild(this.splashScreenScrollBarOuterContainer);
             domConstruct.create("div", { "class": "esriCTLoadingIndicator", "id": "splashscreenlodingIndicator" }, this.splashScreenScrollBarOuterContainer);
+            on(window, "resize", lang.hitch(this, this.resizeSplashScreenDialog));
         },
 
         /**
@@ -63,9 +64,19 @@ define([
             var splashScreenContent;
             domStyle.set(this.domNode, "display", "block");
             splashScreenContent = domConstruct.create("div", { "class": "esriGovtSplashContent" }, this.splashScreenScrollBarContainer);
+            this.splashScreenScrollBarContainer.style.height = (this.splashScreenDialogContainer.offsetHeight - 70) + "px";
             domAttr.set(splashScreenContent, "innerHTML", appGlobals.configData.SplashScreen.SplashScreenContent);
         },
 
+        /*
+        *resize splash screen
+        * @memberOf widgets/splashScreen/splashScreen
+        */
+        resizeSplashScreenDialog: function () {
+            if (this.splashScreenScrollBarContainer && this.splashScreenDialogContainer) {
+                this.splashScreenScrollBarContainer.style.height = (this.splashScreenDialogContainer.offsetHeight - 70) + "px";
+            }
+        },
         /**
         * hide splash screen dialog
         * @memberOf widgets/splashScreen/splashScreen

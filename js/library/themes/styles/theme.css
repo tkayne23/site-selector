@@ -188,13 +188,13 @@ html, body
 {
     border: #DFDFDF solid 1px;
     outline: medium none;
-    padding: 5px 7px !important;
+    padding: 5px 5px 5px 7px !important;
     vertical-align: middle !important;
-    width: 242px;
+    width: 100%;
     overflow: hidden;
     vertical-align: middle !important;
     height: 18px;
-    float: right;
+    float: left;
 }
 
 input
@@ -209,7 +209,6 @@ input
 input[type="text"]
 {
     border: 1px solid #DFDFDF;
-    padding: 5px;
     -webkit-appearance: none;
     overflow: hidden;
     border-radius: 0px !important;
@@ -249,7 +248,7 @@ input[type="text"]
     float: left;
     margin-top: 5px;
     overflow: hidden;
-    width: 320px;
+    width: 100%;
 }
 
 .esriCTColorChange
@@ -327,8 +326,10 @@ input[type="text"]
     border-right: 1px solid #DFDFDF;
     border-bottom: 1px solid #DFDFDF;
     cursor: pointer;
-    float: left;
-    padding: 4px;
+    width: 24px;
+    vertical-align: middle;
+    padding: 4px 4px 4px 19px;
+    display: table-cell;
 }
 
 .esriCTClearInput
@@ -339,7 +340,6 @@ input[type="text"]
     float: left;
     height: 20px !important;
     width: 20px;
-    float: left;
     cursor: pointer;
 }
 
@@ -485,9 +485,9 @@ input[type="text"]
 
 .horizontalSlider
 {
-    width: 330px !important; /*345 */
     margin-top: 15px !important;
     margin-left: -5px;
+    margin-right: -5px;
 }
 
 .dijitSliderButtonContainerH, .dijitSliderDecrementButtonHover
@@ -610,9 +610,14 @@ input[type="text"]
 
 .splashScreenScrollBarContainer
 {
-    width: 100% !important;
     position: relative !important;
     margin-top: 10px;
+    height: calc(100% - 75px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    text-align: justify;
+    padding: 0px 14px 10px 14px;
 }
 
 .esriGovtLoadSpashScreen
@@ -647,20 +652,6 @@ input[type="text"]
     height: 290px;
     position: relative;
     z-index: 10002;
-}
-
-.esriGovtSplashContent
-{
-    overflow: hidden;
-    width: 92% !important;
-    margin-top: 10px;
-    padding: 0px 14px;
-    position: relative;
-    text-align: justify;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 210px;
-    -webkit-overflow-scrolling: touch;
 }
 
 .customButton
@@ -901,7 +892,7 @@ input[type="text"]
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    width: 89px;
+    width: 90%;
     margin-left: 3px;
 }
 
@@ -922,14 +913,21 @@ input[type="text"]
 {
     margin-top: 5px;
 }
+
 .esriOuterDivContainer
 {
     float: left;
     width: 100%;
 }
+
+.esriOuterDivContainer .esriOuterDiv
+{
+    display: table;
+}
+
 .esriOuterDiv
 {
-    width: 320px;
+    width: 87%;
     height: auto !important;
     margin-top: 10px;
     margin: 0 auto;
@@ -957,15 +955,15 @@ input[type="text"]
 .esriCTAddressClear
 {
     clear: both;
-    float: left;
     width: 100%;
-    margin: 10px 0 15px 0;
+    margin: 15px 0 10px 0;
 }
 
 .esriCTSearch
 {
-    float: right;
-    margin-left: 2px;
+    width: 30px;
+    display: table-cell;
+    padding-left: 3px;
     cursor: pointer;
 }
 
@@ -1034,6 +1032,8 @@ input[type="text"]
 
 .esriCTAddressPlaceHolder
 {
+    display: table;
+    width: 100%;
     position: relative;
     cursor: default !important;
 }
@@ -1274,6 +1274,7 @@ input[type="text"]
 .dijitRuleContainer
 {
     margin-top: 10px;
+    width: 100%;
 }
 
 .dijitRuleLabelsContainer
@@ -1326,22 +1327,11 @@ input[type="text"]
     height: 3px !important;
 }
 
-.dijitSliderImageHAndleH
-{
-    left: 18% !important;
-    top: -3px;
-}
-
 .claro .dijitRuleMark
 {
     color: #808080 !important;
     border-right-color: #808080 !important;
     border: none;
-}
-
-.dijitRuleMark .dijitRuleMarkH
-{
-    margin-left: 96% !important;
 }
 
 .dijitSliderImageHandleH
@@ -1357,17 +1347,18 @@ input[type="text"]
 .esriCTSlider
 {
     height: 25px;
-    clear: both; /*margin-left: 5px;*/
+    clear: both;
+    margin-left: 0px;
 }
 
 .esriCTHorizontalRuleContainer, .horizontalRule
 {
-    width: 300px;
+    width: 100%;
 }
 
 .esriCTHorizontalSliderContainer
 {
-    width: 200px;
+    width: 100%;
     margin-left: 25px;
 }
 
@@ -1554,7 +1545,7 @@ input[type="text"]
 {
     width: 100%;
     position: relative;
-    float: left;
+    float: none;
     height: auto;
 }
 
@@ -1568,7 +1559,7 @@ input[type="text"]
 {
     margin-right: 16px;
     float: right;
-    width: 48%;
+    width: 40%;
     text-align: right;
 }
 
@@ -1616,7 +1607,6 @@ input[type="text"]
 {
     margin-left: 1px;
     height: 20px;
-    width: 34%;
     float: left;
 }
 
@@ -1647,6 +1637,7 @@ input[type="text"]
     float: left;
     width: 33px;
     height: 15px;
+    line-height: 15px;
     margin-left: 2px;
     text-align: center;
     vertical-align: middle;
@@ -1694,7 +1685,6 @@ input[type="text"]
 
 .esriCTOuterResultDiv
 {
-    float: left;
     width: 100%;
 }
 
@@ -1722,22 +1712,26 @@ input[type="text"]
     padding-left: 5px;
 }
 
+.esriCTDefaultAttachmentIcon
+{
+    cursor: pointer;
+}
+
 .esriCTFeatureInfo
 {
     width: 98%;
     float: left;
 }
 
-.esriCTAttchImages img
-{
-    width: 160px;
-    height: 160px;
-}
-
 .esriCTAttachmentDiv img
 {
     height: 175px;
     width: 175px;
+}
+
+.esriCTAutoWidth
+{
+    width: auto !important;
 }
 
 .esriCTHorizantalLine
@@ -1763,7 +1757,7 @@ input[type="text"]
 .esriCTAttachmentParenDiv
 {
     margin: 0 auto;
-    width: 320px;
+    width: 87%;
 }
 
 .esriCTBackToResultImage
@@ -1882,7 +1876,8 @@ div.esriCTPrev
 
 .esriCTAddressSize
 {
-    float: left;
+    display: table-cell;
+    width: 100%;
 }
 
 .esriCTsearchContentBusiness
@@ -2156,7 +2151,7 @@ label.css-label
     height: -webkit-calc(100% - 90px);
     height: -o-calc(100% - 90px);
     position: absolute;
-    top: 87px;
+    top: 86px;
     width: 100%;
 }
 
@@ -2210,6 +2205,7 @@ label.css-label
     height: auto;
     float: left;
     width: 100%;
+    -webkit-transform: translate3d(0,0,0);
 }
 
 .esriCTClearFilterIcon
@@ -2245,4 +2241,3 @@ label.css-label
     cursor: pointer;
     margin: 3px 0 3px 10px;
 }
-
