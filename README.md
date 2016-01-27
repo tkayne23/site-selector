@@ -1,7 +1,7 @@
 site-selector
 ==============
 
-The Site Selector application is a configuration of ArcGIS and a JavaScript application that helps business owners and corporations locate available buildings and sites, and combine their property search with key community and business demographic information. We have two configurations of this application focused on the workflows for State and Local Governments. 
+The Site Selector application is a configuration of ArcGIS and a JavaScript application that helps business owners and corporations locate available buildings and sites, and combine their property search with key community and business demographic information. We have two configurations of this application focused on the workflows for State and Local Governments.
 
 * Try the [Site Selector (State Government) application](http://links.esri.com/stategovernment/tryit/SiteSelector)
 * Try the [Site Selector (Local Government) application](http://links.esri.com/localgovernment/tryit/SiteSelector)
@@ -11,7 +11,7 @@ The Site Selector application is a configuration of ArcGIS and a JavaScript appl
 ## Features
 
 * Search for a place by name, by current location, by address
-* Review ammenities at a given place, assess demographic  variables 
+* Review ammenities at a given place, assess demographic  variables
 * Share information via social media
 
 ## Requirements
@@ -73,6 +73,6 @@ limitations under the License.
 A copy of the license is available in the repository's
 [LICENSE.txt](https://raw.github.com/Esri/configurable-place-finder/master/LICENSE.txt) file.
 
-[](Esri Tags: State-Government Local-Government State Local Government Site Selector)
+[](Esri Tags: ArcGISSolutions State-Government Local-Government State Local Government Site Selector)
 [](Esri Language: JavaScript)
 
