@@ -53,10 +53,10 @@ define([], function () {
         ApplicationName: "Residential Comp Finder",
 
         // Set application icon path
-        ApplicationIcon: "/js/library/themes/images/site-selector-logo.png",
+        ApplicationIcon: "/js/library/themes/images/comp-finder-logo-blue.png",
 
         // Set application Favicon path
-        ApplicationFavicon: "/js/library/themes/images/faviconBlue.ico",
+        ApplicationFavicon: "/js/library/themes/images/faviconBlue_CompFinder.ico",
 
         // Set URL of help page/portal
         HelpURL: "help.htm",
