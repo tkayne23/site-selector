@@ -140,20 +140,20 @@ define([], function () {
         // Configure workflows
 
         // Name: Specify the workflow name. Workflow names have to be unique. It is displayed in the tabs in search panel.
-        // WebMapId: Specify the WebMapId for operational layers. Mandatory if Buildings and Sites workflows are enabled.
+        // WebMapId: Specify the WebMapId for operational layers.
         // SearchSettings: Configure search settings for each workflow.
         // Title: Must match layer name specified in webmap.
         // QueryLayerId: This is the layer index in the webmap and is used for performing queries.
         // SearchDisplayTitle: This text is displayed in search results as the title to group results.
         // SearchDisplayFields: Attribute that will be displayed in the search box when user performs a search.
         // SearchExpression: Configure the query expression to be used for search.
-        // FilterSettings: Configure filtering options for buildings, sites and business workflows.
+        // FilterSettings: Configure filtering options for each tab.
         // FilterRangeFields: Text box controls for 'From' and 'To' are displayed for filter ranges configured under FilterRangeFields.
         // RegularFilterOptionFields: Checkboxes are displayed for filters configured under FilterOptionFields.
         // AdditionalFilterOptions: Checkboxes are displayed for filters configured under AdditionalFilterOptions.
         // InfoPanelSettings: Configure settings for items shown in info panel.
-        // ResultContents: Used in Buildings and Sites workflows for displaying list of search results.
-        // LayerContents: Used in Buildings and Sites workflows for displaying detailed information of Building or Site.
+        // ResultContents: Used for displaying a list of search results from the operational layer(s).
+        // LayerContents: Used for displaying detailed information for the selected feature from the operational layer(s).
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
