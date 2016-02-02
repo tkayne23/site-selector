@@ -59,7 +59,7 @@ define([], function () {
         ApplicationFavicon: "/js/library/themes/images/faviconBlue_CompFinder.ico",
 
         // Set URL of help page/portal
-        HelpURL: "help.htm",
+        HelpURL: "help_CompFinder.htm",
 
         // Set custom logo url, displayed in lower left corner. Set to empty "" to disable.
         CustomLogoUrl: "",
