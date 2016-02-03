@@ -731,8 +731,8 @@ define([], function () {
         MapSharingOptions: {
             TinyURLServiceURL: "https://api-ssl.bitly.com/v3/shorten?longUrl=${0}",
             TinyURLResponseAttribute: "data.url",
-            FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Site%20Selector",
-            TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Site%20Selector ${0}",
+            FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Residential%20Comp%20Finder",
+            TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Residential%20Comp%20Finder ${0}",
             ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map&body=${0}"
         },
 
