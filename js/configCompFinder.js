@@ -175,22 +175,18 @@ define([], function () {
                                 {
                                     DisplayText: "Floor Area (sqft)",
                                     FieldName: "RESFLRAREA"
-                                },
-								{
+                                }, {
                                     DisplayText: "Sale Price",
                                     FieldName: "SALEAMNT"
-                                },
-								{
+                                }, {
                                     DisplayText: "Assessed Value",
                                     FieldName: "CNTASSDVAL"
-                                },
-								{
-									DisplayText: "Year Built",
+                                }, {
+				    DisplayText: "Year Built",
                                     FieldName: "RESYRBLT"
-								}
+				}
                             ],
-                            RegularFilterOptionFields: [
-								                       ],
+                            RegularFilterOptionFields: [ ],
 
                             AdditionalFilterOptions: {
                                 Enabled: true,
@@ -226,7 +222,7 @@ define([], function () {
                                 DisplayText: "Site Address:",
                                 FieldName: "SITEADDRESS",
                                 SortingEnabled: true
-							}, {
+		            }, {
                                 DisplayText: "Sale Price: $",
                                 FieldName: "SALEAMNT",
                                 SortingEnabled: false
@@ -250,7 +246,7 @@ define([], function () {
                                 DisplayText: "Site Address:",
                                 FieldName: "SITEADDRESS",
                                 SortingEnabled: true
-							}, {
+			    }, {
                                 DisplayText: "Sale Price: $",
                                 FieldName: "SALEAMNT",
                                 SortingEnabled: false
@@ -290,8 +286,8 @@ define([], function () {
                             }, {
                                 DisplayText: "Average Home Value",
                                 FieldName: "KeyUSFacts.AVGVAL_CY"
-							}, {	
-								DisplayText: "Average Household Income",
+			    }, {	
+				DisplayText: "Average Household Income",
                                 FieldName: "KeyUSFacts.AVGHINC_CY"
                             }, {
                                 DisplayText: "Median Household Income",
@@ -299,10 +295,10 @@ define([], function () {
                             }, {
                                 DisplayText: "Per Capita Income",
                                 FieldName: "KeyUSFacts.PCI_CY"
-							}, {
-								DisplayText: "Dominant Tapestry Segment",
+			    }, {
+				DisplayText: "Dominant Tapestry Segment",
                                 FieldName: "Policy.TSEGNAME"
-							}, {	
+			    }, {	
                                 DisplayText: "Labor Force Participation Rate",
                                 FieldName: "Industry.CIVLBFR_CY"
                             }, {
@@ -338,7 +334,7 @@ define([], function () {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
                             Filetype: "PDF" //allowed PDF or XLSX
-						}, {
+			}, {
                             DisplayOptionTitle: "Demographic and Income Profile",
                             GeoEnrichmentReportName: "dandi",
                             Filetype: "PDF" //allowed PDF or XLSX
@@ -362,8 +358,7 @@ define([], function () {
                                     FieldName: "TOTAREA"
                                 }
                             ],
-                            RegularFilterOptionFields: [
-                            ],
+                            RegularFilterOptionFields: [ ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
                                 FilterFieldName: "ZONEDESC",
@@ -634,8 +629,7 @@ define([], function () {
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
                                     FieldName: "Industry.CIVLBFR_CY"
-                                },
-                                {
+                                }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
                                 }, {
