@@ -300,7 +300,7 @@ define([], function () {
                                 FieldName: "Policy.TSEGNAME"
 			    }, {	
                                 DisplayText: "Labor Force Participation Rate",
-                                FieldName: "Industry.CIVLBFR_CY"
+                                FieldName: "industry.CIVLBFR_CY"
                             }, {
                                 DisplayText: "Total Population",
                                 FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -446,7 +446,7 @@ define([], function () {
                                 FieldName: "Policy.TSEGNAME"
                             }, {
                                 DisplayText: "Labor Force Participation Rate",
-                                FieldName: "Industry.CIVLBFR_CY"
+                                FieldName: "industry.CIVLBFR_CY"
                             }, {
                                 DisplayText: "Total Population",
                                 FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -522,21 +522,21 @@ define([], function () {
                         {
                             DisplayTitle: "Business Information",
                             DisplayTextForBusinessCount: "Count",
-                            BusinessDataCollectionName: "IndustryByNAICSCode",
+                            BusinessDataCollectionName: "industrybynaicscode",
 
                             BusinessSummaryFields: [
                                 {
                                     DisplayText: "Businesses",
-                                    FieldName: "IndustryByNAICSCode.N01_BUS"
+                                    FieldName: "industrybynaicscode.N01_BUS"
                                 }, {
                                     DisplayText: "Revenue",
-                                    FieldName: "IndustryByNAICSCode.N01_SALES"
+                                    FieldName: "industrybynaicscode.N01_SALES"
                                 }, {
                                     DisplayText: "Employees",
-                                    FieldName: "IndustryByNAICSCode.N01_EMP"
+                                    FieldName: "industrybynaicscode.N01_EMP"
                                 }, {
                                     DisplayText: "Unemployment",
-                                    FieldName: "Industry.UNEMPRT_CY"
+                                    FieldName: "industry.UNEMPRT_CY"
                                 }
                             ]
                         }, {
@@ -548,7 +548,7 @@ define([], function () {
                                     FieldName: "Policy.TSEGNAME"
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "Industry.CIVLBFR_CY"
+                                    FieldName: "industry.CIVLBFR_CY"
                                 }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -628,7 +628,7 @@ define([], function () {
                                     FieldName: "Policy.TSEGNAME"
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "Industry.CIVLBFR_CY"
+                                    FieldName: "industry.CIVLBFR_CY"
                                 }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
