@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "751b99d469bf41668d0e59d69d1b3a9a",
+        WebMapId: "7b29715ea7584f68ab5a5ceea549da35",
         Workflows: [
             {
                 Name: "Buildings",
