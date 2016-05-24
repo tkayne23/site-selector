@@ -307,7 +307,7 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Property Information",
-                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
@@ -469,7 +469,7 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Site Information",
-                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
