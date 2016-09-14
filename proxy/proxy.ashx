@@ -398,7 +398,7 @@ public class proxy : IHttpHandler {
                         if (
                             !ignoreAuthenticationErrors
                             && strResponse.Contains("error")
-                            && (strResponse.Contains("\"code\": 498") || strResponse.Contains("\"code\": 499") || strResponse.Contains("\"code\":498") || strResponse.Contains("\"code\":499"))
+                            && Regex.Match(strResponse, "\"code\"\\s*:\\s*49[89]").Success
                         )
                             return true;
 
