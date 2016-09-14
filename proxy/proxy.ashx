@@ -263,15 +263,15 @@ public class proxy : IHttpHandler {
                     context.Application["token_for_" + serverUrl.Url] = token;
                     context.Application.UnLock();
                 }
-            }
 
-            //name by which token parameter is passed (if url actually came from the list)
-            tokenParamName = serverUrl != null ? serverUrl.TokenParamName : null;
+                //name by which token parameter is passed (if url actually came from the list)
+                tokenParamName = serverUrl != null ? serverUrl.TokenParamName : null;
 
-            if (String.IsNullOrEmpty(tokenParamName))
-                tokenParamName = "token";
+                if (String.IsNullOrEmpty(tokenParamName))
+                    tokenParamName = "token";
 
             requestUri = addTokenToUri(requestUri, token, tokenParamName);
+            }
         }
 
         //forwarding original request
