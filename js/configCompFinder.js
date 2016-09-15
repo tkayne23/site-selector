@@ -53,13 +53,13 @@ define([], function () {
         ApplicationName: "Residential Comp Finder",
 
         // Set application icon path
-        ApplicationIcon: "/js/library/themes/images/site-selector-logo.png",
+        ApplicationIcon: "/js/library/themes/images/comp-finder-logo-blue.png",
 
         // Set application Favicon path
-        ApplicationFavicon: "/js/library/themes/images/faviconBlue.ico",
+        ApplicationFavicon: "/js/library/themes/images/faviconBlue_CompFinder.ico",
 
         // Set URL of help page/portal
-        HelpURL: "help.htm",
+        HelpURL: "help_CompFinder.htm",
 
         // Set custom logo url, displayed in lower left corner. Set to empty "" to disable.
         CustomLogoUrl: "",
@@ -140,24 +140,24 @@ define([], function () {
         // Configure workflows
 
         // Name: Specify the workflow name. Workflow names have to be unique. It is displayed in the tabs in search panel.
-        // WebMapId: Specify the WebMapId for operational layers. Mandatory if Buildings and Sites workflows are enabled.
+        // WebMapId: Specify the WebMapId for operational layers.
         // SearchSettings: Configure search settings for each workflow.
         // Title: Must match layer name specified in webmap.
         // QueryLayerId: This is the layer index in the webmap and is used for performing queries.
         // SearchDisplayTitle: This text is displayed in search results as the title to group results.
         // SearchDisplayFields: Attribute that will be displayed in the search box when user performs a search.
         // SearchExpression: Configure the query expression to be used for search.
-        // FilterSettings: Configure filtering options for buildings, sites and business workflows.
+        // FilterSettings: Configure filtering options for each tab.
         // FilterRangeFields: Text box controls for 'From' and 'To' are displayed for filter ranges configured under FilterRangeFields.
         // RegularFilterOptionFields: Checkboxes are displayed for filters configured under FilterOptionFields.
         // AdditionalFilterOptions: Checkboxes are displayed for filters configured under AdditionalFilterOptions.
         // InfoPanelSettings: Configure settings for items shown in info panel.
-        // ResultContents: Used in Buildings and Sites workflows for displaying list of search results.
-        // LayerContents: Used in Buildings and Sites workflows for displaying detailed information of Building or Site.
+        // ResultContents: Used for displaying a list of search results from the operational layer(s).
+        // LayerContents: Used for displaying detailed information for the selected feature from the operational layer(s).
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "ce4726a989e74f108202c75225c4d324",
+        WebMapId: "1f69483b404a41749c85e33ce925be89",
           Workflows: [
             {
                 Name: "Sales",
@@ -175,22 +175,18 @@ define([], function () {
                                 {
                                     DisplayText: "Floor Area (sqft)",
                                     FieldName: "RESFLRAREA"
-                                },
-								{
+                                }, {
                                     DisplayText: "Sale Price",
                                     FieldName: "SALEAMNT"
-                                },
-								{
+                                }, {
                                     DisplayText: "Assessed Value",
                                     FieldName: "CNTASSDVAL"
-                                },
-								{
-									DisplayText: "Year Built",
+                                }, {
+				    DisplayText: "Year Built",
                                     FieldName: "RESYRBLT"
-								}
+				}
                             ],
-                            RegularFilterOptionFields: [
-								                       ],
+                            RegularFilterOptionFields: [ ],
 
                             AdditionalFilterOptions: {
                                 Enabled: true,
@@ -226,7 +222,7 @@ define([], function () {
                                 DisplayText: "Site Address:",
                                 FieldName: "SITEADDRESS",
                                 SortingEnabled: true
-							}, {
+		            }, {
                                 DisplayText: "Sale Price: $",
                                 FieldName: "SALEAMNT",
                                 SortingEnabled: false
@@ -250,7 +246,7 @@ define([], function () {
                                 DisplayText: "Site Address:",
                                 FieldName: "SITEADDRESS",
                                 SortingEnabled: true
-							}, {
+			    }, {
                                 DisplayText: "Sale Price: $",
                                 FieldName: "SALEAMNT",
                                 SortingEnabled: false
@@ -290,8 +286,8 @@ define([], function () {
                             }, {
                                 DisplayText: "Average Home Value",
                                 FieldName: "KeyUSFacts.AVGVAL_CY"
-							}, {	
-								DisplayText: "Average Household Income",
+			    }, {	
+				DisplayText: "Average Household Income",
                                 FieldName: "KeyUSFacts.AVGHINC_CY"
                             }, {
                                 DisplayText: "Median Household Income",
@@ -299,12 +295,12 @@ define([], function () {
                             }, {
                                 DisplayText: "Per Capita Income",
                                 FieldName: "KeyUSFacts.PCI_CY"
-							}, {
-								DisplayText: "Dominant Tapestry Segment",
+			    }, {
+				DisplayText: "Dominant Tapestry Segment",
                                 FieldName: "Policy.TSEGNAME"
-							}, {	
+			    }, {	
                                 DisplayText: "Labor Force Participation Rate",
-                                FieldName: "Industry.CIVLBFR_CY"
+                                FieldName: "industry.CIVLBFR_CY"
                             }, {
                                 DisplayText: "Total Population",
                                 FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -332,13 +328,13 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Property Information",
-                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
                             Filetype: "PDF" //allowed PDF or XLSX
-						}, {
+			}, {
                             DisplayOptionTitle: "Demographic and Income Profile",
                             GeoEnrichmentReportName: "dandi",
                             Filetype: "PDF" //allowed PDF or XLSX
@@ -362,8 +358,7 @@ define([], function () {
                                     FieldName: "TOTAREA"
                                 }
                             ],
-                            RegularFilterOptionFields: [
-                            ],
+                            RegularFilterOptionFields: [ ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
                                 FilterFieldName: "ZONEDESC",
@@ -451,7 +446,7 @@ define([], function () {
                                 FieldName: "Policy.TSEGNAME"
                             }, {
                                 DisplayText: "Labor Force Participation Rate",
-                                FieldName: "Industry.CIVLBFR_CY"
+                                FieldName: "industry.CIVLBFR_CY"
                             }, {
                                 DisplayText: "Total Population",
                                 FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -494,7 +489,7 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Site Information",
-                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
@@ -527,21 +522,21 @@ define([], function () {
                         {
                             DisplayTitle: "Business Information",
                             DisplayTextForBusinessCount: "Count",
-                            BusinessDataCollectionName: "IndustryByNAICSCode",
+                            BusinessDataCollectionName: "industrybynaicscode",
 
                             BusinessSummaryFields: [
                                 {
                                     DisplayText: "Businesses",
-                                    FieldName: "IndustryByNAICSCode.N01_BUS"
+                                    FieldName: "industrybynaicscode.N01_BUS"
                                 }, {
                                     DisplayText: "Revenue",
-                                    FieldName: "IndustryByNAICSCode.N01_SALES"
+                                    FieldName: "industrybynaicscode.N01_SALES"
                                 }, {
                                     DisplayText: "Employees",
-                                    FieldName: "IndustryByNAICSCode.N01_EMP"
+                                    FieldName: "industrybynaicscode.N01_EMP"
                                 }, {
                                     DisplayText: "Unemployment",
-                                    FieldName: "Industry.UNEMPRT_CY"
+                                    FieldName: "industry.UNEMPRT_CY"
                                 }
                             ]
                         }, {
@@ -553,7 +548,7 @@ define([], function () {
                                     FieldName: "Policy.TSEGNAME"
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "Industry.CIVLBFR_CY"
+                                    FieldName: "industry.CIVLBFR_CY"
                                 }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -633,9 +628,8 @@ define([], function () {
                                     FieldName: "Policy.TSEGNAME"
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "Industry.CIVLBFR_CY"
-                                },
-                                {
+                                    FieldName: "industry.CIVLBFR_CY"
+                                }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
                                 }, {
@@ -731,8 +725,8 @@ define([], function () {
         MapSharingOptions: {
             TinyURLServiceURL: "https://api-ssl.bitly.com/v3/shorten?longUrl=${0}",
             TinyURLResponseAttribute: "data.url",
-            FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Site%20Selector",
-            TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Site%20Selector ${0}",
+            FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Residential%20Comp%20Finder",
+            TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Residential%20Comp%20Finder ${0}",
             ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map&body=${0}"
         },
 
@@ -741,13 +735,16 @@ define([], function () {
         //------------------------------------------------------------------------------------------------------------------------
         // Set widgets settings such as widget title, widgetPath, mapInstanceRequired to be displayed in header panel
         // WidgetPath: path of the widget respective to the widgets package.
+        // The geolocation button has been hidden from the user interface by commenting out the widgetpath for geolocation below. You can enable geolocation by uncommenting the widgetpath for geolocation. The geolocation button, however, will only work on browsers supporting geolocation over HTTP connections.  If a browser requires a HTTPS connection to support geolocation and the button is enabled, the button will not work, but the application will work correctly otherwise.
 
         AppHeaderWidgets: [
             {
                 WidgetPath: "widgets/siteLocator/siteLocator"
-            }, {
-                WidgetPath: "widgets/geoLocation/geoLocation"
-            }, {
+            }, 
+            //{
+            //    WidgetPath: "widgets/geoLocation/geoLocation"
+            //}, 
+            {
                 WidgetPath: "widgets/share/share"
             }, {
                 WidgetPath: "widgets/help/help"

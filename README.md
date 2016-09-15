@@ -1,17 +1,21 @@
 site-selector
 ==============
 
-The Site Selector application is a configuration of ArcGIS and a JavaScript application that helps business owners and corporations locate available buildings and sites, and combine their property search with key community and business demographic information. We have two configurations of this application focused on the workflows for State and Local Governments. 
+The Site Selector application is a configuration of ArcGIS and a JavaScript application that helps business owners and corporations locate available buildings and sites, and combine their property search with key community and business demographic information. We have two configurations of this application focused on the workflows for State and Local Governments.
 
 * Try the [Site Selector (State Government) application](http://links.esri.com/stategovernment/tryit/SiteSelector)
 * Try the [Site Selector (Local Government) application](http://links.esri.com/localgovernment/tryit/SiteSelector)
 
 [![Image of the Site Selector application](site-selector.png "Site Selector application")](http://links.esri.com/stategovernment/tryit/SiteSelector)
 
+The Residential Comp Finder application is another configuration of the site-selector application that can be used by citizens, real estate agents and appraisers to find comparable sales and related property information.
+
+* Try the [Residential Comp Finder application](http://links.esri.com/localgovernment/tryit/ResidentialCompFinder/)
+
 ## Features
 
 * Search for a place by name, by current location, by address
-* Review ammenities at a given place, assess demographic  variables 
+* Review ammenities at a given place, assess demographic  variables
 * Share information via social media
 
 ## Requirements
@@ -23,7 +27,7 @@ You'll need to convert to an application in IIS and use the ASP .NET 4.0. applic
 
 **Start now using your own services**
 
-For more information on requirements and publication steps, see [Site Selector for State Government](http://links.esri.com/stategovernment/help/10.2/SiteSelector) help or [Site Selector for Local Government](http://links.esri.com/localgovernment/help/SiteSelector) help
+For more information on requirements and publication steps, see [Site Selector for State Government](http://links.esri.com/stategovernment/help/10.2/SiteSelector) help, [Site Selector for Local Government](http://links.esri.com/localgovernment/help/SiteSelector) help, or [Residential Comp Finder for Local Government](http://links.esri.com/localgovernment/help/ResidentialCompFinder) help.
 
 ## Resources
 
@@ -40,10 +44,11 @@ see the site for concepts, samples, and a reference for using the API to create 
 
 ##Selecting Your Configuration
 
-The site-selector repo contains 2 application configurations: Site Selector for State Government, and Site Selector for Local Government.
+The site-selector repo contains 3 application configurations: Site Selector for State Government, Site Selector for Local Government and Residential Comp Finder for Local Government.
 
-To get the Site Selector for State Government use the configuration named config.js.
-To get the Site Selector for Local Government configuration rename configLG.js to config.js
+* To get the Site Selector for State Government use the configuration named config.js.
+* To get the Site Selector for Local Government configuration rename configLG.js to config.js
+* To get the Residential Comp Finder for Local Government configuration rename configCompFinder.js to config.js
 
 ## Issues
 
@@ -73,6 +78,6 @@ limitations under the License.
 A copy of the license is available in the repository's
 [LICENSE.txt](https://raw.github.com/Esri/configurable-place-finder/master/LICENSE.txt) file.
 
-[](Esri Tags: State-Government Local-Government State Local Government Site Selector)
+[](Esri Tags: ArcGISSolutions State-Government Local-Government State Local Government Site Selector)
 [](Esri Language: JavaScript)
 

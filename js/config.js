@@ -1,4 +1,4 @@
-﻿/*global dojo,define */
+/*global dojo,define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
  | Copyright 2013 Esri
@@ -157,7 +157,7 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "751b99d469bf41668d0e59d69d1b3a9a",
+        WebMapId: "7b29715ea7584f68ab5a5ceea549da35",
         Workflows: [
             {
                 Name: "Buildings",
@@ -264,7 +264,7 @@ define([], function () {
                                 FieldName: "Policy.TSEGNAME"
                             }, {
                                 DisplayText: "Labor Force Participation Rate",
-                                FieldName: "Industry.CIVLBFR_CY"
+                                FieldName: "industry.CIVLBFR_CY"
                             }, {
                                 DisplayText: "Total Population",
                                 FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -307,7 +307,7 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Property Information",
-                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
@@ -426,7 +426,7 @@ define([], function () {
                                 FieldName: "Policy.TSEGNAME"
                             }, {
                                 DisplayText: "Labor Force Participation Rate",
-                                FieldName: "Industry.CIVLBFR_CY"
+                                FieldName: "industry.CIVLBFR_CY"
                             }, {
                                 DisplayText: "Total Population",
                                 FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -469,7 +469,7 @@ define([], function () {
                     DownloadSettings: [
                         {
                             DisplayOptionTitle: "Site Information",
-                            GeoProcessingServiceURL: "http://54.203.249.87/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                             Filetype: "PDF" //allowed PDF
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
@@ -502,21 +502,21 @@ define([], function () {
                         {
                             DisplayTitle: "Business Information",
                             DisplayTextForBusinessCount: "Count",
-                            BusinessDataCollectionName: "IndustryByNAICSCode",
+                            BusinessDataCollectionName: "industrybynaicscode",
 
                             BusinessSummaryFields: [
                                 {
                                     DisplayText: "Businesses",
-                                    FieldName: "IndustryByNAICSCode.N01_BUS"
+                                    FieldName: "industrybynaicscode.N01_BUS"
                                 }, {
                                     DisplayText: "Revenue",
-                                    FieldName: "IndustryByNAICSCode.N01_SALES"
+                                    FieldName: "industrybynaicscode.N01_SALES"
                                 }, {
                                     DisplayText: "Employees",
-                                    FieldName: "IndustryByNAICSCode.N01_EMP"
+                                    FieldName: "industrybynaicscode.N01_EMP"
                                 }, {
                                     DisplayText: "Unemployment",
-                                    FieldName: "Industry.UNEMPRT_CY"
+                                    FieldName: "industry.UNEMPRT_CY"
                                 }
                             ]
                         }, {
@@ -528,7 +528,7 @@ define([], function () {
                                     FieldName: "Policy.TSEGNAME"
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "Industry.CIVLBFR_CY"
+                                    FieldName: "industry.CIVLBFR_CY"
                                 }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
@@ -608,7 +608,7 @@ define([], function () {
                                     FieldName: "Policy.TSEGNAME"
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "Industry.CIVLBFR_CY"
+                                    FieldName: "industry.CIVLBFR_CY"
                                 },
                                 {
                                     DisplayText: "Total Population",
@@ -716,13 +716,16 @@ define([], function () {
         //------------------------------------------------------------------------------------------------------------------------
         // Set widgets settings such as widget title, widgetPath, mapInstanceRequired to be displayed in header panel
         // WidgetPath: path of the widget respective to the widgets package.
+        //The geolocation button has been hidden from the user interface by commenting out the widgetpath for geolocation below. You can enable geolocation by uncommenting the widgetpath for geolocation. The geolocation button, however, will only work on browsers supporting geolocation over HTTP connections.  If a browser requires a HTTPS connection to support geolocation and the button is enabled, the button will not work, but the application will work correctly otherwise.
 
         AppHeaderWidgets: [
             {
                 WidgetPath: "widgets/siteLocator/siteLocator"
-            }, {
-                WidgetPath: "widgets/geoLocation/geoLocation"
-            }, {
+            }, 
+            //{
+            //    WidgetPath: "widgets/geoLocation/geoLocation"
+            // }, 
+            {
                 WidgetPath: "widgets/share/share"
             }, {
                 WidgetPath: "widgets/help/help"
