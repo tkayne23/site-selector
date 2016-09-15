@@ -455,6 +455,9 @@ public class proxy : IHttpHandler {
         req.Referer = referer;
         req.Method = method;
 
+        long numBytes = bytes != null ? bytes.Length : 0;//???
+        log(TraceLevel.Info, "  --> " + (numBytes > 0? "POST" : "GET") + " [" + numBytes.ToString() + "] " + uri);//???
+
         // Use the default system proxy
         req.Proxy = SYSTEM_PROXY;
 
