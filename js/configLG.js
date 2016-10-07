@@ -90,7 +90,7 @@ define([], function () {
         NoThumbnail: "js/library/themes/images/not-available.png",
 
         // Set geometry service URL
-        GeometryService: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer",
+        GeometryService: "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
 
         // Set geoenrichment service URL
         GeoEnrichmentService: "http://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
