@@ -36,7 +36,8 @@ define([
     "esri/tasks/query",
     "esri/tasks/QueryTask",
     "../siteLocator/geoEnrichment"
-], function (array, declare, lang, all, domAttr, domClass, domConstruct, domStyle, sharedNls, on, topic, _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, SelectList, GeometryService, Query, QueryTask, geoEnrichment) {
+], function (array, declare, lang, all, domAttr, domClass, domConstruct, domStyle, sharedNls, on, topic, _WidgetBase,
+    _TemplatedMixin, _WidgetsInTemplateMixin, SelectList, GeometryService, Query, QueryTask, geoEnrichment) {
     //========================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, geoEnrichment], {
@@ -54,17 +55,22 @@ define([
             var isfilterRemoved = false,
                 isValid = true;
             // check from node value and to node value and set the "AND" or "OR" query string
-            if (Number(fromNode.value) >= 0 && Number(toNode.value) >= 0 && Number(fromNode.value) <= Number(toNode.value) && lang.trim(fromNode.value) !== "" && lang.trim(toNode.value) !== "") {
+            if (Number(fromNode.value) >= 0 && Number(toNode.value) >= 0 && Number(fromNode.value) <= Number(toNode.value) &&
+                lang.trim(fromNode.value) !== "" && lang.trim(toNode.value) !== "") {
                 // check the range filter validation in building tab
                 if (this.workflowCount === 0) {
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
+                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
+                        array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" +
+                            fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
+                        this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value +
+                            ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
                         isfilterRemoved = true;
                     }
                     // if checkbox state is checked then push the from and to value into "AND" query string
                     if (chkBox.checked) {
                         if (fromNode.value !== "" && toNode.value !== 0 && Number(fromNode.value) <= Number(toNode.value)) {
-                            this.queryArrayBuildingAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " + chkBox.value + "<=" + Number(toNode.value));
+                            this.queryArrayBuildingAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " +
+                                chkBox.value + "<=" + Number(toNode.value));
                             fromNode.setAttribute("FieldValue", Number(fromNode.value));
                             toNode.setAttribute("FieldValue", Number(toNode.value));
                         }
@@ -89,7 +95,9 @@ define([
                     this.orArr = this.queryArrayBuildingOR;
                 }
                 else {
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
+                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
+                        array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" +
+                            fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
                         this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
                         isfilterRemoved = true;
                     }
@@ -125,8 +133,11 @@ define([
                 toNode.value = "";
                 // check from node and to node invalid values and remove the item from query string for building tab and update the query string
                 if (this.workflowCount === 0) {
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
+                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
+                        array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
+                        this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND,
+                            chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " +
+                            chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
                     }
                     this.andArr = this.queryArrayBuildingAND;
                     this.orArr = this.queryArrayBuildingOR;
@@ -134,8 +145,10 @@ define([
                 }
                 else {
                     // check from node and to node invalid values and remove the item from query string for sites tab and update the query string
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) && array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
+                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
+                        array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
+                        this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" +
+                            fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
                     }
                     this.andArr = this.queryArraySitesAND;
                     this.orArr = this.queryArraySitesOR;
@@ -277,7 +290,8 @@ define([
                 if (where !== null) {
                     queryString += " AND " + where;
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] = where;
-                    appGlobals.shareOptions.arrWhereClause[this.workflowCount] = appGlobals.shareOptions.arrWhereClause[this.workflowCount].toString().replace(/%/g, "PERCENT");
+                    appGlobals.shareOptions.arrWhereClause[this.workflowCount] =
+                        appGlobals.shareOptions.arrWhereClause[this.workflowCount].toString().replace(/%/g, "PERCENT");
                 }
                 else {
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] = "1=1";
@@ -293,7 +307,8 @@ define([
                     geometryService.intersect(geometry, appGlobals.shareOptions.webMapExtent, lang.hitch(this, function (interSectGeometry) {
                         if (interSectGeometry[0].rings.length > 0) {
                             queryLayer.geometry = geometry[0];
-                            queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._errorHandler));
+                            queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler),
+                                lang.hitch(this, this._errorHandler));
                         }
                         else {
                             topic.publish("hideProgressIndicator");
@@ -349,7 +364,8 @@ define([
                     }));
                 }
                 else {
-                    queryLayerTask.execute(queryLayer, lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._errorHandler));
+                    queryLayerTask.execute(queryLayer,
+                        lang.hitch(this, this._queryFeaturesHandler), lang.hitch(this, this._errorHandler));
                 }
             }
             else {
@@ -404,7 +420,9 @@ define([
                 //display filtered graphics layers
                 this._setFilteredLayerVisibility(this.workflowCount, true);
                 if (this.workflowCount === 0) {
-                    if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
+                    if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length ||
+                        appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
+                        appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                         domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
                         domClass.remove(this.filterText, "esriCTDisableText");
                         domClass.add(this.filterText, "esriCTFilterTextEnable");
@@ -415,7 +433,9 @@ define([
                     this._paginationForResults(paginationIndex);
                 }
                 else if (this.workflowCount === 1) {
-                    if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
+                    if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length ||
+                        appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
+                        appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                         domClass.remove(this.filterMainContainerSites, "esriCTFilterMainContainer");
                         domClass.remove(this.filterTextSites, "esriCTDisableText");
                         domClass.add(this.filterTextSites, "esriCTFilterTextEnable");
@@ -451,8 +471,11 @@ define([
                     }
 
                 }
-                // check the shared URL for "whereClause"(applied filters) to set the visibility of filter container according to workflows
-                if (window.location.toString().split("$whereClause=").length > 1 && window.location.toString().split("whereClause=")[1] !== "1=1" && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
+                // check the shared URL for "whereClause"(applied filters) to set the visibility of filter container
+                // according to workflows
+                if (window.location.toString().split("$whereClause=").length > 1 &&
+                    window.location.toString().split("whereClause=")[1] !== "1=1" &&
+                    Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === this.workflowCount) {
                     if (this.workflowCount === 0) {
                         domClass.remove(this.filterMainContainer, "esriCTFilterMainContainer");
                         if (domStyle.get(this.filterContainer, "display") === "none") {
@@ -490,7 +513,8 @@ define([
                     appGlobals.shareOptions.paginationIndex = [null, null, null, null];
                     appGlobals.shareOptions.paginationIndex[this.workflowCount] = curentIndex;
                 }
-                // if feature set exist then loop all the feature set and check has attachment field in layer and configuration to perform query for attachment and data
+                // if feature set exist then loop all the feature set and check has attachment field in layer and
+                // configuration to perform query for attachment and data
                 if (featureSet.length !== 0) {
                     onCompleteArray = [];
                     finalIndex = curentIndex + 10;
@@ -500,7 +524,8 @@ define([
                     for (i = curentIndex; i < finalIndex; i++) {
                         arrIds.push(featureSet[i]);
                         // check has attachment in layer and show attachment in configuration is exist
-                        if (layer.hasAttachments && appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
+                        if (layer.hasAttachments &&
+                            appGlobals.configData.Workflows[this.workflowCount].InfoPanelSettings.ResultContents.ShowAttachments) {
                             this.itemquery(null, featureSet[i], layer, onCompleteArray);
                         }
                     }
@@ -580,7 +605,8 @@ define([
                     featureData: layerFeatureSet.features[i].attributes
                 });
                 for (j = 0; j < layerAttachmentInfos.length; j++) {
-                    if (layerAttachmentInfos[j][0] && layerFeatureSet.features[i].attributes[layer.objectIdField] === layerAttachmentInfos[j][0].objectId) {
+                    if (layerAttachmentInfos[j][0] &&
+                        layerFeatureSet.features[i].attributes[layer.objectIdField] === layerAttachmentInfos[j][0].objectId) {
                         arrTabData[i].attachmentData = layerAttachmentInfos[j];
                         break;
                     }
@@ -604,7 +630,9 @@ define([
          * @memberOf widgets/siteLocator/featureQuery
          */
         _paginationForResults: function (currentIndex) {
-            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForBuilding, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1,
+            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv,
+                sortContentDiv, spanContent, selectForBuilding, currentIndexNode, hyphen, tenthIndex, ofTextDiv,
+                TotalCount, currentPage = 1,
                 total, result, i, timeOut, strLastUpdate, selectedOption;
             domConstruct.empty(this.outerDivForPegination);
             // create dynamic UI for pagination and set element content
@@ -700,7 +728,8 @@ define([
                     clearTimeout(timeOut);
                     timeOut = setTimeout(lang.hitch(this, function () {
                         topic.publish("showProgressIndicator");
-                        if (!isNaN(Number(firstIndex.innerHTML)) && Number(firstIndex.innerHTML) > 0 && Math.ceil(Number(firstIndex.innerHTML)) <= result) {
+                        if (!isNaN(Number(firstIndex.innerHTML)) && Number(firstIndex.innerHTML) > 0 &&
+                            Math.ceil(Number(firstIndex.innerHTML)) <= result) {
                             currentIndex = Math.ceil(Number(firstIndex.innerHTML)) * 10 - 10;
                             currentPage = Math.ceil((currentIndex / 10) + 1);
                             domAttr.set(firstIndex, "innerHTML", currentPage);
@@ -829,7 +858,9 @@ define([
          * @memberOf widgets/siteLocator/featureQuery
          */
         _paginationForResultsSites: function (index) {
-            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv, sortContentDiv, spanContent, selectForSites, currentIndexNode, hyphen, tenthIndex, ofTextDiv, TotalCount, currentPage = 1,
+            var rangeDiv, paginationCountDiv, leftArrow, firstIndex, selectSortBox, lastIndex, rightArrow, sortingDiv,
+                sortContentDiv, spanContent, selectForSites, currentIndexNode, hyphen, tenthIndex, ofTextDiv,
+                TotalCount, currentPage = 1,
                 total, result, i, timeOut, currentIndexSites = index,
                 strLastUpdate, selectedOption;
             domConstruct.empty(this.outerDivForPeginationSites);
@@ -926,7 +957,8 @@ define([
                     clearTimeout(timeOut);
                     timeOut = setTimeout(lang.hitch(this, function () {
                         topic.publish("showProgressIndicator");
-                        if (!isNaN(Number(firstIndex.innerHTML)) && Number(firstIndex.innerHTML) > 0 && Math.ceil(Number(firstIndex.innerHTML)) <= result) {
+                        if (!isNaN(Number(firstIndex.innerHTML)) && Number(firstIndex.innerHTML) > 0 &&
+                            Math.ceil(Number(firstIndex.innerHTML)) <= result) {
                             currentIndexSites = Math.ceil(Number(firstIndex.innerHTML)) * 10 - 10;
                             currentPage = Math.ceil((currentIndexSites / 10) + 1);
                             domAttr.set(firstIndex, "innerHTML", currentPage);

@@ -45,7 +45,9 @@ define([
     "esri/tasks/GeometryService",
     "esri/urlUtils",
     "../siteLocator/siteLocatorHelper"
-], function (array, Color, declare, html, lang, dom, domAttr, domClass, domConstruct, domStyle, sharedNls, on, query, template, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Graphic, Point, esriRequest, SimpleFillSymbol, SimpleLineSymbol, BufferParameters, GeometryService, urlUtils, siteLocatorHelper) {
+], function (array, Color, declare, html, lang, dom, domAttr, domClass, domConstruct, domStyle, sharedNls, on,
+    query, template, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Graphic, Point,
+    esriRequest, SimpleFillSymbol, SimpleLineSymbol, BufferParameters, GeometryService, urlUtils, siteLocatorHelper) {
 
     //========================================================================================================================//
 
@@ -260,7 +262,8 @@ define([
             // extent change event for map
             this.map.on("extent-change", lang.hitch(this, function () {
                 if (this.map.getLayer("esriFeatureGraphicsLayer").graphics[0]) {
-                    if (this.operationalLayer && this.operationalLayer.visibleAtMapScale && this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].attributes.layerURL === this.operationalLayer.url) {
+                    if (this.operationalLayer && this.operationalLayer.visibleAtMapScale &&
+                        this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].attributes.layerURL === this.operationalLayer.url) {
                         this.map.getLayer("esriFeatureGraphicsLayer").graphics[0].show();
                     }
                     else {
@@ -275,9 +278,15 @@ define([
             this._attachFilterClick();
 
             // dynamic UI of Building tab
-            if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
+            if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length ||
+                appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
+                appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                 this._createFilter(appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields, this.buildingAreaToFromDiv, 0);
-                this._createFilterOptionField(appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields, this.horizantalruleBuliding, appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions, this.divHideOptionBuilding, 0);
+                this._createFilterOptionField(
+                    appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
+                    this.horizantalruleBuliding,
+                    appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions,
+                    this.divHideOptionBuilding, 0);
                 this.own(on(this.filterText, "click", lang.hitch(this, function () {
                     if (domClass.contains(this.filterText, "esriCTFilterTextEnable")) {
                         if (domStyle.get(this.filterContainer, "display") === "none") {
@@ -296,9 +305,15 @@ define([
             }
 
             // dynamic UI of Sites tab
-            if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length || appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
+            if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length ||
+                appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
+                appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
                 this._createFilter(appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields, this.sitesFromToMainDiv, 1);
-                this._createFilterOptionField(appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields, this.horizantalruleSites, appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions, this.divHideOptionSites, 1);
+                this._createFilterOptionField(
+                    appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
+                    this.horizantalruleSites,
+                    appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions,
+                    this.divHideOptionSites, 1);
                 this.own(on(this.filterTextSites, "click", lang.hitch(this, function () {
                     if (domClass.contains(this.filterTextSites, "esriCTFilterTextEnable")) {
                         if (domStyle.get(this.filterContainerSites, "display") === "none") {
@@ -401,28 +416,37 @@ define([
                 bufferDistance = Number(window.location.toString().split("$bufferDistance=")[1].toString().split("$")[0]);
             }
             // check the shared URL for "workflowCount" and workflowCount is equal to 0 and set the buffer distance for buildings tab
-            if (window.location.toString().split("$workflowCount=").length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === 0) {
-                this._createHorizontalSlider(this.horizontalSliderContainerBuliding, this.horizontalRuleContainer, this.sliderDisplayText, 0, bufferDistance);
+            if (window.location.toString().split("$workflowCount=").length > 1 &&
+                Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === 0) {
+                this._createHorizontalSlider(this.horizontalSliderContainerBuliding,
+                    this.horizontalRuleContainer, this.sliderDisplayText, 0, bufferDistance);
                 appGlobals.shareOptions.arrBufferDistance[0] = bufferDistance;
             }
             else {
-                this._createHorizontalSlider(this.horizontalSliderContainerBuliding, this.horizontalRuleContainer, this.sliderDisplayText, 0, null);
+                this._createHorizontalSlider(this.horizontalSliderContainerBuliding,
+                    this.horizontalRuleContainer, this.sliderDisplayText, 0, null);
             }
             // check the shared URL for "workflowCount" and workflowCount is equal to 1 and set the buffer distance for sites tab
-            if (window.location.toString().split("$workflowCount=").length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === 1) {
-                this._createHorizontalSlider(this.horizontalSliderContainerSites, this.horizontalRuleContainerSites, this.sitesSliderText, 1, bufferDistance);
+            if (window.location.toString().split("$workflowCount=").length > 1 &&
+                Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === 1) {
+                this._createHorizontalSlider(this.horizontalSliderContainerSites,
+                    this.horizontalRuleContainerSites, this.sitesSliderText, 1, bufferDistance);
                 appGlobals.shareOptions.arrBufferDistance[1] = bufferDistance;
             }
             else {
-                this._createHorizontalSlider(this.horizontalSliderContainerSites, this.horizontalRuleContainerSites, this.sitesSliderText, 1, null);
+                this._createHorizontalSlider(this.horizontalSliderContainerSites,
+                    this.horizontalRuleContainerSites, this.sitesSliderText, 1, null);
             }
             // check the shared URL for "workflowCount" and workflowCount is equal to 2 and set the buffer distance for business tab
-            if (window.location.toString().split("$workflowCount=").length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === 2) {
-                this._createHorizontalSlider(this.horizontalSliderContainerBusiness, this.horizontalRuleContainerBusiness, this.businessSliderText, 2, bufferDistance);
+            if (window.location.toString().split("$workflowCount=").length > 1 &&
+                Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === 2) {
+                this._createHorizontalSlider(this.horizontalSliderContainerBusiness,
+                    this.horizontalRuleContainerBusiness, this.businessSliderText, 2, bufferDistance);
                 appGlobals.shareOptions.arrBufferDistance[2] = bufferDistance;
             }
             else {
-                this._createHorizontalSlider(this.horizontalSliderContainerBusiness, this.horizontalRuleContainerBusiness, this.businessSliderText, 2, null);
+                this._createHorizontalSlider(this.horizontalSliderContainerBusiness,
+                    this.horizontalRuleContainerBusiness, this.businessSliderText, 2, null);
             }
         },
 
@@ -460,7 +484,8 @@ define([
                 domAttr.set(this.txtAddressCommunities, "defaultAddress", sharedAddress);
             }
             else {
-                domAttr.set(this.txtAddressCommunities, "defaultAddress", appGlobals.configData.Workflows[3].FilterSettings.StandardGeographyQuery.LocatorDefaultAddress);
+                domAttr.set(this.txtAddressCommunities, "defaultAddress",
+                    appGlobals.configData.Workflows[3].FilterSettings.StandardGeographyQuery.LocatorDefaultAddress);
             }
         },
 
@@ -677,7 +702,9 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _createFilterOptionField: function (arrFields, node, arrAdditionalFields, additionalFieldsNode, index) {
-            var i, j, divBusinessRevenue, checkBoxWithText, divCheckBox, checkBox, fieldContent, divAdditionalField, checkBoxAdditionalWithText, additionalFieldCheckBox, additionalCheckBox, additionalFieldDisplayText, checkedValueForFilter, checkedValue, k, nodeValue;
+            var i, j, divBusinessRevenue, checkBoxWithText, divCheckBox, checkBox, fieldContent,
+                divAdditionalField, checkBoxAdditionalWithText, additionalFieldCheckBox, additionalCheckBox,
+                additionalFieldDisplayText, checkedValueForFilter, checkedValue, k, nodeValue;
             // check length of RegularFilterOptionFields from config and create UI
             for (i = 0; i < arrFields.length; i++) {
                 if (arrFields[i].FieldValue) {
@@ -711,7 +738,8 @@ define([
                     "workflow": index
                 };
                 // check the shared URL for "whereClause" to perform layer search and get the filtered data for "RegularFilterOptionFields" on selected fields in building and sites tab
-                if (decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName).length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
+                if (decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName).length > 1 &&
+                    Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
                     checkedValue = decodeURIComponent(window.location.toString()).split("UPPER(" + arrFields[i].FieldName + ") =");
                     if (this.workflowCount === 0) {
                         domClass.add(this.filterIcon, "esriCTFilterEnabled");
@@ -800,7 +828,9 @@ define([
                         "workflow": index
                     };
                     // check the shared URL for "AdditionalFilterOptions" to perform layer search and get the filtered data for "AdditionalFilterOptions" on selected fields in building and sites tab
-                    if (decodeURIComponent(window.location.toString()).split("UPPER('PERCENT" + arrAdditionalFields.FilterOptions[j].FieldValue + "PERCENT')").length > 1 && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
+                    if (decodeURIComponent(window.location.toString()).split("UPPER('PERCENT" +
+                            arrAdditionalFields.FilterOptions[j].FieldValue + "PERCENT')").length > 1 &&
+                        Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
                         additionalCheckBox.checked = true;
                         if (this.workflowCount === 0) {
                             domClass.add(this.filterIcon, "esriCTFilterEnabled");
@@ -1106,7 +1136,8 @@ define([
                         if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
                             if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
                                 // validate from and to text box value
-                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom, this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
+                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom,
+                                    this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
                                 if (!isValid) {
                                     break;
                                 }
@@ -1133,7 +1164,8 @@ define([
                     if (isValid) {
                         if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
                             if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
-                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom, this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
+                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom,
+                                    this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
                                 // if to and from values is invalid then clear values of from and to textbox of selected workflows
                                 if (!isValid) {
                                     for (node in this.filterOptionsValues) {
