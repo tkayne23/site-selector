@@ -8,13 +8,13 @@ module.exports = function(grunt) {
       options: {
         config: './.jsbeautifyrc'
       },
-      files : ['js/**/*.js', '!js/library/coreLibrary/modernizr*.js', '!js/library/nls/**/*.js']
+      files : ['js/**/*.js', '!js/**/__*.js', '!js/library/coreLibrary/modernizr*.js', '!js/library/nls/**/*.js']
     },
 
     jshint: {
       options: {
         jshintrc: true,
-        ignores: ['js/library/coreLibrary/modernizr*.js']
+        ignores: ['js/**/__*.js', 'js/library/coreLibrary/modernizr*.js']
       },
       src: ['js/**/*.js']
     }
