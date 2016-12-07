@@ -1,4 +1,4 @@
-﻿/*global dojo,define */
+/*global define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
  | Copyright 2013 Esri
@@ -90,7 +90,7 @@ define([], function () {
         NoThumbnail: "js/library/themes/images/not-available.png",
 
         // Set geometry service URL
-        // Do not use the ArcGIS Online geometry service (http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service. 
+        // Do not use the ArcGIS Online geometry service (http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service.
         GeometryService: "http://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
 
         // Set geoenrichment service URL
@@ -159,595 +159,556 @@ define([], function () {
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
         WebMapId: "4e0f517c76c046a59da8c8955b7d5a43",
-        Workflows: [
-            {
-                Name: "Buildings",
-                Enabled: true,
-                SearchSettings: [
-                    {
-                        Title: "Improved Sites",
-                        QueryLayerId: "0",
-                        SearchDisplayTitle: "Improved Sites",
-                        SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
-                        SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
+        Workflows: [{
+            Name: "Buildings",
+            Enabled: true,
+            SearchSettings: [{
+                Title: "Improved Sites",
+                QueryLayerId: "0",
+                SearchDisplayTitle: "Improved Sites",
+                SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
+                SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
 
-                        FilterSettings: {
-                            FilterRangeFields: [
-                                {
-                                    DisplayText: "Area (sqft)",
-                                    FieldName: "BLDGAREA"
-                                }
-                            ],
-                            RegularFilterOptionFields: [
-
-
-                            ],
-                            AdditionalFilterOptions: {
-                                Enabled: true,
-                                FilterFieldName: "FACTYPE",
-                                FilterOptions: [
-                                    {
-                                        DisplayText: "Office",
-                                        FieldValue: "Office Building"
-                                    }, {
-                                        DisplayText: "Retail",
-                                        FieldValue: "Retail Building"
-                                    }, {
-                                        DisplayText: "Warehouse",
-                                        FieldValue: "Warehouse Building"
-                                    }, {
-                                        DisplayText: "Industrial",
-                                        FieldValue: "Industrial Building"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
-                InfoPanelSettings: {
-                    ResultContents: {
-                        ShowAttachments: true,
-                        DisplayFields: [
-                            {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR",
-                                SortingEnabled: false
-                            }, {
-                                DisplayText: "Area (sqft):",
-                                FieldName: "BLDGAREA",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Zoning:",
-                                FieldName: "ZONEDESC",
-                                SortingEnabled: true
-                            }
-
-                        ]
-                    },
-                    LayerContents: {
-                        ShowAttachments: true,
-                        DisplayTitle: "Property Information",
-                        DisplayFields: [
-                            {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME"
-                            }, {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR"
-                            }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY"
-                            }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP"
-                            }, {
-                                DisplayText: "Zoning:",
-                                FieldName: "ZONEDESC"
-                            }, {
-                                DisplayText: "Area (sqft):",
-                                FieldName: "BLDGAREA"
-                            }, {
-                                DisplayText: "Acquisition:",
-                                FieldName: "ACQUISITION"
-                            }, {
-                                DisplayText: "Incentives:",
-                                FieldName: "INCENTIVE"
-                            }, {
-                                DisplayText: "Gas:",
-                                FieldName: "GAS"
-                            }, {
-                                DisplayText: "Electric:",
-                                FieldName: "ELECTRIC"
-                            }, {
-                                DisplayText: "Water:",
-                                FieldName: "WATER"
-                            }, {
-                                DisplayText: "Sewer:",
-                                FieldName: "SEWER"
-                            }, {
-                                DisplayText: "Telco:",
-                                FieldName: "TELCO"
-                            }, {
-                                DisplayText: "High-Speed ISP:",
-                                FieldName: "ISP"
-                            }, {
-                                DisplayText: "Distance to Rail (Mi):",
-                                FieldName: "DISTRAIL"
-                            }, {
-                                DisplayText: "Distance to Highway (Mi):",
-                                FieldName: "DISTHGWY"
-                            }, {
-                                DisplayText: "Distance to Airport (Mi):",
-                                FieldName: "DISTAIR"
-                            }, {
-                                DisplayText: "Contact Name:",
-                                FieldName: "POCNAME"
-                            }, {
-                                DisplayText: "Company Name:",
-                                FieldName: "POCCOMP"
-                            }, {
-                                DisplayText: "Contact Phone:",
-                                FieldName: "POCPHONE"
-                            }
-                        ]
-                    },
-                    GeoenrichmentDistance: {
-                        Unit: "UNIT_STATUTE_MILE",
-                        BufferDistance: 1
-                    },
-                    GeoEnrichmentContents: {
-                        DisplayTitle: "Neighborhood Information",
-                        DisplayFields: [
-                            {
-                                DisplayText: "Dominant Tapestry Segment",
-                                FieldName: "Policy.TSEGNAME"
-                            }, {
-                                DisplayText: "Labor Force Participation Rate",
-                                FieldName: "industry.CIVLBFR_CY"
-                            }, {
-                                DisplayText: "Total Population",
-                                FieldName: "KeyUSFacts.TOTPOP_CY"
-                            }, {
-                                DisplayText: "Total Households",
-                                FieldName: "KeyUSFacts.TOTHH_CY"
-                            }, {
-                                DisplayText: "Average Household Size",
-                                FieldName: "KeyUSFacts.AVGHHSZ_CY"
-                            }, {
-                                DisplayText: "Average Household Income",
-                                FieldName: "KeyUSFacts.AVGHINC_CY"
-                            }, {
-                                DisplayText: "Median Household Income",
-                                FieldName: "KeyUSFacts.MEDHINC_CY"
-                            }, {
-                                DisplayText: "Per Capita Income",
-                                FieldName: "KeyUSFacts.PCI_CY"
-                            }, {
-                                DisplayText: "Total Housing Units",
-                                FieldName: "KeyUSFacts.TOTHU_FY"
-                            }, {
-                                DisplayText: "Owner Occupied HUs",
-                                FieldName: "KeyUSFacts.OWNER_CY"
-                            }, {
-                                DisplayText: "Renter Occupied HUs",
-                                FieldName: "KeyUSFacts.RENTER_CY"
-                            }, {
-                                DisplayText: "Vacant Housing Units",
-                                FieldName: "KeyUSFacts.VACANT_CY"
-                            }, {
-                                DisplayText: "Median Home Value",
-                                FieldName: "KeyUSFacts.MEDVAL_CY"
-                            }, {
-                                DisplayText: "Average Home Value",
-                                FieldName: "KeyUSFacts.AVGVAL_CY"
-                            }
-                        ]
-                    },
-                    DownloadSettings: [
-                        {
-                            DisplayOptionTitle: "Property Information",
-                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
-                            Filetype: "PDF" //allowed PDF
-                        }, {
-                            DisplayOptionTitle: "Traffic Count Profile",
-                            GeoEnrichmentReportName: "traffic",
-                            Filetype: "PDF" //allowed PDF or XLSX
-                        }
-                    ]
-                }
-            }, {
-                Name: "Sites",
-                Enabled: true,
-                SearchSettings: [
-                    {
-                        Title: "Vacant Land Sites",
-                        QueryLayerId: "1",
-                        SearchDisplayTitle: "Sites",
-                        SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${FULLADDR}",
-                        SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(FULLADDR) LIKE UPPER('${0}%')",
-                        FilterSettings: {
-                            FilterRangeFields: [
-                                {
-                                    DisplayText: "Area (acres)",
-                                    FieldName: "TOTAREA"
-                                }
-                            ],
-                            RegularFilterOptionFields: [
-                                {
-                                    DisplayText: "Sewer Service",
-                                    FieldName: "SEWER",
-                                    FieldValue: "Yes"
-                                }, {
-                                    DisplayText: "Water Service",
-                                    FieldName: "WATER",
-                                    FieldValue: "Yes"
-                                }, {
-                                    DisplayText: "Gas Service",
-                                    FieldName: "GAS",
-                                    FieldValue: "Yes"
-                                }
-                            ],
-                            AdditionalFilterOptions: {
-                                Enabled: true,
-                                FilterFieldName: "ZONEDESC",
-                                FilterOptions: [
-                                    {
-                                        DisplayText: "Industrial (I-2) Zone",
-                                        FieldValue: "I-2"
-                                    }, {
-                                        DisplayText: "Commerical (C-1) Zone",
-                                        FieldValue: "C-1"
-                                    }, {
-                                        DisplayText: "Commercial (C-2) Zone",
-                                        FieldValue: "C-2"
-                                    }, {
-                                        DisplayText: "Planned Use Development (PUD) Zone",
-                                        FieldValue: "PUD"
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
-                InfoPanelSettings: {
-                    ResultContents: {
-                        ShowAttachments: true,
-                        DisplayFields: [
-                            {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR",
-                                SortingEnabled: false
-                            }, {
-                                DisplayText: "Area (acres):",
-                                FieldName: "TOTAREA",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Zoning:",
-                                FieldName: "ZONEDESC",
-                                SortingEnabled: true
-                            }
-
-                        ]
-                    },
-                    LayerContents: {
-                        ShowAttachments: true,
-                        DisplayTitle: "Site Information",
-                        DisplayFields: [
-                            {
-                                DisplayText: "Name:",
-                                FieldName: "FACNAME"
-                            }, {
-                                DisplayText: "Address:",
-                                FieldName: "FULLADDR"
-                            }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY"
-                            }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP"
-                            }, {
-                                DisplayText: "Zoning:",
-                                FieldName: "ZONEDESC"
-                            }, {
-                                DisplayText: "Area (acres):",
-                                FieldName: "TOTAREA"
-                            }, {
-                                DisplayText: "Acquisition:",
-                                FieldName: "ACQUISITION"
-                            }, {
-                                DisplayText: "Incentives:",
-                                FieldName: "INCENTIVE"
-                            }, {
-                                DisplayText: "Gas:",
-                                FieldName: "GAS"
-                            }, {
-                                DisplayText: "Electric:",
-                                FieldName: "ELECTRIC"
-                            }, {
-                                DisplayText: "Water:",
-                                FieldName: "WATER"
-                            }, {
-                                DisplayText: "Sewer:",
-                                FieldName: "SEWER"
-                            }, {
-                                DisplayText: "Telco:",
-                                FieldName: "TELCO"
-                            }, {
-                                DisplayText: "High-Speed ISP:",
-                                FieldName: "ISP"
-                            }, {
-                                DisplayText: "Distance to Rail (Mi):",
-                                FieldName: "DISTRAIL"
-                            }, {
-                                DisplayText: "Distance to Highway (Mi):",
-                                FieldName: "DISTHGWY"
-                            }, {
-                                DisplayText: "Distance to Airport (Mi):",
-                                FieldName: "DISTAIR"
-                            }, {
-                                DisplayText: "Contact Name:",
-                                FieldName: "POCNAME"
-                            }, {
-                                DisplayText: "Company Name:",
-                                FieldName: "POCCOMP"
-                            }, {
-                                DisplayText: "Contact Phone:",
-                                FieldName: "POCPHONE"
-                            }
-                        ]
-                    },
-                    GeoenrichmentDistance: {
-                        Unit: "UNIT_STATUTE_MILE",
-                        BufferDistance: 2
-                    },
-                    GeoEnrichmentContents: {
-                        DisplayTitle: "Neighborhood Information",
-
-                        DisplayFields: [
-                            {
-                                DisplayText: "Dominant Tapestry Segment",
-                                FieldName: "Policy.TSEGNAME"
-                            }, {
-                                DisplayText: "Labor Force Participation Rate",
-                                FieldName: "industry.CIVLBFR_CY"
-                            }, {
-                                DisplayText: "Total Population",
-                                FieldName: "KeyUSFacts.TOTPOP_CY"
-                            }, {
-                                DisplayText: "Total Households",
-                                FieldName: "KeyUSFacts.TOTHH_CY"
-                            }, {
-                                DisplayText: "Average Household Size",
-                                FieldName: "KeyUSFacts.AVGHHSZ_CY"
-                            }, {
-                                DisplayText: "Average Household Income",
-                                FieldName: "KeyUSFacts.AVGHINC_CY"
-                            }, {
-                                DisplayText: "Median Household Income",
-                                FieldName: "KeyUSFacts.MEDHINC_CY"
-                            }, {
-                                DisplayText: "Per Capita Income",
-                                FieldName: "KeyUSFacts.PCI_CY"
-                            }, {
-                                DisplayText: "Total Housing Units",
-                                FieldName: "KeyUSFacts.TOTHU_FY"
-                            }, {
-                                DisplayText: "Owner Occupied HUs",
-                                FieldName: "KeyUSFacts.OWNER_CY"
-                            }, {
-                                DisplayText: "Renter Occupied HUs",
-                                FieldName: "KeyUSFacts.RENTER_CY"
-                            }, {
-                                DisplayText: "Vacant Housing Units",
-                                FieldName: "KeyUSFacts.VACANT_CY"
-                            }, {
-                                DisplayText: "Median Home Value",
-                                FieldName: "KeyUSFacts.MEDVAL_CY"
-                            }, {
-                                DisplayText: "Average Home Value",
-                                FieldName: "KeyUSFacts.AVGVAL_CY"
-                            }
-                        ]
-                    },
-                    DownloadSettings: [
-                        {
-                            DisplayOptionTitle: "Site Information",
-                            GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
-                            Filetype: "PDF" //allowed PDF
-                        }, {
-                            DisplayOptionTitle: "Traffic Count Profile",
-                            GeoEnrichmentReportName: "traffic",
-                            Filetype: "PDF" //allowed PDF or XLSX
-                        }
-                    ]
-                }
-            }, {
-                Name: "Business",
-                Enabled: true,
                 FilterSettings: {
-                    BusinesSortOptions: { Option: "Count,Revenue,Employees" },
-                    FilterRangeFields: [
-                        {
-                            DisplayText: "Annual Revenue ($)",
-                            VariableNameSuffix: "_SALES"
-                        }, {
-                            DisplayText: "Number of employees",
-                            VariableNameSuffix: "_EMP"
-                        }
-                    ]
-                },
-                InfoPanelSettings: {
-                    GeoEnrichmentContents: [
-                        {
-                            DisplayTitle: "Business Information",
-                            DisplayTextForBusinessCount: "Count",
-                            BusinessDataCollectionName: "industrybynaicscode",
+                    FilterRangeFields: [{
+                        DisplayText: "Area (sqft)",
+                        FieldName: "BLDGAREA"
+                    }],
+                    RegularFilterOptionFields: [
 
-                            BusinessSummaryFields: [
-                                {
-                                    DisplayText: "Businesses",
-                                    FieldName: "industrybynaicscode.N01_BUS"
-                                }, {
-                                    DisplayText: "Revenue",
-                                    FieldName: "industrybynaicscode.N01_SALES"
-                                }, {
-                                    DisplayText: "Employees",
-                                    FieldName: "industrybynaicscode.N01_EMP"
-                                }, {
-                                    DisplayText: "Unemployment",
-                                    FieldName: "industry.UNEMPRT_CY"
-                                }
-                            ]
-                        }, {
-                            DisplayTitle: "Demographic Information",
 
-                            DisplayFields: [
-                                {
-                                    DisplayText: "Dominant Tapestry Segment",
-                                    FieldName: "Policy.TSEGNAME"
-                                }, {
-                                    DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "industry.CIVLBFR_CY"
-                                }, {
-                                    DisplayText: "Total Population",
-                                    FieldName: "KeyUSFacts.TOTPOP_CY"
-                                }, {
-                                    DisplayText: "Total Households",
-                                    FieldName: "KeyUSFacts.TOTHH_CY"
-                                }, {
-                                    DisplayText: "Average Household Size",
-                                    FieldName: "KeyUSFacts.AVGHHSZ_CY"
-                                }, {
-                                    DisplayText: "Average Household Income",
-                                    FieldName: "KeyUSFacts.AVGHINC_CY"
-                                }, {
-                                    DisplayText: "Median Household Income",
-                                    FieldName: "KeyUSFacts.MEDHINC_CY"
-                                }, {
-                                    DisplayText: "Per Capita Income",
-                                    FieldName: "KeyUSFacts.PCI_CY"
-                                }, {
-                                    DisplayText: "Total Housing Units",
-                                    FieldName: "KeyUSFacts.TOTHU_FY"
-                                }, {
-                                    DisplayText: "Owner Occupied HUs",
-                                    FieldName: "KeyUSFacts.OWNER_CY"
-                                }, {
-                                    DisplayText: "Renter Occupied HUs",
-                                    FieldName: "KeyUSFacts.RENTER_CY"
-                                }, {
-                                    DisplayText: "Vacant Housing Units",
-                                    FieldName: "KeyUSFacts.VACANT_CY"
-                                }, {
-                                    DisplayText: "Median Home Value",
-                                    FieldName: "KeyUSFacts.MEDVAL_CY"
-                                }, {
-                                    DisplayText: "Average Home Value",
-                                    FieldName: "KeyUSFacts.AVGVAL_CY"
-                                }
-                            ]
-                        }
                     ],
-                    DownloadSettings: [
-                        {
-                            DisplayOptionTitle: "Business Summary",
-                            GeoEnrichmentReportName: "business_summary",
-                            Filetype: "PDF" //allowed PDF or XLSX
+                    AdditionalFilterOptions: {
+                        Enabled: true,
+                        FilterFieldName: "FACTYPE",
+                        FilterOptions: [{
+                            DisplayText: "Office",
+                            FieldValue: "Office Building"
                         }, {
-                            DisplayOptionTitle: "Demographic and Income Profile",
-                            GeoEnrichmentReportName: "dandi",
-                            Filetype: "PDF" //allowed PDF or XLSX
-                        }
-                    ]
-                }
-            }, {
-                Name: "Communities",
-                Enabled: false,
-                EnableSearch: true,
-                EnableDropdown: true,
-                FilterSettings: {
-                    StandardGeographyQuery: {
-                        LocatorDefaultAddress: "Naperville",
-                        QueryField: "geographyQuery",
-                        SourceCountry: "US",
-                        FeatureLimit: 10
-                    },
-                    FilterLayer: {
-                        Title: "EconomicDevelopment - Municipalities",
-                        QueryLayerId: "54",
-                        FilterFieldName: "COUNTY",
-                        OutFields: ["COUNTY"]
-                    },
-                    InfoPanelSettings: {
-                        GeoEnrichmentContents: {
-                            DisplayTitle: "Community Information",
-
-                            DisplayFields: [
-                                {
-                                    DisplayText: "Dominant Tapestry Segment",
-                                    FieldName: "Policy.TSEGNAME"
-                                }, {
-                                    DisplayText: "Labor Force Participation Rate",
-                                    FieldName: "industry.CIVLBFR_CY"
-                                }, {
-                                    DisplayText: "Total Population",
-                                    FieldName: "KeyUSFacts.TOTPOP_CY"
-                                }, {
-                                    DisplayText: "Total Households",
-                                    FieldName: "KeyUSFacts.TOTHH_CY"
-                                }, {
-                                    DisplayText: "Average Household Size",
-                                    FieldName: "KeyUSFacts.AVGHHSZ_CY"
-                                }, {
-                                    DisplayText: "Average Household Income",
-                                    FieldName: "KeyUSFacts.AVGHINC_CY"
-                                }, {
-                                    DisplayText: "Median Household Income",
-                                    FieldName: "KeyUSFacts.MEDHINC_CY"
-                                }, {
-                                    DisplayText: "Per Capita Income",
-                                    FieldName: "KeyUSFacts.PCI_CY"
-                                }, {
-                                    DisplayText: "Total Housing Units",
-                                    FieldName: "KeyUSFacts.TOTHU_FY"
-                                }, {
-                                    DisplayText: "Owner Occupied HUs",
-                                    FieldName: "KeyUSFacts.OWNER_CY"
-                                }, {
-                                    DisplayText: "Renter Occupied HUs",
-                                    FieldName: "KeyUSFacts.RENTER_CY"
-                                }, {
-                                    DisplayText: "Vacant Housing Units",
-                                    FieldName: "KeyUSFacts.VACANT_CY"
-                                }, {
-                                    DisplayText: "Median Home Value",
-                                    FieldName: "KeyUSFacts.MEDVAL_CY"
-                                }, {
-                                    DisplayText: "Average Home Value",
-                                    FieldName: "KeyUSFacts.AVGVAL_CY"
-                                }
-                            ]
-                        },
-                        DownloadSettings: [{
-                            DisplayOptionTitle: "Community Profile",
-                            GeoEnrichmentReportName: "community_profile",
-                            Filetype: "PDF" //allowed PDF or XLSX
+                            DisplayText: "Retail",
+                            FieldValue: "Retail Building"
                         }, {
-                            DisplayOptionTitle: "Demographic and Income Profile",
-                            GeoEnrichmentReportName: "dandi",
-                            Filetype: "PDF" //allowed PDF or XLSX
+                            DisplayText: "Warehouse",
+                            FieldValue: "Warehouse Building"
+                        }, {
+                            DisplayText: "Industrial",
+                            FieldValue: "Industrial Building"
                         }]
                     }
                 }
             }],
+            InfoPanelSettings: {
+                ResultContents: {
+                    ShowAttachments: true,
+                    DisplayFields: [{
+                            DisplayText: "Name:",
+                            FieldName: "FACNAME",
+                            SortingEnabled: true
+                        }, {
+                            DisplayText: "Address:",
+                            FieldName: "FULLADDR",
+                            SortingEnabled: false
+                        }, {
+                            DisplayText: "Area (sqft):",
+                            FieldName: "BLDGAREA",
+                            SortingEnabled: true
+                        }, {
+                            DisplayText: "Zoning:",
+                            FieldName: "ZONEDESC",
+                            SortingEnabled: true
+                        }
+
+                    ]
+                },
+                LayerContents: {
+                    ShowAttachments: true,
+                    DisplayTitle: "Property Information",
+                    DisplayFields: [{
+                        DisplayText: "Name:",
+                        FieldName: "FACNAME"
+                    }, {
+                        DisplayText: "Address:",
+                        FieldName: "FULLADDR"
+                    }, {
+                        DisplayText: "County:",
+                        FieldName: "SITECOUNTY"
+                    }, {
+                        DisplayText: "Zipcode:",
+                        FieldName: "SITEZIP"
+                    }, {
+                        DisplayText: "Zoning:",
+                        FieldName: "ZONEDESC"
+                    }, {
+                        DisplayText: "Area (sqft):",
+                        FieldName: "BLDGAREA"
+                    }, {
+                        DisplayText: "Acquisition:",
+                        FieldName: "ACQUISITION"
+                    }, {
+                        DisplayText: "Incentives:",
+                        FieldName: "INCENTIVE"
+                    }, {
+                        DisplayText: "Gas:",
+                        FieldName: "GAS"
+                    }, {
+                        DisplayText: "Electric:",
+                        FieldName: "ELECTRIC"
+                    }, {
+                        DisplayText: "Water:",
+                        FieldName: "WATER"
+                    }, {
+                        DisplayText: "Sewer:",
+                        FieldName: "SEWER"
+                    }, {
+                        DisplayText: "Telco:",
+                        FieldName: "TELCO"
+                    }, {
+                        DisplayText: "High-Speed ISP:",
+                        FieldName: "ISP"
+                    }, {
+                        DisplayText: "Distance to Rail (Mi):",
+                        FieldName: "DISTRAIL"
+                    }, {
+                        DisplayText: "Distance to Highway (Mi):",
+                        FieldName: "DISTHGWY"
+                    }, {
+                        DisplayText: "Distance to Airport (Mi):",
+                        FieldName: "DISTAIR"
+                    }, {
+                        DisplayText: "Contact Name:",
+                        FieldName: "POCNAME"
+                    }, {
+                        DisplayText: "Company Name:",
+                        FieldName: "POCCOMP"
+                    }, {
+                        DisplayText: "Contact Phone:",
+                        FieldName: "POCPHONE"
+                    }]
+                },
+                GeoenrichmentDistance: {
+                    Unit: "UNIT_STATUTE_MILE",
+                    BufferDistance: 1
+                },
+                GeoEnrichmentContents: {
+                    DisplayTitle: "Neighborhood Information",
+                    DisplayFields: [{
+                        DisplayText: "Dominant Tapestry Segment",
+                        FieldName: "Policy.TSEGNAME"
+                    }, {
+                        DisplayText: "Labor Force Participation Rate",
+                        FieldName: "industry.CIVLBFR_CY"
+                    }, {
+                        DisplayText: "Total Population",
+                        FieldName: "KeyUSFacts.TOTPOP_CY"
+                    }, {
+                        DisplayText: "Total Households",
+                        FieldName: "KeyUSFacts.TOTHH_CY"
+                    }, {
+                        DisplayText: "Average Household Size",
+                        FieldName: "KeyUSFacts.AVGHHSZ_CY"
+                    }, {
+                        DisplayText: "Average Household Income",
+                        FieldName: "KeyUSFacts.AVGHINC_CY"
+                    }, {
+                        DisplayText: "Median Household Income",
+                        FieldName: "KeyUSFacts.MEDHINC_CY"
+                    }, {
+                        DisplayText: "Per Capita Income",
+                        FieldName: "KeyUSFacts.PCI_CY"
+                    }, {
+                        DisplayText: "Total Housing Units",
+                        FieldName: "KeyUSFacts.TOTHU_FY"
+                    }, {
+                        DisplayText: "Owner Occupied HUs",
+                        FieldName: "KeyUSFacts.OWNER_CY"
+                    }, {
+                        DisplayText: "Renter Occupied HUs",
+                        FieldName: "KeyUSFacts.RENTER_CY"
+                    }, {
+                        DisplayText: "Vacant Housing Units",
+                        FieldName: "KeyUSFacts.VACANT_CY"
+                    }, {
+                        DisplayText: "Median Home Value",
+                        FieldName: "KeyUSFacts.MEDVAL_CY"
+                    }, {
+                        DisplayText: "Average Home Value",
+                        FieldName: "KeyUSFacts.AVGVAL_CY"
+                    }]
+                },
+                DownloadSettings: [{
+                    DisplayOptionTitle: "Property Information",
+                    GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                    Filetype: "PDF" //allowed PDF
+                }, {
+                    DisplayOptionTitle: "Traffic Count Profile",
+                    GeoEnrichmentReportName: "traffic",
+                    Filetype: "PDF" //allowed PDF or XLSX
+                }]
+            }
+        }, {
+            Name: "Sites",
+            Enabled: true,
+            SearchSettings: [{
+                Title: "Vacant Land Sites",
+                QueryLayerId: "1",
+                SearchDisplayTitle: "Sites",
+                SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${FULLADDR}",
+                SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(FULLADDR) LIKE UPPER('${0}%')",
+                FilterSettings: {
+                    FilterRangeFields: [{
+                        DisplayText: "Area (acres)",
+                        FieldName: "TOTAREA"
+                    }],
+                    RegularFilterOptionFields: [{
+                        DisplayText: "Sewer Service",
+                        FieldName: "SEWER",
+                        FieldValue: "Yes"
+                    }, {
+                        DisplayText: "Water Service",
+                        FieldName: "WATER",
+                        FieldValue: "Yes"
+                    }, {
+                        DisplayText: "Gas Service",
+                        FieldName: "GAS",
+                        FieldValue: "Yes"
+                    }],
+                    AdditionalFilterOptions: {
+                        Enabled: true,
+                        FilterFieldName: "ZONEDESC",
+                        FilterOptions: [{
+                            DisplayText: "Industrial (I-2) Zone",
+                            FieldValue: "I-2"
+                        }, {
+                            DisplayText: "Commerical (C-1) Zone",
+                            FieldValue: "C-1"
+                        }, {
+                            DisplayText: "Commercial (C-2) Zone",
+                            FieldValue: "C-2"
+                        }, {
+                            DisplayText: "Planned Use Development (PUD) Zone",
+                            FieldValue: "PUD"
+                        }]
+                    }
+                }
+            }],
+            InfoPanelSettings: {
+                ResultContents: {
+                    ShowAttachments: true,
+                    DisplayFields: [{
+                            DisplayText: "Name:",
+                            FieldName: "FACNAME",
+                            SortingEnabled: true
+                        }, {
+                            DisplayText: "Address:",
+                            FieldName: "FULLADDR",
+                            SortingEnabled: false
+                        }, {
+                            DisplayText: "Area (acres):",
+                            FieldName: "TOTAREA",
+                            SortingEnabled: true
+                        }, {
+                            DisplayText: "Zoning:",
+                            FieldName: "ZONEDESC",
+                            SortingEnabled: true
+                        }
+
+                    ]
+                },
+                LayerContents: {
+                    ShowAttachments: true,
+                    DisplayTitle: "Site Information",
+                    DisplayFields: [{
+                        DisplayText: "Name:",
+                        FieldName: "FACNAME"
+                    }, {
+                        DisplayText: "Address:",
+                        FieldName: "FULLADDR"
+                    }, {
+                        DisplayText: "County:",
+                        FieldName: "SITECOUNTY"
+                    }, {
+                        DisplayText: "Zipcode:",
+                        FieldName: "SITEZIP"
+                    }, {
+                        DisplayText: "Zoning:",
+                        FieldName: "ZONEDESC"
+                    }, {
+                        DisplayText: "Area (acres):",
+                        FieldName: "TOTAREA"
+                    }, {
+                        DisplayText: "Acquisition:",
+                        FieldName: "ACQUISITION"
+                    }, {
+                        DisplayText: "Incentives:",
+                        FieldName: "INCENTIVE"
+                    }, {
+                        DisplayText: "Gas:",
+                        FieldName: "GAS"
+                    }, {
+                        DisplayText: "Electric:",
+                        FieldName: "ELECTRIC"
+                    }, {
+                        DisplayText: "Water:",
+                        FieldName: "WATER"
+                    }, {
+                        DisplayText: "Sewer:",
+                        FieldName: "SEWER"
+                    }, {
+                        DisplayText: "Telco:",
+                        FieldName: "TELCO"
+                    }, {
+                        DisplayText: "High-Speed ISP:",
+                        FieldName: "ISP"
+                    }, {
+                        DisplayText: "Distance to Rail (Mi):",
+                        FieldName: "DISTRAIL"
+                    }, {
+                        DisplayText: "Distance to Highway (Mi):",
+                        FieldName: "DISTHGWY"
+                    }, {
+                        DisplayText: "Distance to Airport (Mi):",
+                        FieldName: "DISTAIR"
+                    }, {
+                        DisplayText: "Contact Name:",
+                        FieldName: "POCNAME"
+                    }, {
+                        DisplayText: "Company Name:",
+                        FieldName: "POCCOMP"
+                    }, {
+                        DisplayText: "Contact Phone:",
+                        FieldName: "POCPHONE"
+                    }]
+                },
+                GeoenrichmentDistance: {
+                    Unit: "UNIT_STATUTE_MILE",
+                    BufferDistance: 2
+                },
+                GeoEnrichmentContents: {
+                    DisplayTitle: "Neighborhood Information",
+
+                    DisplayFields: [{
+                        DisplayText: "Dominant Tapestry Segment",
+                        FieldName: "Policy.TSEGNAME"
+                    }, {
+                        DisplayText: "Labor Force Participation Rate",
+                        FieldName: "industry.CIVLBFR_CY"
+                    }, {
+                        DisplayText: "Total Population",
+                        FieldName: "KeyUSFacts.TOTPOP_CY"
+                    }, {
+                        DisplayText: "Total Households",
+                        FieldName: "KeyUSFacts.TOTHH_CY"
+                    }, {
+                        DisplayText: "Average Household Size",
+                        FieldName: "KeyUSFacts.AVGHHSZ_CY"
+                    }, {
+                        DisplayText: "Average Household Income",
+                        FieldName: "KeyUSFacts.AVGHINC_CY"
+                    }, {
+                        DisplayText: "Median Household Income",
+                        FieldName: "KeyUSFacts.MEDHINC_CY"
+                    }, {
+                        DisplayText: "Per Capita Income",
+                        FieldName: "KeyUSFacts.PCI_CY"
+                    }, {
+                        DisplayText: "Total Housing Units",
+                        FieldName: "KeyUSFacts.TOTHU_FY"
+                    }, {
+                        DisplayText: "Owner Occupied HUs",
+                        FieldName: "KeyUSFacts.OWNER_CY"
+                    }, {
+                        DisplayText: "Renter Occupied HUs",
+                        FieldName: "KeyUSFacts.RENTER_CY"
+                    }, {
+                        DisplayText: "Vacant Housing Units",
+                        FieldName: "KeyUSFacts.VACANT_CY"
+                    }, {
+                        DisplayText: "Median Home Value",
+                        FieldName: "KeyUSFacts.MEDVAL_CY"
+                    }, {
+                        DisplayText: "Average Home Value",
+                        FieldName: "KeyUSFacts.AVGVAL_CY"
+                    }]
+                },
+                DownloadSettings: [{
+                    DisplayOptionTitle: "Site Information",
+                    GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                    Filetype: "PDF" //allowed PDF
+                }, {
+                    DisplayOptionTitle: "Traffic Count Profile",
+                    GeoEnrichmentReportName: "traffic",
+                    Filetype: "PDF" //allowed PDF or XLSX
+                }]
+            }
+        }, {
+            Name: "Business",
+            Enabled: true,
+            FilterSettings: {
+                BusinesSortOptions: {
+                    Option: "Count,Revenue,Employees"
+                },
+                FilterRangeFields: [{
+                    DisplayText: "Annual Revenue ($)",
+                    VariableNameSuffix: "_SALES"
+                }, {
+                    DisplayText: "Number of employees",
+                    VariableNameSuffix: "_EMP"
+                }]
+            },
+            InfoPanelSettings: {
+                GeoEnrichmentContents: [{
+                    DisplayTitle: "Business Information",
+                    DisplayTextForBusinessCount: "Count",
+                    BusinessDataCollectionName: "industrybynaicscode",
+
+                    BusinessSummaryFields: [{
+                        DisplayText: "Businesses",
+                        FieldName: "industrybynaicscode.N01_BUS"
+                    }, {
+                        DisplayText: "Revenue",
+                        FieldName: "industrybynaicscode.N01_SALES"
+                    }, {
+                        DisplayText: "Employees",
+                        FieldName: "industrybynaicscode.N01_EMP"
+                    }, {
+                        DisplayText: "Unemployment",
+                        FieldName: "industry.UNEMPRT_CY"
+                    }]
+                }, {
+                    DisplayTitle: "Demographic Information",
+
+                    DisplayFields: [{
+                        DisplayText: "Dominant Tapestry Segment",
+                        FieldName: "Policy.TSEGNAME"
+                    }, {
+                        DisplayText: "Labor Force Participation Rate",
+                        FieldName: "industry.CIVLBFR_CY"
+                    }, {
+                        DisplayText: "Total Population",
+                        FieldName: "KeyUSFacts.TOTPOP_CY"
+                    }, {
+                        DisplayText: "Total Households",
+                        FieldName: "KeyUSFacts.TOTHH_CY"
+                    }, {
+                        DisplayText: "Average Household Size",
+                        FieldName: "KeyUSFacts.AVGHHSZ_CY"
+                    }, {
+                        DisplayText: "Average Household Income",
+                        FieldName: "KeyUSFacts.AVGHINC_CY"
+                    }, {
+                        DisplayText: "Median Household Income",
+                        FieldName: "KeyUSFacts.MEDHINC_CY"
+                    }, {
+                        DisplayText: "Per Capita Income",
+                        FieldName: "KeyUSFacts.PCI_CY"
+                    }, {
+                        DisplayText: "Total Housing Units",
+                        FieldName: "KeyUSFacts.TOTHU_FY"
+                    }, {
+                        DisplayText: "Owner Occupied HUs",
+                        FieldName: "KeyUSFacts.OWNER_CY"
+                    }, {
+                        DisplayText: "Renter Occupied HUs",
+                        FieldName: "KeyUSFacts.RENTER_CY"
+                    }, {
+                        DisplayText: "Vacant Housing Units",
+                        FieldName: "KeyUSFacts.VACANT_CY"
+                    }, {
+                        DisplayText: "Median Home Value",
+                        FieldName: "KeyUSFacts.MEDVAL_CY"
+                    }, {
+                        DisplayText: "Average Home Value",
+                        FieldName: "KeyUSFacts.AVGVAL_CY"
+                    }]
+                }],
+                DownloadSettings: [{
+                    DisplayOptionTitle: "Business Summary",
+                    GeoEnrichmentReportName: "business_summary",
+                    Filetype: "PDF" //allowed PDF or XLSX
+                }, {
+                    DisplayOptionTitle: "Demographic and Income Profile",
+                    GeoEnrichmentReportName: "dandi",
+                    Filetype: "PDF" //allowed PDF or XLSX
+                }]
+            }
+        }, {
+            Name: "Communities",
+            Enabled: false,
+            EnableSearch: true,
+            EnableDropdown: true,
+            FilterSettings: {
+                StandardGeographyQuery: {
+                    LocatorDefaultAddress: "Naperville",
+                    QueryField: "geographyQuery",
+                    SourceCountry: "US",
+                    FeatureLimit: 10
+                },
+                FilterLayer: {
+                    Title: "EconomicDevelopment - Municipalities",
+                    QueryLayerId: "54",
+                    FilterFieldName: "COUNTY",
+                    OutFields: ["COUNTY"]
+                },
+                InfoPanelSettings: {
+                    GeoEnrichmentContents: {
+                        DisplayTitle: "Community Information",
+
+                        DisplayFields: [{
+                            DisplayText: "Dominant Tapestry Segment",
+                            FieldName: "Policy.TSEGNAME"
+                        }, {
+                            DisplayText: "Labor Force Participation Rate",
+                            FieldName: "industry.CIVLBFR_CY"
+                        }, {
+                            DisplayText: "Total Population",
+                            FieldName: "KeyUSFacts.TOTPOP_CY"
+                        }, {
+                            DisplayText: "Total Households",
+                            FieldName: "KeyUSFacts.TOTHH_CY"
+                        }, {
+                            DisplayText: "Average Household Size",
+                            FieldName: "KeyUSFacts.AVGHHSZ_CY"
+                        }, {
+                            DisplayText: "Average Household Income",
+                            FieldName: "KeyUSFacts.AVGHINC_CY"
+                        }, {
+                            DisplayText: "Median Household Income",
+                            FieldName: "KeyUSFacts.MEDHINC_CY"
+                        }, {
+                            DisplayText: "Per Capita Income",
+                            FieldName: "KeyUSFacts.PCI_CY"
+                        }, {
+                            DisplayText: "Total Housing Units",
+                            FieldName: "KeyUSFacts.TOTHU_FY"
+                        }, {
+                            DisplayText: "Owner Occupied HUs",
+                            FieldName: "KeyUSFacts.OWNER_CY"
+                        }, {
+                            DisplayText: "Renter Occupied HUs",
+                            FieldName: "KeyUSFacts.RENTER_CY"
+                        }, {
+                            DisplayText: "Vacant Housing Units",
+                            FieldName: "KeyUSFacts.VACANT_CY"
+                        }, {
+                            DisplayText: "Median Home Value",
+                            FieldName: "KeyUSFacts.MEDVAL_CY"
+                        }, {
+                            DisplayText: "Average Home Value",
+                            FieldName: "KeyUSFacts.AVGVAL_CY"
+                        }]
+                    },
+                    DownloadSettings: [{
+                        DisplayOptionTitle: "Community Profile",
+                        GeoEnrichmentReportName: "community_profile",
+                        Filetype: "PDF" //allowed PDF or XLSX
+                    }, {
+                        DisplayOptionTitle: "Demographic and Income Profile",
+                        GeoEnrichmentReportName: "dandi",
+                        Filetype: "PDF" //allowed PDF or XLSX
+                    }]
+                }
+            }
+        }],
         // ------------------------------------------------------------------------------------------------------------------------
         // ADDRESS SEARCH SETTINGS
         // ------------------------------------------------------------------------------------------------------------------------
@@ -758,7 +719,7 @@ define([], function () {
         // MaxResults: Maximum number of locations to display in the results menu.
         LocatorSettings: {
             LocatorFilterFieldName: "Addr_Type",
-            LocatorFilterFieldValues: ['PointAddress', 'BuildingName', 'StreetAddress', 'StreetInt', 'StreetName', 'Postal', 'POI', 'Locality'],
+            LocatorFilterFieldValues: ["PointAddress", "BuildingName", "StreetAddress", "StreetInt", "StreetName", "Postal", "POI", "Locality"],
             DefaultLocatorSymbol: "/js/library/themes/images/redpushpin.png",
             MarkupSymbolSize: {
                 width: 35,
@@ -805,10 +766,9 @@ define([], function () {
         // WidgetPath: path of the widget respective to the widgets package.
         // The geolocation button has been hidden from the user interface by commenting out the widgetpath for geolocation below. You can enable geolocation by uncommenting the widgetpath for geolocation. The geolocation button, however, will only work on browsers supporting geolocation over HTTP connections.  If a browser requires a HTTPS connection to support geolocation and the button is enabled, the button will not work, but the application will work correctly otherwise.
 
-        AppHeaderWidgets: [
-            {
+        AppHeaderWidgets: [{
                 WidgetPath: "widgets/siteLocator/siteLocator"
-            }, 
+            },
             //{
             //    WidgetPath: "widgets/geoLocation/geoLocation"
             //},

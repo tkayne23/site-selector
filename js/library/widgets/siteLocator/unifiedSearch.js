@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,esri,esriConfig,alert,handle:true,dijit,appGlobals */
+/*global define,dojoConfig,alert,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
  | Copyright 2013 Esri
@@ -48,10 +48,10 @@ define([
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, featureQuery], {
         /**
-        * attach locator events
-        * @param {object} nodes and other variable for all workflows
-        * @memberOf widgets/siteLocator/unifiedSearch
-        */
+         * attach locator events
+         * @param {object} nodes and other variable for all workflows
+         * @memberOf widgets/siteLocator/unifiedSearch
+         */
         _attachLocatorEvents: function (obj) {
             this.own(on(obj.divSearch, "click", lang.hitch(this, function () {
                 if (!domClass.contains(obj.divAddressResults, "esriCTDisableSearch")) {
@@ -86,9 +86,11 @@ define([
                 if (this.workflowCount === obj.addressWorkflowCount) {
                     if (this.workflowCount === 0) {
                         this._getBackToTab(query(".esriCTAttachmentOuterDiv")[this.workflowCount], query(".esriCTMainDivBuilding")[0]);
-                    } else if (this.workflowCount === 1) {
+                    }
+                    else if (this.workflowCount === 1) {
                         this._getBackToTab(query(".esriCTAttachmentOuterDiv")[this.workflowCount], query(".esriCTMainDivSites")[0]);
-                    } else if (this.workflowCount === 3) {
+                    }
+                    else if (this.workflowCount === 3) {
                         this.rdoCommunitiesAddressSearch.checked = true;
                         this._communitiesSearchRadioButtonHandler(this.rdoCommunitiesAddressSearch);
                     }
@@ -96,7 +98,8 @@ define([
                     if (html.coords(this.applicationHeaderSearchContainer).h > 0) {
                         appGlobals.shareOptions.arrAddressMapPoint[this.workflowCount] = mapPoint.x + "," + mapPoint.y;
                         appGlobals.shareOptions.strGeoLocationMapPoint = null;
-                    } else {
+                    }
+                    else {
                         topic.publish("hideProgressIndicator");
                         appGlobals.shareOptions.strGeoLocationMapPoint = mapPoint.x + "," + mapPoint.y;
                     }
@@ -106,11 +109,11 @@ define([
         },
 
         /**
-        * perform query on GeoLocation
-        * @param {object} Nodes and other variable for all workflows
-        * @param {object} Geolocation MapPoint
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * perform query on GeoLocation
+         * @param {object} Nodes and other variable for all workflows
+         * @param {object} Geolocation MapPoint
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _geoLocationQuery: function (obj, mapPoint) {
             var locator;
             locator = new Locator(appGlobals.configData.LocatorSettings.LocatorURL);
@@ -129,7 +132,8 @@ define([
                     if (this.workflowCount === 3) {
                         topic.publish("showProgressIndicator");
                         this._enrichData([mapPoint], this.workflowCount, null);
-                    } else {
+                    }
+                    else {
                         // in building, sites and business workflow, create buffer.
                         this._createBuffer(mapPoint, null, true);
                     }
@@ -143,12 +147,13 @@ define([
         },
 
         /**
-        * perform search by address if search type is address search
-        * @param {object} Nodes and other variable for all workflows
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * perform search by address if search type is address search
+         * @param {object} Nodes and other variable for all workflows
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _searchLocation: function (obj, searchText, thisSearchTime) {
-            var nameArray = {}, searchFields, addressFieldValues, s, deferredArray, resultLength, index;
+            var nameArray = {},
+                searchFields, addressFieldValues, s, deferredArray, resultLength, index;
             // discard searches made obsolete by new typing from user
             if (thisSearchTime < this.lastSearchTime) {
                 return;
@@ -161,7 +166,8 @@ define([
                 this._locatorErrBack(obj, false);
                 domStyle.set(obj.divAddressScrollContainer, "display", "none");
                 domStyle.set(obj.divAddressScrollContent, "display", "none");
-            } else {
+            }
+            else {
                 nameArray[appGlobals.configData.LocatorSettings.DisplayText] = [];
                 domAttr.set(obj.txtAddress, "defaultAddress", searchText);
                 domStyle.set(obj.imgSearchLoader, "display", "block");
@@ -227,13 +233,15 @@ define([
                                                 }
                                             }
                                         }
-                                    } else if (result[num].length) {
+                                    }
+                                    else if (result[num].length) {
                                         this._addressResult(result[num], nameArray, searchFields);
                                     }
                                     //result length in case of address
                                     if (result[num].length) {
                                         resultLength = result[num].length;
-                                    } else if (result[num].featureSet && result[num].featureSet.features.length > 0) {
+                                    }
+                                    else if (result[num].featureSet && result[num].featureSet.features.length > 0) {
                                         //result length in case of features
                                         resultLength = result[num].featureSet.features.length;
                                     }
@@ -241,7 +249,8 @@ define([
                             }
                             this._showLocatedAddress(nameArray, resultLength, obj, searchText);
                         }
-                    } else {
+                    }
+                    else {
                         this.mapPoint = null;
                         this._locatorErrBack(obj, true);
                     }
@@ -250,13 +259,14 @@ define([
         },
 
         /**
-        * get results from locator service
-        * @param {object} deferredArray
-        * @param {object} searchText
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * get results from locator service
+         * @param {object} deferredArray
+         * @param {object} searchText
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _getAddressSearchResults: function (deferredArray, searchText, obj) {
-            var addressField = {}, options, searchFieldName, baseMapExtent, locator, locatorDef, deferred, basemapId, selectedBasemap = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex];
+            var addressField = {},
+                options, searchFieldName, baseMapExtent, locator, locatorDef, deferred, basemapId, selectedBasemap = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex];
             // call locator service specified in configuration file
             locator = new Locator(appGlobals.configData.LocatorSettings.LocatorURL);
             searchFieldName = appGlobals.configData.LocatorSettings.LocatorParameters.SearchField;
@@ -264,7 +274,8 @@ define([
             //get full extent of selected basemap
             if (selectedBasemap.length) {
                 basemapId = selectedBasemap[0].BasemapId;
-            } else {
+            }
+            else {
                 basemapId = selectedBasemap.BasemapId;
             }
             if (this.map.getLayer(basemapId)) {
@@ -291,13 +302,13 @@ define([
             deferredArray.push(locatorDef);
         },
         /**
-        * query layer for searched result
-        * @param {array} deferred array to push query result
-        * @param {object} an instance of services
-        * @param {object} obj
-        * @param {string} searchText
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * query layer for searched result
+         * @param {array} deferred array to push query result
+         * @param {object} an instance of services
+         * @param {object} obj
+         * @param {string} searchText
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _layerSearchResults: function (deferredArray, layerobject, obj, searchText) {
             var queryTask, queryLayer, deferred;
             domStyle.set(obj.imgSearchLoader, "display", "block");
@@ -330,12 +341,16 @@ define([
         },
 
         /**
-        * filter valid results from results returned by locator service
-        * @param {object} candidates Contains results from locator service
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * filter valid results from results returned by locator service
+         * @param {object} candidates Contains results from locator service
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _showLocatedAddress: function (candidates, resultLength, obj) {
-            var addrListCount = 0, noResultCount = 0, candidatesCount = 0, addrList = [], divAddressSearchCell, divAddressCounty, candidate, listContainer, i, candidateName;
+            var addrListCount = 0,
+                noResultCount = 0,
+                candidatesCount = 0,
+                addrList = [],
+                divAddressSearchCell, divAddressCounty, candidate, listContainer, i, candidateName;
             domConstruct.empty(obj.divAddressResults);
             if (lang.trim(obj.txtAddress.value) === "") {
                 obj.txtAddress.focus();
@@ -346,9 +361,9 @@ define([
             }
 
             /**
-            * display all the located address in the address container
-            * 'this.divAddressResults' div dom element contains located addresses, created in widget template
-            */
+             * display all the located address in the address container
+             * 'this.divAddressResults' div dom element contains located addresses, created in widget template
+             */
             domStyle.set(obj.divAddressScrollContainer, "display", "block");
             domStyle.set(obj.divAddressScrollContent, "display", "block");
             if (resultLength > 0) {
@@ -356,21 +371,34 @@ define([
                     if (candidates.hasOwnProperty(candidateName)) {
                         candidatesCount++;
                         if (candidates[candidateName].length > 0) {
-                            divAddressCounty = domConstruct.create("div", { "class": "esriCTSearchGroupRow esriCTBottomBorder esriCTResultColor esriCTCursorPointer esriCTAddressCounty" }, obj.divAddressResults);
-                            divAddressSearchCell = domConstruct.create("div", { "class": "esriCTSearchGroupCell" }, divAddressCounty);
+                            divAddressCounty = domConstruct.create("div", {
+                                "class": "esriCTSearchGroupRow esriCTBottomBorder esriCTResultColor esriCTCursorPointer esriCTAddressCounty"
+                            }, obj.divAddressResults);
+                            divAddressSearchCell = domConstruct.create("div", {
+                                "class": "esriCTSearchGroupCell"
+                            }, divAddressCounty);
                             candidate = candidateName + " (" + candidates[candidateName].length + ")";
-                            domConstruct.create("div", { "innerHTML": "+", "class": "esriCTPlusMinus" }, divAddressSearchCell);
-                            domConstruct.create("div", { "innerHTML": candidate, "class": "esriCTGroupList" }, divAddressSearchCell);
+                            domConstruct.create("div", {
+                                "innerHTML": "+",
+                                "class": "esriCTPlusMinus"
+                            }, divAddressSearchCell);
+                            domConstruct.create("div", {
+                                "innerHTML": candidate,
+                                "class": "esriCTGroupList"
+                            }, divAddressSearchCell);
                             domStyle.set(obj.imgSearchLoader, "display", "none");
                             domStyle.set(obj.close, "display", "block");
                             addrList.push(divAddressSearchCell);
                             this._toggleAddressList(addrList, addrListCount);
                             addrListCount++;
-                            listContainer = domConstruct.create("div", { "class": "listContainer esriCTHideAddressList" }, obj.divAddressResults);
+                            listContainer = domConstruct.create("div", {
+                                "class": "listContainer esriCTHideAddressList"
+                            }, obj.divAddressResults);
                             for (i = 0; i < candidates[candidateName].length; i++) {
                                 this._displayValidLocations(candidates[candidateName][i], i, candidates[candidateName], listContainer, obj);
                             }
-                        } else {
+                        }
+                        else {
                             noResultCount++;
                         }
                     }
@@ -379,18 +407,19 @@ define([
                     this.mapPoint = null;
                     this._locatorErrBack(obj, true);
                 }
-            } else {
+            }
+            else {
                 this.mapPoint = null;
                 this._locatorErrBack(obj, true);
             }
         },
 
         /**
-        * perform search by address if search type is address search
-        * @param {array} array of address
-        * @param {number} count of address in address list
-        * @memberOf widgets/Sitelocator/UnifiedSearch
-        */
+         * perform search by address if search type is address search
+         * @param {array} array of address
+         * @param {number} count of address in address list
+         * @memberOf widgets/Sitelocator/UnifiedSearch
+         */
         _toggleAddressList: function (addressList, idx) {
             on(addressList[idx], "click", function () {
                 var listStatusSymbol, outputContainer, plusMinusContainer;
@@ -410,31 +439,31 @@ define([
         },
 
         /**
-        * search address on every key press
-        * @param {object} evt Keyup event
-        * @param {string} obj
-        * @memberOf widgets/Sitelocator/UnifiedSearch
-        */
+         * search address on every key press
+         * @param {object} evt Keyup event
+         * @param {string} obj
+         * @memberOf widgets/Sitelocator/UnifiedSearch
+         */
         _submitAddress: function (evt, obj) {
             if (evt) {
                 /**
-                * Enter key immediately starts search
-                */
+                 * Enter key immediately starts search
+                 */
                 if (evt.keyCode === keys.ENTER) {
                     this._locateAddress(obj, true);
                     return;
                 }
 
                 /**
-                * do not perform auto complete search if alphabets,
-                * numbers,numpad keys,comma,ctl+v,ctrl +x,delete or
-                * backspace is pressed
-                */
+                 * do not perform auto complete search if alphabets,
+                 * numbers,numpad keys,comma,ctl+v,ctrl +x,delete or
+                 * backspace is pressed
+                 */
                 if (evt.ctrlKey || evt.altKey ||
-                            evt.keyCode === keys.UP_ARROW || evt.keyCode === keys.DOWN_ARROW ||
-                            evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
-                            evt.keyCode === keys.HOME || evt.keyCode === keys.END ||
-                            evt.keyCode === keys.CTRL || evt.keyCode === keys.SHIFT) {
+                    evt.keyCode === keys.UP_ARROW || evt.keyCode === keys.DOWN_ARROW ||
+                    evt.keyCode === keys.LEFT_ARROW || evt.keyCode === keys.RIGHT_ARROW ||
+                    evt.keyCode === keys.HOME || evt.keyCode === keys.END ||
+                    evt.keyCode === keys.CTRL || evt.keyCode === keys.SHIFT) {
                     evt.cancelBubble = true;
                     evt.stopPropagation();
                     domStyle.set(obj.imgSearchLoader, "display", "none");
@@ -447,11 +476,11 @@ define([
         },
 
         /**
-        * perform search by address if search type is address search
-        * @param {object} obj contains data for selected workflow
-        * @param {object} launchImmediately
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * perform search by address if search type is address search
+         * @param {object} obj contains data for selected workflow
+         * @param {object} launchImmediately
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _locateAddress: function (obj, launchImmediately) {
             var searchText = lang.trim(obj.txtAddress.value);
             if (launchImmediately || this.lastSearchString !== searchText) {
@@ -473,30 +502,36 @@ define([
                 this.lastSearchTime = thisSearchTime = (new Date()).getTime();
                 if (obj.addressWorkflowCount === 3) {
                     this._standardGeoQuery(obj);
-                } else {
+                }
+                else {
                     this._searchLocation(obj, lang.trim(obj.txtAddress.value), thisSearchTime);
                 }
             }), (launchImmediately ? 0 : 500));
         },
 
         /**
-        * perform search by address if search type is address search
-        * @param {object} candidate contains the address result
-        * @param {int} index of address
-        * @param {object} candidateName contain the name of result
-        * @param {object} listContainer is div which stored address result
-        * @param {object} obj contains data for selected workflow
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * perform search by address if search type is address search
+         * @param {object} candidate contains the address result
+         * @param {int} index of address
+         * @param {object} candidateName contain the name of result
+         * @param {object} listContainer is div which stored address result
+         * @param {object} obj contains data for selected workflow
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _displayValidLocations: function (candidate, index, candidateName, listContainer, obj) {
             var candidateAddress, esriCTSearchList, layer;
-            esriCTSearchList = domConstruct.create("div", { "class": "esriCTSearchListPanel" }, listContainer);
-            candidateAddress = domConstruct.create("div", { "class": "esriCTContentBottomBorder esriCTCursorPointer" }, esriCTSearchList);
+            esriCTSearchList = domConstruct.create("div", {
+                "class": "esriCTSearchListPanel"
+            }, listContainer);
+            candidateAddress = domConstruct.create("div", {
+                "class": "esriCTContentBottomBorder esriCTCursorPointer"
+            }, esriCTSearchList);
             domAttr.set(candidateAddress, "index", index);
             try {
                 if (candidate.name) {
                     domAttr.set(candidateAddress, "innerHTML", candidate.name);
-                } else {
+                }
+                else {
                     domAttr.set(candidateAddress, "innerHTML", candidate);
                 }
                 if (candidate.attributes.location) {
@@ -504,7 +539,8 @@ define([
                     domAttr.set(candidateAddress, "y", candidate.attributes.location.y);
                     domAttr.set(candidateAddress, "address", string.substitute(appGlobals.configData.LocatorSettings.DisplayField, candidate.attributes.attributes));
                 }
-            } catch (err) {
+            }
+            catch (err) {
                 alert(sharedNls.errorMessages.falseConfigParams);
             }
             on(candidateAddress, "click", lang.hitch(this, function (evt) {
@@ -518,16 +554,19 @@ define([
                     domStyle.set(obj.divAddressScrollContainer, "display", "none");
                     domStyle.set(obj.divAddressScrollContent, "display", "none");
                     this._enrichData(null, obj.addressWorkflowCount, candidate);
-                } else {
+                }
+                else {
                     // check the infowindow is visible on map
                     if (this.map.infoWindow) {
                         this.map.infoWindow.hide();
                     }
                     if (obj.addressWorkflowCount === 0 && domClass.contains(this.filterIcon, "esriCTFilterEnabled")) {
                         domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                    } else if (obj.addressWorkflowCount === 1 && domClass.contains(this.filterIconSites, "esriCTFilterEnabled")) {
+                    }
+                    else if (obj.addressWorkflowCount === 1 && domClass.contains(this.filterIconSites, "esriCTFilterEnabled")) {
                         domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                    } else {
+                    }
+                    else {
                         if (domClass.contains(this.filterIconBusiness, "esriCTFilterEnabled")) {
                             domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
                         }
@@ -543,11 +582,13 @@ define([
                             this.selectedValue[this.workflowCount] = null;
                             appGlobals.shareOptions.sortingData = null;
                             this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-                        } else if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites && this.workflowCount === 1) {
+                        }
+                        else if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites && this.workflowCount === 1) {
                             this.selectedValue[this.workflowCount] = null;
                             appGlobals.shareOptions.sortingData = null;
                             this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-                        } else if (this.selectSortOption && this.totalArray && this.workflowCount === 2) {
+                        }
+                        else if (this.selectSortOption && this.totalArray && this.workflowCount === 2) {
                             this.totalArray = [];
                             appGlobals.shareOptions.toFromBussinessFilter = null;
                             this.selectSortOption.set("value", sharedNls.titles.select);
@@ -558,12 +599,14 @@ define([
                         target = evt.currentTarget || evt.srcElement;
                         this.mapPoint = new Point(domAttr.get(target, "x"), domAttr.get(target, "y"), this.map.spatialReference);
                         this._locateAddressOnMap(this.mapPoint, obj, isValid);
-                    } else {
+                    }
+                    else {
                         if (candidateName[domAttr.get(candidateAddress, "index", index)]) {
                             layer = candidateName[domAttr.get(candidateAddress, "index", index)].layer;
                             if (!candidate.geometry) {
                                 this._getSelectedCandidateGeometry(layer, candidate, obj, isValid);
-                            } else {
+                            }
+                            else {
                                 this.mapPoint = new Point(candidate.geometry.x, candidate.geometry.y, this.map.spatialReference);
                                 this._locateAddressOnMap(this.mapPoint, obj, isValid);
                             }
@@ -574,13 +617,13 @@ define([
         },
 
         /**
-        * fetch geometry of the selected candidate
-        * @param {object} layerobject - selected candidate's layer details
-        * @param {object} candidate - selected candidate
-        * @param {object} obj contains data for selected workflow
-        * @param {boolean} isValid - flag to indicate if the applied filter is valid or not
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * fetch geometry of the selected candidate
+         * @param {object} layerobject - selected candidate's layer details
+         * @param {object} candidate - selected candidate
+         * @param {object} obj contains data for selected workflow
+         * @param {boolean} isValid - flag to indicate if the applied filter is valid or not
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _getSelectedCandidateGeometry: function (layerobject, candidate, obj, isValid) {
             var queryTask, queryLayer, currentTime;
             // if QueryURL is present for the selected candidate's layer, query the layer with the selected candidates objectid to fetch the candidate geometry
@@ -603,11 +646,11 @@ define([
         },
 
         /**
-        * perform search by address if search type is address search
-        * @param {object} Map point
-        * @param {object} obj contains data for selected workflow
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * perform search by address if search type is address search
+         * @param {object} Map point
+         * @param {object} obj contains data for selected workflow
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _locateAddressOnMap: function (mapPoint, obj, isValid) {
             var geoLocationPushpin, locatorMarkupSymbol, graphic;
             // if the applied filter is valid
@@ -634,7 +677,8 @@ define([
                     domStyle.set(obj.divAddressScrollContainer, "display", "none");
                     domStyle.set(obj.divAddressScrollContent, "display", "none");
                 }
-            } else {
+            }
+            else {
                 obj.txtAddress.value = obj.lastSearchString;
                 alert(sharedNls.errorMessages.invalidInput);
                 if (this.workflowCount === 0 || this.workflowCount === 1 || this.workflowCount === 2) {
@@ -645,11 +689,11 @@ define([
         },
 
         /**
-        * display error message if locator service fails or does not return any results
-        * @param {object} obj contains data for selected workflow
-        * @param {boolean} showMessage
-        * @memberOf widgets/siteLocator/UnifiedSearch
-        */
+         * display error message if locator service fails or does not return any results
+         * @param {object} obj contains data for selected workflow
+         * @param {boolean} showMessage
+         * @memberOf widgets/siteLocator/UnifiedSearch
+         */
         _locatorErrBack: function (obj, showMessage) {
             var errorAddressCounty, resultDiv;
             domStyle.set(obj.divAddressScrollContainer, "display", "block");
@@ -658,14 +702,18 @@ define([
             domStyle.set(obj.imgSearchLoader, "display", "none");
             domStyle.set(obj.close, "display", "block");
             if (showMessage) {
-                errorAddressCounty = domConstruct.create("div", { "class": "esriCTBottomBorder esriCTAddressCounty" }, obj.divAddressResults);
+                errorAddressCounty = domConstruct.create("div", {
+                    "class": "esriCTBottomBorder esriCTAddressCounty"
+                }, obj.divAddressResults);
                 domAttr.set(errorAddressCounty, "innerHTML", sharedNls.errorMessages.invalidSearch);
                 if (this.workflowCount === 0 && this.buildingTabData) {
                     this.buildingTabData = [];
-                } else if (this.workflowCount === 1 && this.sitesTabData) {
+                }
+                else if (this.workflowCount === 1 && this.sitesTabData) {
                     this.sitesTabData = [];
-                } else if (this.workflowCount === 2) {
-                    resultDiv = query('.esriCTRightPanel');
+                }
+                else if (this.workflowCount === 2) {
+                    resultDiv = query(".esriCTRightPanel");
                     if (this.totalArray) {
                         this.totalArray = [];
                     }
@@ -678,28 +726,28 @@ define([
         },
 
         /**
-        * clear default value from search textbox
-        * @param {object} evt Dblclick event
-        * @param {object} obj contains data for selected workflow
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * clear default value from search textbox
+         * @param {object} evt Dblclick event
+         * @param {object} obj contains data for selected workflow
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _clearDefaultText: function (evt, obj) {
             var target = window.event ? window.event.srcElement : evt ? evt.target : null;
             if (!target) {
                 return;
             }
             target.style.color = "#FFF";
-            target.value = '';
+            target.value = "";
             obj.txtAddress.value = "";
             domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
         },
 
         /**
-        * set default value to search textbox
-        * @param {object} evt Blur event
-        * @param {object} obj contains data for selected workflow
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * set default value to search textbox
+         * @param {object} evt Blur event
+         * @param {object} obj contains data for selected workflow
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _replaceDefaultText: function (evt, obj) {
             var target = window.event ? window.event.srcElement : evt ? evt.target : null;
             if (!target) {
@@ -709,13 +757,13 @@ define([
         },
 
         /**
-        * address result handler for unified search
-        * @param {object} Address candidate
-        * @param {array} array of address name
-        * @param {array} search fields
-        * @param {string} address field name
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * address result handler for unified search
+         * @param {object} Address candidate
+         * @param {array} array of address name
+         * @param {array} search fields
+         * @param {string} address field name
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _addressResult: function (candidates, nameArray, searchFields) {
             var order, j;
             for (order = 0; order < candidates.length; order++) {
@@ -737,13 +785,13 @@ define([
         },
 
         /**
-        * reset target value for unified search
-        * @param {object} target
-        * @param {object} title
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * reset target value for unified search
+         * @param {object} target
+         * @param {object} title
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _resetTargetValue: function (target, title) {
-            if (target.value === '' && domAttr.get(target, title)) {
+            if (target.value === "" && domAttr.get(target, title)) {
                 target.value = target.title;
                 if (target.title === "") {
                     target.value = domAttr.get(target, title);
@@ -756,10 +804,10 @@ define([
         },
 
         /**
-        * hide text for unified search
-        * @param {object} obj contains data for selected workflow
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * hide text for unified search
+         * @param {object} obj contains data for selected workflow
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _hideText: function (obj) {
             obj.txtAddress.value = "";
             domConstruct.empty(obj.divAddressResults);
@@ -769,10 +817,10 @@ define([
         },
 
         /**
-        * standard geometry query using enrichment service
-        * @param {object} obj contains data for selected workflow
-        * @memberOf widgets/SiteLocator/UnifiedSearch
-        */
+         * standard geometry query using enrichment service
+         * @param {object} obj contains data for selected workflow
+         * @memberOf widgets/SiteLocator/UnifiedSearch
+         */
         _standardGeoQuery: function (obj) {
             var standardGeoQueryURL, standardGeoQueryRequest, arrResult = [];
             domConstruct.empty(this.communityMainDiv);

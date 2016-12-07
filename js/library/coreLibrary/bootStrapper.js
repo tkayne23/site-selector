@@ -1,4 +1,4 @@
-﻿/*global require,dojo,dojoConfig,esri,esriConfig,alert,appGlobals:true */
+/*global require,dojoConfig,alert,appGlobals:true */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -35,13 +35,14 @@ require([
         esriConfig.defaults.io.proxyUrl = appGlobals.configData.ProxyUrl;
         esriConfig.defaults.io.timeout = 180000;
         /**
-        * load application configuration settings from configuration file
-        * create an object of widget loader class
-        */
+         * load application configuration settings from configuration file
+         * create an object of widget loader class
+         */
         var applicationWidgetLoader = new WidgetLoader();
         applicationWidgetLoader.startup();
 
-    } catch (ex) {
+    }
+    catch (ex) {
         alert(ex.message);
     }
 });

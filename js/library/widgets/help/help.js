@@ -1,4 +1,4 @@
-﻿/*global define,dojo,appGlobals */
+/*global define,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -32,18 +32,21 @@ define([
         sharedNls: sharedNls,
 
         /**
-        * create help widget
-        *
-        * @class
-        * @name widgets/help/help
-        */
+         * create help widget
+         *
+         * @class
+         * @name widgets/help/help
+         */
         postCreate: function () {
-            this.domNode = domConstruct.create("div", { "title": sharedNls.tooltips.help, "class": "esriCTHelpImg" }, null);
+            this.domNode = domConstruct.create("div", {
+                "title": sharedNls.tooltips.help,
+                "class": "esriCTHelpImg"
+            }, null);
             this.own(on(this.domNode, "click", lang.hitch(this, function () {
 
                 /**
-                * minimize other open header panel widgets and show help
-                */
+                 * minimize other open header panel widgets and show help
+                 */
                 topic.publish("toggleWidget", "help");
                 topic.publish("setMaxLegendLength");
                 this._showHelpPage();
@@ -51,9 +54,9 @@ define([
         },
 
         /**
-        * show help page
-        * @memberOf widgets/help/help
-        */
+         * show help page
+         * @memberOf widgets/help/help
+         */
         _showHelpPage: function () {
             window.open(appGlobals.configData.HelpURL);
         }
