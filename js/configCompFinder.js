@@ -22,29 +22,29 @@ define([], function () {
 
         // Use this file to perform the following:
 
-        // 1. Specify application Name                                 - [ Tag(s) to look for: ApplicationName ]
-        // 2. Set path for application icon                           - [ Tag(s) to look for: ApplicationIcon ]
-        // 3. Set path for application favicon                     - [ Tag(s) to look for: ApplicationFavicon ]
-        // 4. Set URL for help page                                         - [ Tag(s) to look for: HelpURL ]
-        // 5. Set URL for logo URL                                           - [ Tag(s) to look for: CustomLogoUrl ]
-        // 6. Set content for splash screen                          - [ Tag(s) to look for: SplashScreen ]
-        // 7. Set application theme URL                                - [ Tag(s) to look for: ThemeColor ]
-        // 8. Specify URLs for base maps                             - [ Tag(s) to look for: BaseMapLayers ]
-        // 9. Set URL for geometry service                            - [ Tag(s) to look for: GeometryService ]
-        // 10. Specify URL for geo-enrichment service      - [ Tag(s) to look for: GeoEnrichmentService]
-        // 11. Customize zoom level for address search  - [ Tag(s) to look for: ZoomLevel ]
-        // 12. Customize InfoPopupHeight                           - [ Tag(s) to look for: InfoPopupHeight ]
-        // 13. Customize InfoPopupWidth                           - [ Tag(s) to look for: InfoPopupWidth ]
-        // 14. Specify ShowNullValueAs                               - [ Tag(s) to look for: ShowNullValueAs ]
-        // 15. Set map attribution                                          - [ Tag(s) to look for: ShowMapAttribution ]
-        // 16. Set proxy URL                                                     - [ Tag(s) to look for: ProxyUrl ]
-        // 17. Set distance unit settings                               - [ Tag(s) to look for: DistanceUnitSettings]
-        // 18. Customize buffer symbol                         - [ Tag(s) to look for: BufferSymbology]
-        // 19. Customize ripple color                                   - [ Tag(s) to look for: RippleColor]
-        // 20. Customize ripple size                                     - [ Tag(s) to look for: LocatorRippleSize]
-        // 21. Customize address search settings             - [ Tag(s) to look for: LocatorSettings]
-        // 22. Specify URLs for map sharing                        - [ Tag(s) to look for: MapSharingOptions,TinyURLServiceURL, TinyURLResponseAttribute, FacebookShareURL, TwitterShareURL, ShareByMailLink ]
-        // 23. Specify header widget settings                      - [ Tag(s) to look for: AppHeaderWidgets ]
+        // 1. Specify application Name                 - [ Tag(s) to look for: ApplicationName ]
+        // 2. Set path for application icon            - [ Tag(s) to look for: ApplicationIcon ]
+        // 3. Set path for application favicon         - [ Tag(s) to look for: ApplicationFavicon ]
+        // 4. Set URL for help page                    - [ Tag(s) to look for: HelpURL ]
+        // 5. Set URL for logo URL                     - [ Tag(s) to look for: CustomLogoUrl ]
+        // 6. Set content for splash screen            - [ Tag(s) to look for: SplashScreen ]
+        // 7. Set application theme URL                - [ Tag(s) to look for: ThemeColor ]
+        // 8. Specify URLs for base maps               - [ Tag(s) to look for: BaseMapLayers ]
+        // 9. Set URL for geometry service             - [ Tag(s) to look for: GeometryService ]
+        // 10. Specify URL for geo-enrichment service  - [ Tag(s) to look for: GeoEnrichmentService]
+        // 11. Customize zoom level for address search - [ Tag(s) to look for: ZoomLevel ]
+        // 12. Customize InfoPopupHeight               - [ Tag(s) to look for: InfoPopupHeight ]
+        // 13. Customize InfoPopupWidth                - [ Tag(s) to look for: InfoPopupWidth ]
+        // 14. Specify ShowNullValueAs                 - [ Tag(s) to look for: ShowNullValueAs ]
+        // 15. Set map attribution                     - [ Tag(s) to look for: ShowMapAttribution ]
+        // 16. Set proxy URL                           - [ Tag(s) to look for: ProxyUrl ]
+        // 17. Set distance unit settings              - [ Tag(s) to look for: DistanceUnitSettings]
+        // 18. Customize buffer symbol                 - [ Tag(s) to look for: BufferSymbology]
+        // 19. Customize ripple color                  - [ Tag(s) to look for: RippleColor]
+        // 20. Customize ripple size                   - [ Tag(s) to look for: LocatorRippleSize]
+        // 21. Customize address search settings       - [ Tag(s) to look for: LocatorSettings]
+        // 22. Specify URLs for map sharing            - [ Tag(s) to look for: MapSharingOptions,TinyURLServiceURL, TinyURLResponseAttribute, FacebookShareURL, TwitterShareURL, ShareByMailLink ]
+        // 23. Specify header widget settings          - [ Tag(s) to look for: AppHeaderWidgets ]
 
         // ------------------------------------------------------------------------------------------------------------------------
         // GENERAL SETTINGS
@@ -79,7 +79,7 @@ define([], function () {
         // Set options for basemap
         // Please note: All base-maps need to use the same spatial reference.
         // Specify URL to ArcGIS Online REST API
-        PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
+        PortalAPIURL: "https://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
         BasemapGroupTitle: "Basemaps",
         // Specify the user name of owner of the group that contains basemaps
@@ -90,11 +90,11 @@ define([], function () {
         NoThumbnail: "js/library/themes/images/not-available.png",
 
         // Set geometry service URL
-        // Do not use the ArcGIS Online geometry service (http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service.
-        GeometryService: "http://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
+        // Do not use the ArcGIS Online geometry service (https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service.
+        GeometryService: "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
 
         // Set geoenrichment service URL
-        GeoEnrichmentService: "http://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
+        GeoEnrichmentService: "https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
 
         // Following zoom level will be set for the map upon searching an address
         ZoomLevel: 16,
@@ -184,7 +184,6 @@ define([], function () {
                         FieldName: "RESYRBLT"
                     }],
                     RegularFilterOptionFields: [],
-
                     AdditionalFilterOptions: {
                         Enabled: true,
                         FilterFieldName: "RESSTRTYPE",
@@ -316,7 +315,7 @@ define([], function () {
                 },
                 DownloadSettings: [{
                     DisplayOptionTitle: "Property Information",
-                    GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                    GeoProcessingServiceURL: "https://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                     Filetype: "PDF" //allowed PDF
                 }, {
                     DisplayOptionTitle: "Traffic Count Profile",
@@ -463,7 +462,7 @@ define([], function () {
                 },
                 DownloadSettings: [{
                     DisplayOptionTitle: "Site Information",
-                    GeoProcessingServiceURL: "http://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                    GeoProcessingServiceURL: "https://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
                     Filetype: "PDF" //allowed PDF
                 }, {
                     DisplayOptionTitle: "Traffic Count Profile",
@@ -643,6 +642,7 @@ define([], function () {
                 }
             }
         }],
+
         // ------------------------------------------------------------------------------------------------------------------------
         // ADDRESS SEARCH SETTINGS
         // ------------------------------------------------------------------------------------------------------------------------
@@ -665,7 +665,7 @@ define([], function () {
                 SearchField: "SingleLine",
                 SearchBoundaryField: "searchExtent"
             },
-            LocatorURL: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
+            LocatorURL: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
             LocatorOutFields: ["Addr_Type", "Type", "Score", "Match_Addr", "xmin", "xmax", "ymin", "ymax"],
             DisplayField: "${Match_Addr}",
             AddressMatchScore: {
@@ -678,7 +678,6 @@ define([], function () {
         // ------------------------------------------------------------------------------------------------------------------------
         // SETTINGS FOR MAP SHARING
         // ------------------------------------------------------------------------------------------------------------------------
-
         // Set URL for TinyURL service, and URLs for social media
         // MapSharingOptions: Allow user to share map using social media.
         // TinyURLServiceURL: Set URL for TinyURL service.
@@ -688,8 +687,8 @@ define([], function () {
         MapSharingOptions: {
             TinyURLServiceURL: "https://api-ssl.bitly.com/v3/shorten?longUrl=${0}",
             TinyURLResponseAttribute: "data.url",
-            FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Residential%20Comp%20Finder",
-            TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Residential%20Comp%20Finder ${0}",
+            FacebookShareURL: "https://www.facebook.com/sharer.php?u=${0}&t=Residential%20Comp%20Finder",
+            TwitterShareURL: "https://mobile.twitter.com/compose/tweet?status=Residential%20Comp%20Finder ${0}",
             ShareByMailLink: "mailto:%20?subject=Check%20out%20this%20map&body=${0}"
         },
 
@@ -698,20 +697,15 @@ define([], function () {
         //------------------------------------------------------------------------------------------------------------------------
         // Set widgets settings such as widget title, widgetPath, mapInstanceRequired to be displayed in header panel
         // WidgetPath: path of the widget respective to the widgets package.
-        // The geolocation button has been hidden from the user interface by commenting out the widgetpath for geolocation below. You can enable geolocation by uncommenting the widgetpath for geolocation. The geolocation button, however, will only work on browsers supporting geolocation over HTTP connections.  If a browser requires a HTTPS connection to support geolocation and the button is enabled, the button will not work, but the application will work correctly otherwise.
-
+        // The geolocation button can be added using the list item
+        //     { WidgetPath: "widgets/geoLocation/geoLocation" }
+        // but note that modern browsers require the site to be hosted using HTTPS for geolocation to work
         AppHeaderWidgets: [{
-                WidgetPath: "widgets/siteLocator/siteLocator"
-            },
-            //{
-            //    WidgetPath: "widgets/geoLocation/geoLocation"
-            //},
-            {
-                WidgetPath: "widgets/share/share"
-            }, {
-                WidgetPath: "widgets/help/help"
-            }
-        ]
-
+            WidgetPath: "widgets/siteLocator/siteLocator"
+        }, {
+            WidgetPath: "widgets/share/share"
+        }, {
+            WidgetPath: "widgets/help/help"
+        }]
     };
 });
