@@ -174,11 +174,17 @@ define([], function () {
                         DisplayText: "Area (sqft)",
                         FieldName: "BLDGAREA"
                     }],
-                    RegularFilterOptionFields: [],
-                    AdditionalFilterOptions: {
-                        Enabled: true,
-                        FilterFieldName: "ZONEDESC",
-                        FilterOptions: [{
+                    RegularFilterOptionFields: [{
+                        FieldName: "ZONEDESC",
+                        DisplayText: "AgriculturalX",
+                        FieldValue: "AGRICULTURAL"
+                    }, {
+                        FieldName: "ZONEDESC",
+                        DisplayText: "CommercialY",
+                        FieldValue: "COMMERCIAL"
+                    }, {
+                        FieldName: "ZONEDESC",
+                        Options: [{
                             DisplayText: "Agricultural",
                             FieldValue: "Agricultural"
                         }, {
@@ -190,6 +196,86 @@ define([], function () {
                         }, {
                             DisplayText: "Retail",
                             FieldValue: "Retail"
+                        }]
+                    }, {
+                        FieldName: "ACQUISITION",
+                        Options: [{
+                            DisplayText: "Lease",
+                            FieldValue: "Lease"
+                        }, {
+                            DisplayText: "Sale",
+                            FieldValue: "Sale"
+                        }, {
+                            DisplayText: "Other",
+                            FieldValue: "Other"
+                        }]
+                    }],
+                    AdditionalFilterOptions: {
+                        Enabled: true,
+                        FilterFieldName: "SITECOUNTY",
+                        FilterOptions: [{
+                            DisplayText: "Allegany",
+                            FieldValue: "Allegany"
+                        }, {
+                            DisplayText: "Anne Arundel",
+                            FieldValue: "Anne Arundel"
+                        }, {
+                            DisplayText: "Baltimore",
+                            FieldValue: "Baltimore"
+                        }, {
+                            DisplayText: "Baltimore City",
+                            FieldValue: "Baltimore City"
+                        }, {
+                            DisplayText: "Calvert",
+                            FieldValue: "Calvert"
+                        }, {
+                            DisplayText: "Caroline",
+                            FieldValue: "Caroline"
+                        }, {
+                            DisplayText: "Carroll",
+                            FieldValue: "Carroll"
+                        }, {
+                            DisplayText: "Cecil",
+                            FieldValue: "Cecil"
+                        }, {
+                            DisplayText: "Charles",
+                            FieldValue: "Charles"
+                        }, {
+                            DisplayText: "Dorchester",
+                            FieldValue: "Dorchester"
+                        }, {
+                            DisplayText: "Frederick",
+                            FieldValue: "Frederick"
+                        }, {
+                            DisplayText: "Garrett",
+                            FieldValue: "Garrett"
+                        }, {
+                            DisplayText: "Harford",
+                            FieldValue: "Harford"
+                        }, {
+                            DisplayText: "Howard",
+                            FieldValue: "Howard"
+                        }, {
+                            DisplayText: "Montgomery",
+                            FieldValue: "Montgomery"
+                        }, {
+                            DisplayText: "Prince George's",
+                            FieldValue: "Prince George's"
+                        }, {
+                            DisplayText: "Saint Mary's",
+                            FieldValue: "Saint Mary's"
+                        }, {
+                            DisplayText: "Talbot",
+                            FieldValue: "Talbot"
+                        }, {
+                            DisplayText: "Washington",
+                            FieldValue: "Washington"
+                        }, {
+                            DisplayText: "Wicomico",
+                            FieldValue: "Wicomico"
+                        }, {
+                            DisplayText: "Worcester",
+                            FieldValue: "Worcester"
                         }]
                     }
                 }

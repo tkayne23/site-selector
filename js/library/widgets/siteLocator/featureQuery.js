@@ -167,7 +167,9 @@ define([
          */
         chkQueryHandler: function (chkBoxNode) {
             var arrAndQuery = [],
-                arrOrQuery = [];
+                arrOrQuery = [],
+                query;
+
             //set query string for applied Regular filters
             if (this.workflowCount === 0) {
                 arrAndQuery = this.queryArrayBuildingAND;
@@ -177,31 +179,26 @@ define([
                 arrAndQuery = this.queryArraySitesAND;
                 arrOrQuery = this.queryArraySitesOR;
             }
-            // if checkbox is checked("regularFilter") then add the checkbox name and value into "AndQuery" string
-            if (chkBoxNode && chkBoxNode.target && chkBoxNode.target.checked) {
-                if (chkBoxNode.target.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
-                    if (array.indexOf(arrAndQuery, chkBoxNode.target.name + "='" + chkBoxNode.target.value + "'") === -1) {
-                        arrAndQuery.push("UPPER(" + chkBoxNode.target.name + ") ='" + chkBoxNode.target.value + "'");
-                    }
-                }
-                else {
-                    // if checkbox is checked("additionalFilter") then add the checkbox name and value into "OrQuery" string
-                    if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')") === -1) {
-                        arrOrQuery.push("UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')");
-                    }
-                }
-            }
-            else if (chkBoxNode && chkBoxNode.checked) {
-                // check the filter values while sharing
+
+            if (chkBoxNode) {
+                chkBoxNode = chkBoxNode.target || chkBoxNode;
+
+                // Checkboxes with the "isRegularFilterOptionFields" attribute are ANDed together ("regular" fields)
                 if (chkBoxNode.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
-                    if (array.indexOf(arrAndQuery, chkBoxNode.name + "='" + chkBoxNode.value + "'") === -1) {
-                        arrAndQuery.push("UPPER(" + chkBoxNode.name + ") ='" + chkBoxNode.value + "'");
+                    query = "UPPER(" + chkBoxNode.name + ") ='" + chkBoxNode.value + "'";
+                    if (array.indexOf(arrAndQuery, query) === -1) {
+                        arrAndQuery.push(query);
                     }
                 }
-                else if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')") === -1) {
-                    arrOrQuery.push("UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')");
+                // Otherwise, they are ORed together ("additional" fields)
+                else {
+                    query = "UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')";
+                    if (array.indexOf(arrOrQuery, query) === -1) {
+                        arrOrQuery.push(query);
+                    }
                 }
             }
+
             // update the query string according to workflow
             if (this.workflowCount === 0) {
                 this.queryArrayBuildingAND = arrAndQuery;
