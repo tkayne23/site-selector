@@ -103,7 +103,8 @@ define([
                     }
                     if (chkBox.checked) {
                         if (fromNode.value !== "" && toNode.value !== 0 && Number(fromNode.value) <= Number(toNode.value)) {
-                            this.queryArraySitesAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " + chkBox.value + "<=" + Number(toNode.value));
+                            this.queryArraySitesAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " +
+                                chkBox.value + "<=" + Number(toNode.value));
                             fromNode.setAttribute("FieldValue", Number(fromNode.value));
                             toNode.setAttribute("FieldValue", Number(toNode.value));
                         }

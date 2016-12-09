@@ -1976,6 +1976,8 @@ div.esriCTPrev
 .esriCTdivHideOptionBuilding
 {
     clear: both;
+    background-color: rgb(235, 235, 228);
+    padding: 2px;
 }
 
 .esriCTbuildingAreaToFromDiv
@@ -1991,9 +1993,12 @@ div.esriCTPrev
     margin-bottom: 10px;
 }
 
-.esriCTCheckBoxWithText div.esriCTCheckBox, .esriCTCheckBoxWithText div.esriCTCheckBox
+.esriCTDivAdditionalOpt
 {
-    margin-bottom: 5px;
+    display: inline-block;
+    width: 48%;
+    overflow: hidden;
+    padding: 2px;
 }
 
 .esriCTSearchGroupRow
@@ -2023,12 +2028,66 @@ div.esriCTPrev
     display: table-cell;
 }
 
+
+
+
+.esriFilterOption
+{
+    clear: both;
+    margin: 6px 0 6px 0;
+    padding: 4px;
+    background-color: rgb(235, 235, 228);
+}
+
+.esriCheckBoxWithText
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.esriCheckBox
+{
+    float: left;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    vertical-align: middle;
+    background-image: url(../images/checkbox.png);
+    cursor: pointer;
+}
+
+.esriCheckBoxInput
+{
+    position: absolute;
+    z-index: -1000;
+    top: -1000px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+}
+
+.esriCheckBoxLabel
+{
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+
+
+
+
 .esriCTCheckBoxWithText
 {
-    width: 35%;
-    float: left;
+    width: 100%;
     display: table;
-    margin-bottom: 10PX;
+    table-layout: fixed;
+    overflow: hidden;
 }
 
 .esriCTOptionRow
@@ -2039,7 +2098,7 @@ div.esriCTPrev
 
 .esriCTCheckBox
 {
-    width: 15px;
+    width: 21px;
     display: table-cell;
 }
 
@@ -2051,12 +2110,19 @@ input[type="radio"]
 .esriCTChkLabel
 {
     display: table-cell;
-    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 5px;
 }
 
 .esriCTDivFilterOption
 {
     clear: both;
+    width: 98%;
+    margin: 6px 0 6px 0;
+    padding: 4px;
+    background-color: rgb(235, 235, 228);
 }
 
 .esriCTLeftFromTO

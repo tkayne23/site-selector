@@ -702,42 +702,124 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _createFilterOptionField: function (arrFields, node, arrAdditionalFields, additionalFieldsNode, index) {
-            var i, j, divBusinessRevenue, checkBoxWithText, divCheckBox, checkBox, fieldContent,
+            var i, j, divFilterOption, checkBoxWithText, divCheckBox, checkBox,
+                //fieldContent,
                 divAdditionalField, checkBoxAdditionalWithText, additionalFieldCheckBox, additionalCheckBox,
-                additionalFieldDisplayText, checkedValueForFilter, checkedValue, k, nodeValue;
-            // check length of RegularFilterOptionFields from config and create UI
+                additionalFieldDisplayText,
+                //checkedValueForFilter, checkedValue, k,
+                nodeValue;
+
+            // Create UI for RegularFilterOptionFields, which are joined by AND
             for (i = 0; i < arrFields.length; i++) {
-                if (arrFields[i].FieldValue) {
+                /*if (arrFields[i].FieldValue) {
                     //insert single quote(') as an escape character to allow single quote(') in query string
                     arrFields[i].FieldValue = arrFields[i].FieldValue.replace(/'/g, "''");
-                }
-                divBusinessRevenue = domConstruct.create("div", {
-                    "class": "esriCTDivFilterOption"
-                }, node);
-                checkBoxWithText = domConstruct.create("div", {
-                    "class": "esriCTCheckBoxWithText"
-                }, divBusinessRevenue);
-                divCheckBox = domConstruct.create("div", {
-                    "class": "esriCTCheckBox"
-                }, checkBoxWithText);
-                checkBox = domConstruct.create("input", {
-                    "class": "esriCTChkBox esriCheckBoxInput",
-                    "type": "checkbox",
-                    "name": arrFields[i].FieldName.toString(),
-                    "id": arrFields[i].FieldName.toString() + index.toString() + i,
-                    "value": arrFields[i].FieldValue
-                }, divCheckBox);
-                domConstruct.create("label", {
-                    "class": "css-label",
-                    "for": arrFields[i].FieldName.toString() + index.toString() + i
-                }, divCheckBox);
+                }*/
 
-                nodeValue = arrFields[i].DisplayText + index;
-                this.filterOptionsValues[nodeValue] = {
-                    "checkBox": checkBox,
-                    "workflow": index
-                };
-                // check the shared URL for "whereClause" to perform layer search and get the filtered data for "RegularFilterOptionFields" on selected fields in building and sites tab
+                // Container for option/option set
+                divFilterOption = domConstruct.create("div", {
+                    "class": "esriFilterOption"
+                }, node);
+
+                // Set of options
+                if (arrFields[i].Options) {
+                    // Create set of options
+                    //for (j = 0; j < arrFields[i].Options.length; j++) {
+                    divAdditionalField = domConstruct.create("div", {
+                        "class": "esriCTDivAdditionalOpt"
+                    }, divFilterOption);
+                }
+
+                // Single option
+                else {
+                    // Box containing checkbox and label
+                    checkBoxWithText = domConstruct.create("div", {
+                        "class": "esriCheckBoxWithText"
+                    }, divFilterOption);
+
+                    // Checkbox
+                    divCheckBox = domConstruct.create("div", {
+                        "class": "esriCheckBox"
+                    }, checkBoxWithText);
+                    checkBox = domConstruct.create("input", {
+                        "class": "esriCheckBox esriCheckBoxInput",
+                        "type": "checkbox",
+                        "name": arrFields[i].FieldName.toString(),
+                        "id": arrFields[i].FieldName.toString() + index.toString() + i,
+                        // insert single quote(') as an escape character to allow single quote(') in query string
+                        "value": arrFields[i].FieldValue && arrFields[i].FieldValue.replace(/'/g, "''")
+                    }, checkBoxWithText);
+
+                    // Label
+                    domConstruct.create("label", {
+                        "class": "esriCheckBoxLabel",
+                        "for": arrFields[i].FieldName.toString() + index.toString() + i,
+                        "innerHTML": arrFields[i].DisplayText
+                    }, checkBoxWithText);
+
+                    nodeValue = arrFields[i].DisplayText + index;
+                    this.filterOptionsValues[nodeValue] = {
+                        "checkBox": checkBox,
+                        "workflow": index
+                    };
+
+
+                    /*divCheckBox.setAttribute("isRegularFilterOptionFields", true);
+                    fieldContent = domConstruct.create("div", {
+                        "class": "esriCTChkLabel"
+                    }, checkBoxWithText);*/
+                    /*domConstruct.create("div", {
+                        "class": "esriCTCheckBoxWithText"
+                    }, divFilterOption);*/
+                    /*domAttr.set(fieldContent, "innerHTML", arrFields[i].DisplayText);*/
+
+                    this.own(on(checkBox, "click", lang.hitch(this, this._onCheckBoxClicked)));
+                }
+
+
+
+
+                /*
+                If it's a set of options,
+                esriCTDivAdditionalOpt
+                    esriCTCheckBoxWithText
+                        esriCTCheckBox
+                        esriCTChkLabel
+
+                                for (j = 0; j < arrFields[i].FilterOptions.length; j++) {
+                                    if (arrFields[i].FilterOptions[j].FieldValue) {
+                                        //insert single quote(') as an escape character to allow single quote(') in query string
+                                        arrFields[i].FilterOptions[j].FieldValue = arrFields[i].FilterOptions[j].FieldValue.replace(/'/g, "''");
+                                    }
+
+                                    divAdditionalField = domConstruct.create("div", {
+                                        "class": "esriCTDivAdditionalOpt"
+                                    }, additionalFieldsNode);
+                                    checkBoxAdditionalWithText = domConstruct.create("div", {
+                                        "class": "esriCTCheckBoxWithText"
+                                    }, divAdditionalField);
+                                    additionalFieldCheckBox = domConstruct.create("div", {
+                                        "class": "esriCTCheckBox"
+                                    }, checkBoxAdditionalWithText);
+                                    additionalCheckBox = domConstruct.create("input", {
+                                        "class": "esriCTChkBox esriCheckBoxInput",
+                                        "type": "checkbox",
+                                        "name": arrFields[i].FilterFieldName,
+                                        "id": arrFields[i].FilterOptions[j].FieldValue.toString() + index.toString(),
+                                        "value": arrFields[i].FilterOptions[j].FieldValue
+                                    }, additionalFieldCheckBox);
+                                    domConstruct.create("label", {
+                                        "class": "css-label",
+                                        "for": arrFields[i].FilterOptions[j].FieldValue.toString() + index.toString()
+                                    }, additionalFieldCheckBox);
+
+                                }
+
+                */
+
+
+
+                /*
                 if (decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName).length > 1 &&
                     Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
                     checkedValue = decodeURIComponent(window.location.toString()).split("UPPER(" + arrFields[i].FieldName + ") =");
@@ -782,18 +864,10 @@ define([
                         checkBox.checked = true;
                         divCheckBox.setAttribute("isRegularFilterOptionFields", true);
                     }
-                }
-                divCheckBox.setAttribute("isRegularFilterOptionFields", true);
-                fieldContent = domConstruct.create("div", {
-                    "class": "esriCTChkLabel"
-                }, checkBoxWithText);
-                domConstruct.create("div", {
-                    "class": "esriCTCheckBoxWithText"
-                }, divBusinessRevenue);
-                domAttr.set(fieldContent, "innerHTML", arrFields[i].DisplayText);
-                this.own(on(checkBox, "click", lang.hitch(this, this._onCheckBoxClicked)));
+                }*/
             }
-            // check filter option is enable or disable(based on config parameter) in buildings and sites tab
+
+            // Create UI for AdditionalFilterOptions
             if (arrAdditionalFields && arrAdditionalFields.Enabled && arrAdditionalFields.FilterOptions.length) {
                 // create additional filter options UI(dynamic) for configurable fields in buildings and sites tab
                 for (j = 0; j < arrAdditionalFields.FilterOptions.length; j++) {
@@ -821,6 +895,7 @@ define([
                         "class": "css-label",
                         "for": arrAdditionalFields.FilterOptions[j].FieldValue.toString() + index.toString()
                     }, additionalFieldCheckBox);
+
                     //check if checkbox value is true in shared URL
                     nodeValue = arrAdditionalFields.FilterOptions[j].DisplayText + index;
                     this.filterOptionsValues[nodeValue] = {
