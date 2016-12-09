@@ -1,4 +1,4 @@
-﻿/*global dojoConfig:true */
+/*global dojoConfig:true */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -18,9 +18,9 @@
 //============================================================================================================================//
 
 /**
-* initialize default dojo configuration attributes by creating a dojoConfig object
-*/
-var root = location.href.slice(0, location.href.lastIndexOf('/'));
+ * initialize default dojo configuration attributes by creating a dojoConfig object
+ */
+var root = location.href.slice(0, location.href.lastIndexOf("/"));
 dojoConfig = {
     parseOnLoad: true,
     async: true,
@@ -30,9 +30,9 @@ dojoConfig = {
         location: root
     }, {
         name: "widgets",
-        location: root + '/js/library/widgets'
+        location: root + "/js/library/widgets"
     }, {
         name: "coreLibrary",
-        location: root + '/js/library/coreLibrary'
+        location: root + "/js/library/coreLibrary"
     }]
 };

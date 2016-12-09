@@ -1,4 +1,4 @@
-﻿/*global define,dojo,require,alert,console,appGlobals */
+/*global define,require,alert,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -41,11 +41,11 @@ define([
         sharedNls: sharedNls,
 
         /**
-        * load widgets specified in Header Widget Settings of configuration file
-        *
-        * @class
-        * @name coreLibrary/widgetLoader
-        */
+         * load widgets specified in Header Widget Settings of configuration file
+         *
+         * @class
+         * @name coreLibrary/widgetLoader
+         */
         startup: function () {
             var mapInstance, splashScreen, basemapDeferred;
             topic.subscribe("filterRedundantBasemap", lang.hitch(this, function (bmLayers) {
@@ -64,9 +64,9 @@ define([
                 mapInstance = this._initializeMap();
 
                 /**
-                * create an object with widgets specified in Header Widget Settings of configuration file
-                * @param {array} appGlobals.configData.AppHeaderWidgets Widgets specified in configuration file
-                */
+                 * create an object with widgets specified in Header Widget Settings of configuration file
+                 * @param {array} appGlobals.configData.AppHeaderWidgets Widgets specified in configuration file
+                 */
                 topic.subscribe("setMap", lang.hitch(this, function (map) {
                     this._initializeWidget(map);
                 }));
@@ -78,10 +78,10 @@ define([
         },
 
         /**
-        * create map object
-        * @return {object} Current map instance
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * create map object
+         * @return {object} Current map instance
+         * @memberOf coreLibrary/widgetLoader
+         */
         _initializeMap: function () {
             var map = new Map(),
                 mapInstance = map._getMapInstance();
@@ -89,13 +89,16 @@ define([
         },
 
         _initializeWidget: function (mapInstance) {
-            var widgets = {}, deferredArray = [];
+            var widgets = {},
+                deferredArray = [];
 
             array.forEach(appGlobals.configData.AppHeaderWidgets, function (widgetConfig) {
                 var deferred = new Deferred();
                 widgets[widgetConfig.WidgetPath] = null;
                 require([widgetConfig.WidgetPath], function (Widget) {
-                    widgets[widgetConfig.WidgetPath] = new Widget({ map: mapInstance });
+                    widgets[widgetConfig.WidgetPath] = new Widget({
+                        map: mapInstance
+                    });
                     deferred.resolve(widgetConfig.WidgetPath);
                 });
                 deferredArray.push(deferred.promise);
@@ -104,10 +107,11 @@ define([
             all(deferredArray).then(lang.hitch(this, function () {
                 try {
                     /**
-                    * create application header
-                    */
+                     * create application header
+                     */
                     this._createApplicationHeader(widgets);
-                } catch (ex) {
+                }
+                catch (ex) {
                     alert(sharedNls.errorMessages.widgetNotLoaded);
                 }
 
@@ -115,10 +119,10 @@ define([
         },
 
         /**
-        * create application header
-        * @param {object} widgets Contain widgets to be displayed in header panel
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * create application header
+         * @param {object} widgets Contain widgets to be displayed in header panel
+         * @memberOf coreLibrary/widgetLoader
+         */
         _createApplicationHeader: function (widgets) {
             var applicationHeader = new AppHeader();
             applicationHeader.loadHeaderWidgets(widgets);
@@ -133,10 +137,13 @@ define([
         },
 
         _fetchBasemapCollection: function (basemapDeferred) {
-            var groupUrl, searchUrl, webmapRequest, groupRequest, deferred, thumbnailSrc, baseMapArray = [], deferredArray = [], self = this, basemapId;
+            var groupUrl, searchUrl, webmapRequest, groupRequest, deferred, thumbnailSrc, baseMapArray = [],
+                deferredArray = [],
+                self = this,
+                basemapId;
             /**
-            * If group owner & title are configured, create request to fetch the group id
-            */
+             * If group owner & title are configured, create request to fetch the group id
+             */
             if (appGlobals.configData.BasemapGroupTitle && appGlobals.configData.BasemapGroupOwner) {
                 if (lang.trim(appGlobals.configData.PortalAPIURL) !== "") {
                     groupUrl = appGlobals.configData.PortalAPIURL + "community/groups?q=title:\"" + appGlobals.configData.BasemapGroupTitle + "\" AND owner:" + appGlobals.configData.BasemapGroupOwner + "&f=json";
@@ -150,21 +157,21 @@ define([
                             return;
                         }
                         /**
-                        * Create request using group id to fetch all the items from that group
-                        */
-                        searchUrl = appGlobals.configData.PortalAPIURL + 'search?q=group:' + groupInfo.results[0].id + "&sortField=name&sortOrder=desc&num=50&f=json";
+                         * Create request using group id to fetch all the items from that group
+                         */
+                        searchUrl = appGlobals.configData.PortalAPIURL + "search?q=group:" + groupInfo.results[0].id + "&sortField=name&sortOrder=desc&num=50&f=json";
                         webmapRequest = esriRequest({
                             url: searchUrl,
                             callbackParamName: "callback"
                         });
                         webmapRequest.then(function (groupInfo) {
                             /**
-                            * Loop for each item in the group
-                            */
+                             * Loop for each item in the group
+                             */
                             array.forEach(groupInfo.results, lang.hitch(this, function (info, index) {
                                 /**
-                                * If type is "Map Service", create the object and push it into "baseMapArray"
-                                */
+                                 * If type is "Map Service", create the object and push it into "baseMapArray"
+                                 */
                                 if (info.type === "Map Service") {
                                     thumbnailSrc = (groupInfo.results[index].thumbnail === null) ? appGlobals.configData.NoThumbnail : appGlobals.configData.PortalAPIURL + "content/items/" + info.id + "/info/" + info.thumbnail;
                                     basemapId = groupInfo.results[index].name || groupInfo.results[index].id;
@@ -176,9 +183,10 @@ define([
                                         MapURL: info.url
                                     });
                                     /**
-                                    * If type is "Web Map", create requests to fetch all the items of the webmap (asynchronous request)
-                                    */
-                                } else if (info.type === "Web Map") {
+                                     * If type is "Web Map", create requests to fetch all the items of the webmap (asynchronous request)
+                                     */
+                                }
+                                else if (info.type === "Web Map") {
                                     var mapDeferred = esriUtils.getItem(info.id);
                                     mapDeferred.then(lang.hitch(this, function () {
                                         deferred = new Deferred();
@@ -191,21 +199,22 @@ define([
 
                                 all(deferredArray).then(function (res) {
                                     /**
-                                    *If result of webmaps are empty
-                                    */
+                                     *If result of webmaps are empty
+                                     */
                                     if (res.length === 0) {
                                         basemapDeferred.resolve(baseMapArray);
                                         return;
                                     }
                                     /**
-                                    * Else for each items in the webmap, create the object and push it into "baseMapArray"
-                                    */
+                                     * Else for each items in the webmap, create the object and push it into "baseMapArray"
+                                     */
                                     array.forEach(res, function (data) {
                                         self._filterRedundantBasemap(data, baseMapArray, false);
                                     });
                                     basemapDeferred.resolve(baseMapArray);
                                 });
-                            } else {
+                            }
+                            else {
                                 basemapDeferred.resolve(baseMapArray);
                             }
                         }, function (err) {
@@ -214,26 +223,30 @@ define([
                     }, function (err) {
                         alert(err.message);
                     });
-                } else {
+                }
+                else {
                     alert(sharedNls.errorMessages.portalUrlNotFound);
                 }
-            } else {
+            }
+            else {
                 basemapDeferred.resolve(baseMapArray);
             }
         },
 
         /**
-        * remove basemap which is added by earlier selected workflow's webmap
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * remove basemap which is added by earlier selected workflow's webmap
+         * @memberOf coreLibrary/widgetLoader
+         */
         _removeWorkFlowBasemap: function () {
-            var i, temBaseMapArray = [], baseMapArray = appGlobals.configData.BaseMapLayers;
+            var i, temBaseMapArray = [],
+                baseMapArray = appGlobals.configData.BaseMapLayers;
             for (i = 0; i < baseMapArray.length; i++) {
                 if (baseMapArray[i].length) {
                     if (!baseMapArray[i][0].isWorkFlowBasemap) {
                         temBaseMapArray.push(baseMapArray[i]);
                     }
-                } else {
+                }
+                else {
                     if (!baseMapArray[i].isWorkFlowBasemap) {
                         temBaseMapArray.push(baseMapArray[i]);
                     }
@@ -243,15 +256,16 @@ define([
         },
 
         /**
-        * If basemap layer is already present in the "baseMapArray", skip it
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * If basemap layer is already present in the "baseMapArray", skip it
+         * @memberOf coreLibrary/widgetLoader
+         */
         _filterRedundantBasemap: function (bmLayers, baseMapArray, isWorkFlowBasemap) {
             var i, bmLayerData, multiBasemap = [];
             if (bmLayers.itemData.baseMap) {
                 if (bmLayers.itemData.baseMap.baseMapLayers) {
                     bmLayerData = bmLayers.itemData.baseMap.baseMapLayers;
-                } else {
+                }
+                else {
                     bmLayerData = [];
                     bmLayerData.push(bmLayers);
                 }
@@ -269,7 +283,8 @@ define([
                     }
                     if (bmLayerData.length === 1) {
                         this._setBasemapAttribute(baseMapArray, bmLayerData[0], bmLayers, isWorkFlowBasemap);
-                    } else if (bmLayerData.length > 1) {
+                    }
+                    else if (bmLayerData.length > 1) {
                         for (i = 0; i < bmLayerData.length; i++) {
                             this._setBasemapAttribute(multiBasemap, bmLayerData[i], bmLayers, isWorkFlowBasemap);
                         }
@@ -280,9 +295,9 @@ define([
         },
 
         /**
-        * set required basemap attribute
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * set required basemap attribute
+         * @memberOf coreLibrary/widgetLoader
+         */
         _setBasemapAttribute: function (baseMapArray, bmLayerData, bmLayers, isWorkFlowBasemap) {
             bmLayerData.isWorkFlowBasemap = isWorkFlowBasemap;
             bmLayerData.basemapId = bmLayerData.id;
@@ -293,17 +308,19 @@ define([
         },
 
         /**
-        * check new basemap exists in basemap array or not
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * check new basemap exists in basemap array or not
+         * @memberOf coreLibrary/widgetLoader
+         */
         _isUniqueBasemap: function (baseMapArray, bmLayerData) {
-            var i, j, k, pushBasemap = true, count = 1;
+            var i, j, k, pushBasemap = true,
+                count = 1;
             for (i = 0; i < baseMapArray.length; i++) {
                 if (!baseMapArray[i].length) {
                     if (bmLayerData[0].url === baseMapArray[i].MapURL) {
                         if (bmLayerData.length > 1) {
                             pushBasemap = true;
-                        } else {
+                        }
+                        else {
                             pushBasemap = false;
                         }
                         if (bmLayerData[0].visibility) {
@@ -311,7 +328,8 @@ define([
                         }
                         break;
                     }
-                } else {
+                }
+                else {
                     for (j = 0; j < baseMapArray[i].length; j++) {
                         if (bmLayerData[0].url === baseMapArray[i][j].MapURL) {
                             for (k = 1; k < bmLayerData.length; k++) {
@@ -328,7 +346,8 @@ define([
                     if (baseMapArray.length - 1 === i) {
                         if (count === baseMapArray[i].length) {
                             pushBasemap = false;
-                        } else {
+                        }
+                        else {
                             pushBasemap = true;
                         }
                     }
@@ -338,16 +357,17 @@ define([
         },
 
         /**
-        * store unique base map
-        * @memberOf coreLibrary/widgetLoader
-        */
+         * store unique base map
+         * @memberOf coreLibrary/widgetLoader
+         */
         _storeUniqueBasemap: function (bmLayer, baseMapArray) {
             var thumbnailSrc, layerType;
             if (bmLayer.url || (bmLayer.layerType === "OpenStreetMap" || bmLayer.type === "OpenStreetMap")) {
                 thumbnailSrc = (bmLayer.thumbnail === null) ? appGlobals.configData.NoThumbnail : appGlobals.configData.PortalAPIURL + "content/items/" + bmLayer.id + "/info/" + bmLayer.thumbnail;
                 if (bmLayer.layerType) {
                     layerType = bmLayer.layerType;
-                } else {
+                }
+                else {
                     layerType = bmLayer.type;
                 }
                 baseMapArray.push({

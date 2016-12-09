@@ -1,6 +1,7 @@
 # Tools, notes, outputs
 __*.*
 __*
+node_modules
 
 # Snap backups
 *.7z

@@ -1,4 +1,4 @@
-﻿/*global define,dojo,appGlobals */
+/*global define,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -36,51 +36,61 @@ define([
         sharedNls: sharedNls,
 
         /**
-        * create splashScreen widget
-        * @class
-        * @name widgets/splashScreen/splashScreen
-        */
+         * create splashScreen widget
+         * @class
+         * @name widgets/splashScreen/splashScreen
+         */
         postCreate: function () {
             this.inherited(arguments);
-            domConstruct.create("div", { "class": "customButtonInner", "innerHTML": sharedNls.buttons.okButtonText }, this.customButton);
+            domConstruct.create("div", {
+                "class": "customButtonInner",
+                "innerHTML": sharedNls.buttons.okButtonText
+            }, this.customButton);
             this.own(on(this.customButton, "click", lang.hitch(this, function () {
                 this._hideSplashScreenDialog();
             })));
             /**
-            * create UI for splashscreen
-            * @memberOf widgets/splashScreen/splashScreen
-            */
-            this.domNode = domConstruct.create("div", { "class": "esriGovtLoadSpashScreen" }, document.body);
+             * create UI for splashscreen
+             * @memberOf widgets/splashScreen/splashScreen
+             */
+            this.domNode = domConstruct.create("div", {
+                "class": "esriGovtLoadSpashScreen"
+            }, document.body);
             this.domNode.appendChild(this.splashScreenScrollBarOuterContainer);
-            domConstruct.create("div", { "class": "esriCTLoadingIndicator", "id": "splashscreenlodingIndicator" }, this.splashScreenScrollBarOuterContainer);
+            domConstruct.create("div", {
+                "class": "esriCTLoadingIndicator",
+                "id": "splashscreenlodingIndicator"
+            }, this.splashScreenScrollBarOuterContainer);
             on(window, "resize", lang.hitch(this, this.resizeSplashScreenDialog));
         },
 
         /**
-        * set splashContainer width
-        * @memberOf widgets/splashScreen/splashScreen
-        */
+         * set splashContainer width
+         * @memberOf widgets/splashScreen/splashScreen
+         */
         showSplashScreenDialog: function () {
             var splashScreenContent;
             domStyle.set(this.domNode, "display", "block");
-            splashScreenContent = domConstruct.create("div", { "class": "esriGovtSplashContent" }, this.splashScreenScrollBarContainer);
+            splashScreenContent = domConstruct.create("div", {
+                "class": "esriGovtSplashContent"
+            }, this.splashScreenScrollBarContainer);
             this.splashScreenScrollBarContainer.style.height = (this.splashScreenDialogContainer.offsetHeight - 70) + "px";
             domAttr.set(splashScreenContent, "innerHTML", appGlobals.configData.SplashScreen.SplashScreenContent);
         },
 
         /*
-        *resize splash screen
-        * @memberOf widgets/splashScreen/splashScreen
-        */
+         *resize splash screen
+         * @memberOf widgets/splashScreen/splashScreen
+         */
         resizeSplashScreenDialog: function () {
             if (this.splashScreenScrollBarContainer && this.splashScreenDialogContainer) {
                 this.splashScreenScrollBarContainer.style.height = (this.splashScreenDialogContainer.offsetHeight - 70) + "px";
             }
         },
         /**
-        * hide splash screen dialog
-        * @memberOf widgets/splashScreen/splashScreen
-        */
+         * hide splash screen dialog
+         * @memberOf widgets/splashScreen/splashScreen
+         */
         _hideSplashScreenDialog: function () {
             domStyle.set(this.domNode, "display", "none");
         }
