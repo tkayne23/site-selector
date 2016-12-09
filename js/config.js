@@ -176,11 +176,11 @@ define([], function () {
                     }],
                     RegularFilterOptionFields: [{
                         FieldName: "ZONEDESC",
-                        DisplayText: "AgriculturalX",
+                        DisplayText: "Agricultural",
                         FieldValue: "AGRICULTURAL"
                     }, {
                         FieldName: "ZONEDESC",
-                        DisplayText: "CommercialY",
+                        DisplayText: "Commercial CommercialY2 CommercialY3 CommercialY4 CommercialY5",
                         FieldValue: "COMMERCIAL"
                     }, {
                         FieldName: "ZONEDESC",
@@ -214,7 +214,7 @@ define([], function () {
                         Enabled: true,
                         FilterFieldName: "SITECOUNTY",
                         FilterOptions: [{
-                            DisplayText: "Allegany",
+                            DisplayText: "Allegany and Monongahela Rivers",
                             FieldValue: "Allegany"
                         }, {
                             DisplayText: "Anne Arundel",
@@ -223,7 +223,7 @@ define([], function () {
                             DisplayText: "Baltimore",
                             FieldValue: "Baltimore"
                         }, {
-                            DisplayText: "Baltimore City",
+                            DisplayText: "Baltimore City Council",
                             FieldValue: "Baltimore City"
                         }, {
                             DisplayText: "Calvert",
