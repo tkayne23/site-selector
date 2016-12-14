@@ -1973,13 +1973,6 @@ div.esriCTPrev
     clear: both;
 }
 
-.esriCTdivHideOptionBuilding
-{
-    clear: both;
-    background-color: rgb(235, 235, 228);
-    padding: 2px;
-}
-
 .esriCTbuildingAreaToFromDiv
 {
     clear: both;
@@ -2036,7 +2029,37 @@ div.esriCTPrev
     clear: both;
     margin: 6px 0 6px 0;
     padding: 4px;
-    background-color: rgb(235, 235, 228);
+    border: 1px solid #007ac2;
+}
+
+.esriFilterOptionHalfContainer
+{
+    display: inline-block;
+    width: 48%;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.esriFilterOptionRange
+{
+    margin-left: 15px;
+}
+
+.esriFilterOptionRangeBlock
+{
+    display: inline-block;
+}
+
+.esriFilterOptionRangeLabel
+{
+    margin-left: 10px;
+}
+
+.esriFilterOptionRangeInput
+{
+    margin: 2px 0 2px 5px;
+    width: 72px;
+    padding: 5px 2px;
 }
 
 .esriCheckBoxWithText
@@ -2056,6 +2079,11 @@ div.esriCTPrev
     vertical-align: middle;
     background-image: url(../images/checkbox.png);
     cursor: pointer;
+}
+
+.esriCheckBoxChecked
+{
+    background-position: 0 -20px;
 }
 
 .esriCheckBoxInput

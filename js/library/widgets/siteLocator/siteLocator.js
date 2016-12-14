@@ -281,12 +281,13 @@ define([
             if (appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields.length ||
                 appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
                 appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
-                this._createFilter(appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields, this.buildingAreaToFromDiv, 0);
-                this._createFilterOptionField(
+
+                this._createFilterOptionField(0, this.horizantalruleBuliding,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
-                    this.horizantalruleBuliding,
-                    appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions,
-                    this.divHideOptionBuilding, 0);
+                    appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields,
+                    appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions
+                );
+
                 this.own(on(this.filterText, "click", lang.hitch(this, function () {
                     if (domClass.contains(this.filterText, "esriCTFilterTextEnable")) {
                         if (domStyle.get(this.filterContainer, "display") === "none") {
@@ -308,12 +309,13 @@ define([
             if (appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields.length ||
                 appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
                 appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
-                this._createFilter(appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields, this.sitesFromToMainDiv, 1);
-                this._createFilterOptionField(
+
+                this._createFilterOptionField(1, this.horizantalruleSites,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
-                    this.horizantalruleSites,
-                    appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions,
-                    this.divHideOptionSites, 1);
+                    appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields,
+                    appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions
+                );
+
                 this.own(on(this.filterTextSites, "click", lang.hitch(this, function () {
                     if (domClass.contains(this.filterTextSites, "esriCTFilterTextEnable")) {
                         if (domStyle.get(this.filterContainerSites, "display") === "none") {
@@ -333,7 +335,13 @@ define([
 
             // dynamic UI of Business tab
             if (appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields.length) {
-                this._createFilter(appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields, this.BussinessFromToMainDiv, 2);
+
+                this._createFilterOptionField(2, this.BussinessFromToMainDiv,
+                    null,
+                    appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields,
+                    null
+                );
+
                 this.own(on(this.filterTextBusiness, "click", lang.hitch(this, function () {
                     if (domClass.contains(this.filterTextBusiness, "esriCTFilterTextEnable")) {
                         if (domStyle.get(this.filterContainerBussiness, "display") === "none") {
@@ -574,125 +582,6 @@ define([
         },
 
         /**
-         * create filter UI(dynamic) for buildings, sites and business tab based on configuration parameter
-         * @param {array} array of filters based on configuration parameter
-         * @param {node} container node
-         * @param {integer} workflow index
-         * @memberOf widgets/siteLocator/siteLocator
-         */
-        _createFilter: function (arrFilter, node, index) {
-            this.filteredData = [];
-            var divBusinessRevenue, leftDivSites, leftDivSitesContainer, checkBoxAreaSites, chkAreaSites, areaText, checkBoxFieldName,
-                rightDivSites, spanTextFrom, spanTextFromDes, txtFrom, spanTextTo, spanTextToDes, txtTo, sharedFilter, sharedWhereClause;
-            //create UI for each value in arrFilter based on config parameter
-            array.forEach(arrFilter, lang.hitch(this, function (value) {
-                divBusinessRevenue = domConstruct.create("div", {
-                    "class": "esriCTDivFromTo"
-                }, node);
-                leftDivSitesContainer = domConstruct.create("div", {
-                    "class": "esriCTLeftFromTO"
-                }, divBusinessRevenue);
-                leftDivSites = domConstruct.create("div", {
-                    "class": "esriCTOptionRow"
-                }, leftDivSitesContainer);
-                checkBoxAreaSites = domConstruct.create("div", {
-                    "class": "esriCTCheckBox"
-                }, leftDivSites);
-                // if filter range fields in filter setting exist (based on config parameter) then create checkbox and label
-                checkBoxFieldName = value.FieldName || value.VariableNameSuffix;
-                chkAreaSites = domConstruct.create("input", {
-                    "type": "checkbox",
-                    "class": "esriCTChkBox esriCheckBoxInput",
-                    id: checkBoxFieldName.toString() + index.toString(),
-                    "value": checkBoxFieldName
-                }, checkBoxAreaSites);
-                domConstruct.create("label", {
-                    "class": "css-label",
-                    "for": checkBoxFieldName.toString() + index.toString()
-                }, checkBoxAreaSites);
-
-                areaText = domConstruct.create("div", {
-                    "class": "esriCTChkLabel"
-                }, leftDivSites);
-                rightDivSites = domConstruct.create("div", {
-                    "class": "esriCTRightFromTO"
-                }, divBusinessRevenue);
-                spanTextFrom = domConstruct.create("span", {
-                    "class": "esriCTText"
-                }, rightDivSites);
-                spanTextFromDes = domConstruct.create("span", {}, rightDivSites);
-                txtFrom = domConstruct.create("input", {
-                    "type": "text",
-                    "class": "esriCTToTextBoxFrom",
-                    "maxlength": "15"
-                }, spanTextFromDes);
-                spanTextTo = domConstruct.create("span", {
-                    "class": "esriCTText"
-                }, rightDivSites);
-                spanTextToDes = domConstruct.create("span", {}, rightDivSites);
-                txtTo = domConstruct.create("input", {
-                    "type": "text",
-                    "class": "esriCTToTextBoxTo",
-                    "maxlength": "15"
-                }, spanTextToDes);
-                domAttr.set(spanTextFrom, "innerHTML", sharedNls.titles.fromText);
-                domAttr.set(spanTextTo, "innerHTML", sharedNls.titles.toText);
-                domAttr.set(areaText, "innerHTML", value.DisplayText);
-                //push filter input controls in array
-                this.filterOptionsValues[checkBoxFieldName] = {
-                    "txtFrom": txtFrom,
-                    "txtTo": txtTo,
-                    "checkBox": chkAreaSites,
-                    "workflow": index
-                };
-
-                // check the shared URL for "whereClause" to get the filtered result on business tab
-                if ((window.location.toString().split("$whereClause=").length > 1 || window.location.toString().split("$toFromBussinessFilter=").length > 1) && !appGlobals.shareOptions.arrWhereClause[this.workflowCount] && Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
-                    if (window.location.toString().split("$whereClause=").length > 1) {
-                        sharedWhereClause = decodeURIComponent(window.location.toString().split("$whereClause=")[1].split("$")[0]);
-                    }
-                    else {
-                        sharedWhereClause = decodeURIComponent(window.location.toString().split("$toFromBussinessFilter=")[1]);
-                    }
-
-                    if (sharedWhereClause.split(value.FieldName).length > 1) {
-                        chkAreaSites.checked = true;
-                        if (sharedWhereClause.split(value.FieldName + ">=")[1]) {
-                            txtFrom.value = Number(sharedWhereClause.split(value.FieldName + ">=")[1].split(" ")[0]);
-                            txtTo.value = Number(sharedWhereClause.split(value.FieldName + "<=")[1].split(" ")[0].split("$")[0]);
-                            if (this.workflowCount === 0) {
-                                domClass.add(this.filterIcon, "esriCTFilterEnabled");
-                                domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                            }
-                            else {
-                                domClass.add(this.filterIconSites, "esriCTFilterEnabled");
-                                domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                            }
-                        }
-                    }
-                    else if (sharedWhereClause.split(value.VariableNameSuffix).length > 1) {
-                        appGlobals.shareOptions.toFromBussinessFilter = sharedWhereClause;
-                        sharedFilter = sharedWhereClause.split(value.VariableNameSuffix)[1].split("$")[0];
-                        chkAreaSites.checked = true;
-                        txtFrom.value = sharedFilter.split(",")[1];
-                        txtTo.value = sharedFilter.split(",")[2];
-                        domClass.add(this.filterIconBusiness, "esriCTFilterEnabled");
-                        domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
-                    }
-                    // set from and to value of textbox in business tab
-                    txtFrom.setAttribute("FieldValue", Number(txtFrom.value));
-                    txtTo.setAttribute("FieldValue", Number(txtTo.value));
-                }
-                else {
-                    txtFrom.disabled = true;
-                    txtTo.disabled = true;
-                }
-                // click event for FilterRangeFields in filter settings for building, sites and business tab
-                this.own(on(chkAreaSites, "click", lang.hitch(this, this._onCheckBoxClicked)));
-            }));
-        },
-
-        /**
          * create UI(dynamic) of filter option field in buildings, sites and business tab based on config parameter
          * @param {array} number of fields
          * @param {container node} container node
@@ -701,229 +590,167 @@ define([
          * @param {array} workflow index
          * @memberOf widgets/siteLocator/siteLocator
          */
-        _createFilterOptionField: function (arrFields, node, arrAdditionalFields, additionalFieldsNode, index) {
-            var i, j, divFilterOption, checkBoxWithText, divCheckBox, checkBox,
-                //fieldContent,
-                divAdditionalField, checkBoxAdditionalWithText, additionalFieldCheckBox, additionalCheckBox,
-                additionalFieldDisplayText,
-                //checkedValueForFilter, checkedValue, k,
-                nodeValue;
+        _createFilterOptionField: function (index, node, regOptionFields, rangeFields, addlOptionFields) {
+            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock;
 
-            // Create UI for RegularFilterOptionFields, which are joined by AND
-            for (i = 0; i < arrFields.length; i++) {
-                /*if (arrFields[i].FieldValue) {
-                    //insert single quote(') as an escape character to allow single quote(') in query string
-                    arrFields[i].FieldValue = arrFields[i].FieldValue.replace(/'/g, "''");
-                }*/
+            // Create UI for range fields
+            if (rangeFields) {
+                for (i = 0; i < rangeFields.length; i++) {
+
+                    // Container for option
+                    divFilterOption = domConstruct.create("div", {
+                        "class": "esriFilterOption"
+                    }, node);
+
+                    // Option
+                    divFilterOptionPart = domConstruct.create("div", {}, divFilterOption);
+
+                    fieldName = rangeFields[i].FieldName || rangeFields[i].VariableNameSuffix;
+                    this._createOption(divFilterOptionPart,
+                        fieldName + index + i,
+                        rangeFields[i].DisplayText,
+                        fieldName);
+
+                    // Range
+                    divFilterOptionPart = domConstruct.create("div", {
+                        "class": "esriFilterOptionRange"
+                    }, divFilterOption);
+
+                    divFromToBlock = domConstruct.create("div", {
+                        "class": "esriFilterOptionRangeBlock"
+                    }, divFilterOptionPart);
+
+                    domConstruct.create("span", {
+                        "class": "esriFilterOptionRangeLabel",
+                        "innerHTML": sharedNls.titles.fromText
+                    }, divFromToBlock);
+
+                    domConstruct.create("input", {
+                        "type": "text",
+                        "class": "esriFilterOptionRangeInput",
+                        "maxlength": "20"
+                    }, divFromToBlock);
+
+                    divFromToBlock = domConstruct.create("div", {
+                        "class": "esriFilterOptionRangeBlock"
+                    }, divFilterOptionPart);
+
+                    domConstruct.create("span", {
+                        "class": "esriFilterOptionRangeLabel",
+                        "innerHTML": sharedNls.titles.toText
+                    }, divFromToBlock);
+
+                    domConstruct.create("input", {
+                        "type": "text",
+                        "class": "esriFilterOptionRangeInput",
+                        "maxlength": "20"
+                    }, divFromToBlock);
+                }
+            }
+
+            // Create UI for RegularFilterOptionFields
+            if (regOptionFields) {
+                for (i = 0; i < regOptionFields.length; i++) {
+
+                    // Container for option/option set
+                    divFilterOption = domConstruct.create("div", {
+                        "class": "esriFilterOption"
+                    }, node);
+
+                    // Set of options
+                    if (regOptionFields[i].Options) {
+                        // Create set of options
+                        for (j = 0; j < regOptionFields[i].Options.length; j++) {
+                            divFilterOptionPart = domConstruct.create("div", {
+                                "class": "esriFilterOptionHalfContainer"
+                            }, divFilterOption);
+
+                            this._createOption(divFilterOptionPart,
+                                regOptionFields[i].FieldName.toString() + index.toString() + i,
+                                regOptionFields[i].Options[j].DisplayText,
+                                regOptionFields[i].FieldName.toString(), regOptionFields[i].Options[j].FieldValue);
+                        }
+                    }
+
+                    // Single option
+                    else {
+                        this._createOption(divFilterOption,
+                            regOptionFields[i].FieldName.toString() + index.toString() + i,
+                            regOptionFields[i].DisplayText,
+                            regOptionFields[i].FieldName.toString(), regOptionFields[i].FieldValue);
+                    }
+                }
+            }
+
+            // Provide UI for AdditionalFilterOptions for backwards compatibility; they're added as a set of options
+            // to the RegularFilterOptionFields
+            if (addlOptionFields && addlOptionFields.Enabled && addlOptionFields.FilterOptions.length) {
 
                 // Container for option/option set
                 divFilterOption = domConstruct.create("div", {
                     "class": "esriFilterOption"
                 }, node);
 
-                // Set of options
-                if (arrFields[i].Options) {
-                    // Create set of options
-                    //for (j = 0; j < arrFields[i].Options.length; j++) {
-                    divAdditionalField = domConstruct.create("div", {
-                        "class": "esriCTDivAdditionalOpt"
-                    }, divFilterOption);
-                }
-
-                // Single option
-                else {
-                    // Box containing checkbox and label
-                    checkBoxWithText = domConstruct.create("div", {
-                        "class": "esriCheckBoxWithText"
-                    }, divFilterOption);
-
-                    // Checkbox
-                    divCheckBox = domConstruct.create("div", {
-                        "class": "esriCheckBox"
-                    }, checkBoxWithText);
-                    checkBox = domConstruct.create("input", {
-                        "class": "esriCheckBox esriCheckBoxInput",
-                        "type": "checkbox",
-                        "name": arrFields[i].FieldName.toString(),
-                        "id": arrFields[i].FieldName.toString() + index.toString() + i,
-                        // insert single quote(') as an escape character to allow single quote(') in query string
-                        "value": arrFields[i].FieldValue && arrFields[i].FieldValue.replace(/'/g, "''")
-                    }, checkBoxWithText);
-
-                    // Label
-                    domConstruct.create("label", {
-                        "class": "esriCheckBoxLabel",
-                        "for": arrFields[i].FieldName.toString() + index.toString() + i,
-                        "innerHTML": arrFields[i].DisplayText
-                    }, checkBoxWithText);
-
-                    nodeValue = arrFields[i].DisplayText + index;
-                    this.filterOptionsValues[nodeValue] = {
-                        "checkBox": checkBox,
-                        "workflow": index
-                    };
-
-
-                    /*divCheckBox.setAttribute("isRegularFilterOptionFields", true);
-                    fieldContent = domConstruct.create("div", {
-                        "class": "esriCTChkLabel"
-                    }, checkBoxWithText);*/
-                    /*domConstruct.create("div", {
-                        "class": "esriCTCheckBoxWithText"
-                    }, divFilterOption);*/
-                    /*domAttr.set(fieldContent, "innerHTML", arrFields[i].DisplayText);*/
-
-                    this.own(on(checkBox, "click", lang.hitch(this, this._onCheckBoxClicked)));
-                }
-
-
-
-
-                /*
-                If it's a set of options,
-                esriCTDivAdditionalOpt
-                    esriCTCheckBoxWithText
-                        esriCTCheckBox
-                        esriCTChkLabel
-
-                                for (j = 0; j < arrFields[i].FilterOptions.length; j++) {
-                                    if (arrFields[i].FilterOptions[j].FieldValue) {
-                                        //insert single quote(') as an escape character to allow single quote(') in query string
-                                        arrFields[i].FilterOptions[j].FieldValue = arrFields[i].FilterOptions[j].FieldValue.replace(/'/g, "''");
-                                    }
-
-                                    divAdditionalField = domConstruct.create("div", {
-                                        "class": "esriCTDivAdditionalOpt"
-                                    }, additionalFieldsNode);
-                                    checkBoxAdditionalWithText = domConstruct.create("div", {
-                                        "class": "esriCTCheckBoxWithText"
-                                    }, divAdditionalField);
-                                    additionalFieldCheckBox = domConstruct.create("div", {
-                                        "class": "esriCTCheckBox"
-                                    }, checkBoxAdditionalWithText);
-                                    additionalCheckBox = domConstruct.create("input", {
-                                        "class": "esriCTChkBox esriCheckBoxInput",
-                                        "type": "checkbox",
-                                        "name": arrFields[i].FilterFieldName,
-                                        "id": arrFields[i].FilterOptions[j].FieldValue.toString() + index.toString(),
-                                        "value": arrFields[i].FilterOptions[j].FieldValue
-                                    }, additionalFieldCheckBox);
-                                    domConstruct.create("label", {
-                                        "class": "css-label",
-                                        "for": arrFields[i].FilterOptions[j].FieldValue.toString() + index.toString()
-                                    }, additionalFieldCheckBox);
-
-                                }
-
-                */
-
-
-
-                /*
-                if (decodeURIComponent(window.location.toString()).split(arrFields[i].FieldName).length > 1 &&
-                    Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
-                    checkedValue = decodeURIComponent(window.location.toString()).split("UPPER(" + arrFields[i].FieldName + ") =");
-                    if (this.workflowCount === 0) {
-                        domClass.add(this.filterIcon, "esriCTFilterEnabled");
-                        domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                    }
-                    else {
-                        domClass.add(this.filterIconSites, "esriCTFilterEnabled");
-                        domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                    }
-                    if (checkedValue.length < 3 && window.location.toString().split("$strSortingData=").length < 1) {
-                        checkedValue = checkedValue.pop();
-                        if (checkedValue.split(" AND ") && checkedValue.split(" AND ").length > 1) {
-                            checkedValue = checkedValue.split(" AND ")[0];
-                        }
-                    }
-                    else if (checkedValue.length < 3 && window.location.toString().split("$strSortingData=").length > 1) {
-                        checkedValue = checkedValue.pop();
-                        if (checkedValue.split("AND").length > 1) {
-                            checkedValue = checkedValue.split(" AND ")[0];
-                        }
-                        else {
-                            checkedValue = checkedValue.split("$")[0];
-                        }
-                    }
-                    else {
-                        for (k = 0; k < checkedValue.length; k++) {
-                            if (checkedValue[k].split(" AND ").length > 1) {
-                                checkedValueForFilter = checkedValue[k].split(" AND ")[0];
-                            }
-                            else {
-                                checkedValueForFilter = checkedValue[k];
-                            }
-                            if (checkedValueForFilter === "'" + arrFields[i].FieldValue + "'") {
-                                checkBox.checked = true;
-                                divCheckBox.setAttribute("isRegularFilterOptionFields", true);
-                            }
-                        }
-                    }
-                    if (checkedValue === "'" + arrFields[i].FieldValue + "'") {
-                        checkBox.checked = true;
-                        divCheckBox.setAttribute("isRegularFilterOptionFields", true);
-                    }
-                }*/
-            }
-
-            // Create UI for AdditionalFilterOptions
-            if (arrAdditionalFields && arrAdditionalFields.Enabled && arrAdditionalFields.FilterOptions.length) {
                 // create additional filter options UI(dynamic) for configurable fields in buildings and sites tab
-                for (j = 0; j < arrAdditionalFields.FilterOptions.length; j++) {
-                    if (arrAdditionalFields.FilterOptions[j].FieldValue) {
-                        //insert single quote(') as an escape character to allow single quote(') in query string
-                        arrAdditionalFields.FilterOptions[j].FieldValue = arrAdditionalFields.FilterOptions[j].FieldValue.replace(/'/g, "''");
-                    }
-                    divAdditionalField = domConstruct.create("div", {
-                        "class": "esriCTDivAdditionalOpt"
-                    }, additionalFieldsNode);
-                    checkBoxAdditionalWithText = domConstruct.create("div", {
-                        "class": "esriCTCheckBoxWithText"
-                    }, divAdditionalField);
-                    additionalFieldCheckBox = domConstruct.create("div", {
-                        "class": "esriCTCheckBox"
-                    }, checkBoxAdditionalWithText);
-                    additionalCheckBox = domConstruct.create("input", {
-                        "class": "esriCTChkBox esriCheckBoxInput",
-                        "type": "checkbox",
-                        "name": arrAdditionalFields.FilterFieldName,
-                        "id": arrAdditionalFields.FilterOptions[j].FieldValue.toString() + index.toString(),
-                        "value": arrAdditionalFields.FilterOptions[j].FieldValue
-                    }, additionalFieldCheckBox);
-                    domConstruct.create("label", {
-                        "class": "css-label",
-                        "for": arrAdditionalFields.FilterOptions[j].FieldValue.toString() + index.toString()
-                    }, additionalFieldCheckBox);
+                for (i = 0; i < addlOptionFields.FilterOptions.length; i++) {
+                    divFilterOptionPart = domConstruct.create("div", {
+                        "class": "esriFilterOptionHalfContainer"
+                    }, divFilterOption);
 
-                    //check if checkbox value is true in shared URL
-                    nodeValue = arrAdditionalFields.FilterOptions[j].DisplayText + index;
-                    this.filterOptionsValues[nodeValue] = {
-                        "checkBox": additionalCheckBox,
-                        "workflow": index
-                    };
-                    // check the shared URL for "AdditionalFilterOptions" to perform layer search and get the filtered data for "AdditionalFilterOptions" on selected fields in building and sites tab
-                    if (decodeURIComponent(window.location.toString()).split("UPPER('PERCENT" +
-                            arrAdditionalFields.FilterOptions[j].FieldValue + "PERCENT')").length > 1 &&
-                        Number(window.location.toString().split("$workflowCount=")[1].split("$")[0]) === index) {
-                        additionalCheckBox.checked = true;
-                        if (this.workflowCount === 0) {
-                            domClass.add(this.filterIcon, "esriCTFilterEnabled");
-                            domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                        }
-                        else {
-                            domClass.add(this.filterIconSites, "esriCTFilterEnabled");
-                            domClass.add(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                        }
-                    }
-                    additionalFieldCheckBox.setAttribute("isRegularFilterOptionFields", false);
-                    additionalFieldDisplayText = domConstruct.create("div", {
-                        "class": "esriCTChkLabel"
-                    }, checkBoxAdditionalWithText);
-                    domAttr.set(additionalFieldDisplayText, "innerHTML", arrAdditionalFields.FilterOptions[j].DisplayText);
-                    this.own(on(additionalCheckBox, "click", lang.hitch(this, this._onCheckBoxClicked)));
+                    this._createOption(divFilterOptionPart,
+                        addlOptionFields.FilterFieldName.toString() + index.toString() + i,
+                        addlOptionFields.FilterOptions[i].DisplayText,
+                        addlOptionFields.FilterFieldName.toString(),
+                        addlOptionFields.FilterOptions[i].FieldValue.toString());
                 }
             }
+        },
+
+        _createOption: function (containerDiv, id, displayText, fieldName, fieldValue) {
+            var checkboxWithText, checkbox;
+
+            // Box containing checkbox and label
+            checkboxWithText = domConstruct.create("div", {
+                "class": "esriCheckBoxWithText"
+            }, containerDiv);
+
+            // Checkbox
+            checkbox = domConstruct.create("div", {
+                "class": "esriCheckBox",
+                "id": id,
+                "name": fieldName,
+                "value": fieldValue && fieldValue.replace(/'/g, "''"),
+                "role": "checkbox",
+                "aria-checked": "false"
+            }, checkboxWithText);
+
+            // Label
+            domConstruct.create("label", {
+                "class": "esriCheckBoxLabel",
+                "for": id,
+                "innerHTML": displayText
+            }, checkboxWithText);
+
+            /*
+            nodeValue = arrFields[i].DisplayText + index;
+            this.filterOptionsValues[nodeValue] = {
+                "checkBox": checkBox,
+                "workflow": index
+            };
+            */
+
+            // Toggle checkbox
+            this.own(on(checkboxWithText, "click", lang.hitch(this, function (evt) {
+                //var checkbox = evt.currentTarget.childNodes[0];
+                if (domClass.contains(checkbox, "esriCheckBoxChecked")) {
+                    domClass.remove(checkbox, "esriCheckBoxChecked");
+                    domAttr.set(checkbox, "aria-checked", "false");
+                }
+                else {
+                    domClass.add(checkbox, "esriCheckBoxChecked");
+                    domAttr.set(checkbox, "aria-checked", "true");
+                }
+            })));
         },
 
         /**
@@ -1203,8 +1030,9 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _validateRangeFilterValues: function () {
-            var node, isValid;
+            var isValid;
             isValid = true;
+            /*
             for (node in this.filterOptionsValues) {
                 if (this.filterOptionsValues.hasOwnProperty(node)) {
                     if (isValid) {
@@ -1221,7 +1049,7 @@ define([
                     }
 
                 }
-            }
+            }*/
             return isValid;
         },
 
@@ -1230,11 +1058,11 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _applyFilterForBuildingAndSites: function (bufferDistance) {
-            var node, isValid;
+            var isValid;
             isValid = true;
             this.andArr = [];
             this.orArr = [];
-            for (node in this.filterOptionsValues) {
+            /*for (node in this.filterOptionsValues) {
                 if (this.filterOptionsValues.hasOwnProperty(node)) {
                     if (isValid) {
                         if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
@@ -1263,7 +1091,7 @@ define([
                         }
                     }
                 }
-            }
+            }*/
             if (isValid) {
                 this._callAndOrQuery(this.andArr, this.orArr);
             }
