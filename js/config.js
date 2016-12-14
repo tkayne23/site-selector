@@ -171,7 +171,7 @@ define([], function () {
 
                 FilterSettings: {
                     FilterRangeFields: [{
-                        DisplayText: "Area (sqft)",
+                        DisplayText: "Area in square feet (US units or imperial units as you wish)",
                         FieldName: "BLDGAREA"
                     }],
                     RegularFilterOptionFields: [{
