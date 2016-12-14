@@ -365,7 +365,7 @@ define([
                             domClass.add(this.filterMainContainerBussiness, "esriCTFilterMainContainer");
                         }
                     }
-                }), function () {
+                }), lang.hitch(this, function () {
                     topic.publish("hideProgressIndicator");
                     this._clearCommunitiesAndBusinessResults(workflowCount);
                     alert(sharedNls.errorMessages.geometryIntersectError);
@@ -378,7 +378,7 @@ define([
                         domClass.remove(this.filterTextBusiness, "esriCTFilterTextEnable");
                         domClass.add(this.filterMainContainerBussiness, "esriCTFilterMainContainer");
                     }
-                });
+                }));
             }
             else {
                 // perform standard geographic query for communities tab
