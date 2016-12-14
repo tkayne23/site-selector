@@ -282,7 +282,7 @@ define([
                 appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
                 appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
 
-                this._createFilterOptionField(0, this.horizantalruleBuliding,
+                this._createFilterOption(0, this.horizantalruleBuliding,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions
@@ -310,7 +310,7 @@ define([
                 appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
                 appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
 
-                this._createFilterOptionField(1, this.horizantalruleSites,
+                this._createFilterOption(1, this.horizantalruleSites,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions
@@ -336,7 +336,7 @@ define([
             // dynamic UI of Business tab
             if (appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields.length) {
 
-                this._createFilterOptionField(2, this.BussinessFromToMainDiv,
+                this._createFilterOption(2, this.BussinessFromToMainDiv,
                     null,
                     appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields,
                     null
@@ -583,24 +583,24 @@ define([
 
         /**
          * create UI(dynamic) of filter option field in buildings, sites and business tab based on config parameter
-         * @param {array} number of fields
-         * @param {container node} container node
-         * @param {array} additional fields
-         * @param {object} additional fields node
-         * @param {array} workflow index
+         * @param {number} index -- workflow index
+         * @param {object} containerDiv -- container node
+         * @param {array} regOptionFields -- RegularFilterOptionFields fields
+         * @param {array} rangeFields -- FilterRangeFields fields
+         * @param {array} addlOptionFields -- AdditionalFilterOptions fields
          * @memberOf widgets/siteLocator/siteLocator
          */
-        _createFilterOptionField: function (index, node, regOptionFields, rangeFields, addlOptionFields) {
+        _createFilterOption: function (index, containerDiv, regOptionFields, rangeFields, addlOptionFields) {
             var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId;
 
-            // Create UI for range fields
+            // Create UI for FilterRangeFields
             if (rangeFields) {
                 for (i = 0; i < rangeFields.length; i++) {
 
                     // Container for option
                     divFilterOption = domConstruct.create("div", {
                         "class": "esriFilterOption"
-                    }, node);
+                    }, containerDiv);
 
                     // Option
                     divFilterOptionPart = domConstruct.create("div", {}, divFilterOption);
@@ -660,7 +660,7 @@ define([
                     // Container for option/option set
                     divFilterOption = domConstruct.create("div", {
                         "class": "esriFilterOption"
-                    }, node);
+                    }, containerDiv);
 
                     // Set of options
                     if (regOptionFields[i].Options) {
@@ -694,7 +694,7 @@ define([
                 // Container for option/option set
                 divFilterOption = domConstruct.create("div", {
                     "class": "esriFilterOption"
-                }, node);
+                }, containerDiv);
 
                 // create additional filter options UI(dynamic) for configurable fields in buildings and sites tab
                 for (i = 0; i < addlOptionFields.FilterOptions.length; i++) {
@@ -711,6 +711,14 @@ define([
             }
         },
 
+        /**
+         * Creates an option checkbox.
+         * @param {object} containerDiv -- container node
+         * @param {string} id -- id for checkbox
+         * @param {string} displayText -- label for checkbox
+         * @param {string} fieldName -- field tied to checkbox
+         * @param {!object} fieldValue -- value tied to checkbox option
+         */
         _createOption: function (containerDiv, id, displayText, fieldName, fieldValue) {
             var checkboxWithText, checkbox;
 
