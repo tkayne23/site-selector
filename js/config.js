@@ -209,6 +209,18 @@ define([], function () {
                             DisplayText: "Other",
                             FieldValue: "Other"
                         }]
+                    }, {
+                        FieldName: "DISTWATER",
+                        Options: [{
+                            DisplayText: "1",
+                            FieldValue: 1
+                        }, {
+                            DisplayText: "2",
+                            FieldValue: 2
+                        }, {
+                            DisplayText: "3",
+                            FieldValue: 3
+                        }]
                     }],
                     AdditionalFilterOptions: {
                         Enabled: true,
