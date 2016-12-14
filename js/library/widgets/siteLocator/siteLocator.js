@@ -626,7 +626,7 @@ define([
                     }, divFromToBlock);
 
                     domConstruct.create("input", {
-                        "type": "text",
+                        "type": "number",
                         "class": "esriFilterOptionRangeInput",
                         "maxlength": "20"
                     }, divFromToBlock);
@@ -641,7 +641,7 @@ define([
                     }, divFromToBlock);
 
                     domConstruct.create("input", {
-                        "type": "text",
+                        "type": "number",
                         "class": "esriFilterOptionRangeInput",
                         "maxlength": "20"
                     }, divFromToBlock);
