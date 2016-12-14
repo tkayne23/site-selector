@@ -84,6 +84,8 @@ define([
         _previousBufferBuildingValue: 0,
         isInvalidAddress: true,
 
+        _filters: [],
+
         /**
          * create Site Selector widget
          *
@@ -591,7 +593,8 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _createFilterOption: function (index, containerDiv, regOptionFields, rangeFields, addlOptionFields) {
-            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId;
+            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId,
+                checkbox, fromInput, toInput, alternates;
 
             // Create UI for FilterRangeFields
             if (rangeFields) {
@@ -607,7 +610,7 @@ define([
 
                     fieldName = rangeFields[i].FieldName || rangeFields[i].VariableNameSuffix;
                     inputId = fieldName + index + i;
-                    this._createOption(divFilterOptionPart,
+                    checkbox = this._createOption(divFilterOptionPart,
                         inputId,
                         rangeFields[i].DisplayText,
                         fieldName);
@@ -627,7 +630,7 @@ define([
                         "innerHTML": sharedNls.titles.fromText
                     }, divFromToBlock);
 
-                    domConstruct.create("input", {
+                    fromInput = domConstruct.create("input", {
                         "type": "number",
                         "class": "esriFilterOptionRangeInput",
                         "id": inputId + "from",
@@ -644,12 +647,25 @@ define([
                         "innerHTML": sharedNls.titles.toText
                     }, divFromToBlock);
 
-                    domConstruct.create("input", {
+                    toInput = domConstruct.create("input", {
                         "type": "number",
                         "class": "esriFilterOptionRangeInput",
                         "id": inputId + "to",
                         "maxlength": "20"
                     }, divFromToBlock);
+
+                    // Update checkbox to know about its range inputs
+                    checkbox.value = {
+                        "from": fromInput,
+                        "to": toInput
+                    };
+
+                    // Monitor input changes
+                    this.own(on(fromInput, "input", lang.hitch(this, this._updateFilterability)));
+                    this.own(on(toInput, "input", lang.hitch(this, this._updateFilterability)));
+
+                    // Add option to object's list of filters
+                    this._filters.push(checkbox);
                 }
             }
 
@@ -665,24 +681,34 @@ define([
                     // Set of options
                     if (regOptionFields[i].Options) {
                         // Create set of options
+                        alternates = [];
                         for (j = 0; j < regOptionFields[i].Options.length; j++) {
                             divFilterOptionPart = domConstruct.create("div", {
                                 "class": "esriFilterOptionHalfContainer"
                             }, divFilterOption);
 
-                            this._createOption(divFilterOptionPart,
+                            checkbox = this._createOption(divFilterOptionPart,
                                 regOptionFields[i].FieldName.toString() + index.toString() + i,
                                 regOptionFields[i].Options[j].DisplayText,
                                 regOptionFields[i].FieldName.toString(), regOptionFields[i].Options[j].FieldValue);
+
+                            // Add option to collection
+                            alternates.push(checkbox);
                         }
+
+                        // Add collection to object's list of filters
+                        this._filters.push(alternates);
                     }
 
                     // Single option
                     else {
-                        this._createOption(divFilterOption,
+                        checkbox = this._createOption(divFilterOption,
                             regOptionFields[i].FieldName.toString() + index.toString() + i,
                             regOptionFields[i].DisplayText,
                             regOptionFields[i].FieldName.toString(), regOptionFields[i].FieldValue);
+
+                        // Add option to object's list of filters
+                        this._filters.push(checkbox);
                     }
                 }
             }
@@ -697,17 +723,24 @@ define([
                 }, containerDiv);
 
                 // create additional filter options UI(dynamic) for configurable fields in buildings and sites tab
+                alternates = [];
                 for (i = 0; i < addlOptionFields.FilterOptions.length; i++) {
                     divFilterOptionPart = domConstruct.create("div", {
                         "class": "esriFilterOptionHalfContainer"
                     }, divFilterOption);
 
-                    this._createOption(divFilterOptionPart,
+                    checkbox = this._createOption(divFilterOptionPart,
                         addlOptionFields.FilterFieldName.toString() + index.toString() + i,
                         addlOptionFields.FilterOptions[i].DisplayText,
                         addlOptionFields.FilterFieldName.toString(),
                         addlOptionFields.FilterOptions[i].FieldValue.toString());
+
+                    // Add option to collection
+                    alternates.push(checkbox);
                 }
+
+                // Add collection to object's list of filters
+                this._filters.push(alternates);
             }
         },
 
@@ -718,9 +751,15 @@ define([
          * @param {string} displayText -- label for checkbox
          * @param {string} fieldName -- field tied to checkbox
          * @param {!object} fieldValue -- value tied to checkbox option
+         * @return {object} created checkbox
          */
         _createOption: function (containerDiv, id, displayText, fieldName, fieldValue) {
-            var checkboxWithText, checkbox;
+            var checkboxWithText, checkbox, adjustedFieldValue = fieldValue;
+
+            if (typeof adjustedFieldValue === "string") {
+                // Insert single quote(') as an escape character to allow single quote(') in query string
+                adjustedFieldValue = adjustedFieldValue.replace(/'/g, "''");
+            }
 
             // Box containing checkbox and label
             checkboxWithText = domConstruct.create("div", {
@@ -732,7 +771,7 @@ define([
                 "class": "esriCheckBox",
                 "id": id,
                 "name": fieldName,
-                "value": fieldValue && fieldValue.replace(/'/g, "''"),
+                "value": adjustedFieldValue,
                 "role": "checkbox",
                 "aria-checked": "false"
             }, checkboxWithText);
@@ -753,17 +792,47 @@ define([
             */
 
             // Toggle checkbox
-            this.own(on(checkboxWithText, "click", lang.hitch(this, function (evt) {
-                //var checkbox = evt.currentTarget.childNodes[0];
-                if (domClass.contains(checkbox, "esriCheckBoxChecked")) {
-                    domClass.remove(checkbox, "esriCheckBoxChecked");
-                    domAttr.set(checkbox, "aria-checked", "false");
+            this.own(on(checkboxWithText, "click", lang.hitch(this, this._updateCheckbox)));
+
+            return checkbox;
+        },
+
+        _updateCheckbox: function (evt) {
+            var checkbox = evt.currentTarget.childNodes[0];
+
+            // Toggle checkbox
+            if (domClass.contains(checkbox, "esriCheckBoxChecked")) {
+                domClass.remove(checkbox, "esriCheckBoxChecked");
+                domAttr.set(checkbox, "aria-checked", "false");
+            }
+            else {
+                domClass.add(checkbox, "esriCheckBoxChecked");
+                domAttr.set(checkbox, "aria-checked", "true");
+            }
+
+            // Update apply and clear filter buttons based on if we have any options checked
+            this._updateFilterability();
+        },
+
+        _updateFilterability: function () {
+            var i, nl, value, hasOptions = true;
+
+            // Update apply and clear filter buttons based on if we have any options checked
+            nl = query(".esriCheckBoxChecked");
+            hasOptions = nl.length > 0;
+
+            // Check that range values are defined
+            for (i = 0; i < nl.length; ++i) {
+                value = nl[i].value;
+                if (typeof value === "object") {
+                    hasOptions = hasOptions && value.from && !isNaN(value.from.valueAsNumber) &&
+                        value.to && !isNaN(value.to.valueAsNumber);
+                    if (hasOptions) {
+                        hasOptions = hasOptions && value.from.valueAsNumber <= value.to.valueAsNumber;
+                    }
                 }
-                else {
-                    domClass.add(checkbox, "esriCheckBoxChecked");
-                    domAttr.set(checkbox, "aria-checked", "true");
-                }
-            })));
+            }
+            console.log("Number of options: " + nl.length + "; ok to filter: " + hasOptions.toString());
         },
 
         /**
