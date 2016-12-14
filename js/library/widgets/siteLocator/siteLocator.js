@@ -591,7 +591,7 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _createFilterOptionField: function (index, node, regOptionFields, rangeFields, addlOptionFields) {
-            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock;
+            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId;
 
             // Create UI for range fields
             if (rangeFields) {
@@ -606,8 +606,9 @@ define([
                     divFilterOptionPart = domConstruct.create("div", {}, divFilterOption);
 
                     fieldName = rangeFields[i].FieldName || rangeFields[i].VariableNameSuffix;
+                    inputId = fieldName + index + i;
                     this._createOption(divFilterOptionPart,
-                        fieldName + index + i,
+                        inputId,
                         rangeFields[i].DisplayText,
                         fieldName);
 
@@ -620,14 +621,16 @@ define([
                         "class": "esriFilterOptionRangeBlock"
                     }, divFilterOptionPart);
 
-                    domConstruct.create("span", {
+                    domConstruct.create("label", {
                         "class": "esriFilterOptionRangeLabel",
+                        "for": inputId + "from",
                         "innerHTML": sharedNls.titles.fromText
                     }, divFromToBlock);
 
                     domConstruct.create("input", {
                         "type": "number",
                         "class": "esriFilterOptionRangeInput",
+                        "id": inputId + "from",
                         "maxlength": "20"
                     }, divFromToBlock);
 
@@ -635,14 +638,16 @@ define([
                         "class": "esriFilterOptionRangeBlock"
                     }, divFilterOptionPart);
 
-                    domConstruct.create("span", {
+                    domConstruct.create("label", {
                         "class": "esriFilterOptionRangeLabel",
+                        "for": inputId + "to",
                         "innerHTML": sharedNls.titles.toText
                     }, divFromToBlock);
 
                     domConstruct.create("input", {
                         "type": "number",
                         "class": "esriFilterOptionRangeInput",
+                        "id": inputId + "to",
                         "maxlength": "20"
                     }, divFromToBlock);
                 }
