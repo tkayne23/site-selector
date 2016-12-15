@@ -15,7 +15,7 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
-//============================================================================================================================//
+//====================================================================================================================//
 define([
     "dojo/_base/array",
     "dojo/_base/Color",
@@ -49,7 +49,7 @@ define([
     query, template, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Graphic, Point,
     esriRequest, SimpleFillSymbol, SimpleLineSymbol, BufferParameters, GeometryService, urlUtils, siteLocatorHelper) {
 
-    //========================================================================================================================//
+    //================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, siteLocatorHelper], {
         templateString: template,
@@ -407,7 +407,7 @@ define([
             domAttr.set(this.filterText, "innerHTML", sharedNls.titles.filterText);
             domAttr.set(this.filterTextSites, "innerHTML", sharedNls.titles.filterText);
             domAttr.set(this.filterTextBusiness, "innerHTML", sharedNls.titles.filterText);
-            domAttr.set(this.filterIcon, "title", sharedNls.tooltips.applyFilter);
+            domAttr.set(this.filterIconBuilding, "title", sharedNls.tooltips.applyFilter);
             domAttr.set(this.clearFilterBuilding, "title", sharedNls.tooltips.clearFilter);
             domAttr.set(this.filterIconSites, "title", sharedNls.tooltips.applyFilter);
             domAttr.set(this.clearFilterSites, "title", sharedNls.tooltips.clearFilter);
@@ -582,6 +582,8 @@ define([
             this.comAreaList.disabled = !this.rdoCommunityPlaceName.checked;
             appGlobals.shareOptions.standardGeoQueryAttribute = null;
         },
+
+        //------------------------------------------------------------------------------------------------------------//
 
         /**
          * create UI(dynamic) of filter option field in buildings, sites and business tab based on config parameter
@@ -835,6 +837,8 @@ define([
             console.log("Number of options: " + nl.length + "; ok to filter: " + hasOptions.toString());
         },
 
+        //------------------------------------------------------------------------------------------------------------//
+
         /**
          * check whether the check box is clicked in buildings, sites and business tab
          * @memberOf widgets/siteLocator/siteLocator
@@ -847,7 +851,7 @@ define([
                     switch (this.workflowCount) {
                         //disable the filter icon
                         case 0:
-                            domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                            domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
                             if (domClass.contains(this.clearFilterBuilding, "esriCTClearFilterIconEnable")) {
                                 domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                                 topic.publish("showProgressIndicator");
@@ -922,7 +926,7 @@ define([
                 switch (this.workflowCount) {
                     //enable the filter icon
                     case 0:
-                        domClass.add(this.filterIcon, "esriCTFilterEnabled");
+                        domClass.add(this.filterIconBuilding, "esriCTFilterEnabled");
                         break;
                     case 1:
                         domClass.add(this.filterIconSites, "esriCTFilterEnabled");
@@ -959,9 +963,9 @@ define([
         _attachFilterClick: function () {
             topic.publish("showProgressIndicator");
             // attach filter click on building tab
-            if (this.filterIcon) {
-                on(this.filterIcon, "click", lang.hitch(this, function () {
-                    if (domClass.contains(this.filterIcon, "esriCTFilterEnabled")) {
+            if (this.filterIconBuilding) {
+                on(this.filterIconBuilding, "click", lang.hitch(this, function () {
+                    if (domClass.contains(this.filterIconBuilding, "esriCTFilterEnabled")) {
                         topic.publish("showProgressIndicator");
                         domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                         this.queryArrayBuildingOR = [];
@@ -990,7 +994,7 @@ define([
                             this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
                         }
                         this._clearFilter();
-                        domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                        domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
                         domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                     }
                 })));

@@ -133,7 +133,7 @@ define([
                 }
                 // set change slider value for all workflows
                 domAttr.set(divSliderValue, "innerHTML", Math.round(value) + " " + domAttr.get(divSliderValue, "distanceUnit"));
-                if (_self.workflowCount === 0 && domClass.contains(_self.filterIcon, "esriCTFilterEnabled")) {
+                if (_self.workflowCount === 0 && domClass.contains(_self.filterIconBuilding, "esriCTFilterEnabled")) {
                     domClass.add(_self.clearFilterBuilding, "esriCTClearFilterIconEnable");
                 }
                 else if (_self.workflowCount === 1 && domClass.contains(_self.filterIconSites, "esriCTFilterEnabled")) {

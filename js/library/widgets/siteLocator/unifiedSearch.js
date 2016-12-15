@@ -560,7 +560,7 @@ define([
                     if (this.map.infoWindow) {
                         this.map.infoWindow.hide();
                     }
-                    if (obj.addressWorkflowCount === 0 && domClass.contains(this.filterIcon, "esriCTFilterEnabled")) {
+                    if (obj.addressWorkflowCount === 0 && domClass.contains(this.filterIconBuilding, "esriCTFilterEnabled")) {
                         domClass.add(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                     }
                     else if (obj.addressWorkflowCount === 1 && domClass.contains(this.filterIconSites, "esriCTFilterEnabled")) {

@@ -325,7 +325,7 @@ define([
                             alert(sharedNls.errorMessages.geometryIntersectError);
                             if (this.workflowCount === 0) {
                                 this._clearFilterCheckBoxes();
-                                domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                                domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
                                 domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                                 domClass.remove(this.filterText, "esriCTFilterTextEnable");
                                 domStyle.set(this.filterContainer, "display", "none");
@@ -345,7 +345,7 @@ define([
                         alert(sharedNls.errorMessages.geometryIntersectError);
                         if (this.workflowCount === 0) {
                             this._clearFilterCheckBoxes();
-                            domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                            domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
                             domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                             domClass.remove(this.filterText, "esriCTFilterTextEnable");
                             domStyle.set(this.filterContainer, "display", "none");
