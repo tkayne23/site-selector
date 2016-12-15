@@ -587,16 +587,16 @@ define([
 
         /**
          * create UI(dynamic) of filter option field in buildings, sites and business tab based on config parameter
-         * @param {number} index -- workflow index
+         * @param {number} workflowIndex -- workflow index
          * @param {object} containerDiv -- container node
          * @param {array} regOptionFields -- RegularFilterOptionFields fields
          * @param {array} rangeFields -- FilterRangeFields fields
          * @param {array} addlOptionFields -- AdditionalFilterOptions fields
          * @memberOf widgets/siteLocator/siteLocator
          */
-        _createFilterOption: function (index, containerDiv, regOptionFields, rangeFields, addlOptionFields) {
+        _createFilterOption: function (workflowIndex, containerDiv, regOptionFields, rangeFields, addlOptionFields) {
             var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId,
-                checkbox, fromInput, toInput, alternates;
+                checkbox, fromInput, toInput, alternates, optionNum = 0;
 
             // Create UI for FilterRangeFields
             if (rangeFields) {
@@ -611,8 +611,8 @@ define([
                     divFilterOptionPart = domConstruct.create("div", {}, divFilterOption);
 
                     fieldName = rangeFields[i].FieldName || rangeFields[i].VariableNameSuffix;
-                    inputId = fieldName + index + i;
-                    checkbox = this._createOption(divFilterOptionPart,
+                    inputId = fieldName + workflowIndex + optionNum++;
+                    checkbox = this._createOption(divFilterOptionPart, workflowIndex,
                         inputId,
                         rangeFields[i].DisplayText,
                         fieldName);
@@ -689,10 +689,10 @@ define([
                                 "class": "esriFilterOptionHalfContainer"
                             }, divFilterOption);
 
-                            checkbox = this._createOption(divFilterOptionPart,
-                                regOptionFields[i].FieldName.toString() + index.toString() + i,
+                            checkbox = this._createOption(divFilterOptionPart, workflowIndex,
+                                regOptionFields[i].FieldName + workflowIndex + optionNum++,
                                 regOptionFields[i].Options[j].DisplayText,
-                                regOptionFields[i].FieldName.toString(), regOptionFields[i].Options[j].FieldValue);
+                                regOptionFields[i].FieldName, regOptionFields[i].Options[j].FieldValue);
 
                             // Add option to collection
                             alternates.push(checkbox);
@@ -704,10 +704,10 @@ define([
 
                     // Single option
                     else {
-                        checkbox = this._createOption(divFilterOption,
-                            regOptionFields[i].FieldName.toString() + index.toString() + i,
+                        checkbox = this._createOption(divFilterOption, workflowIndex,
+                            regOptionFields[i].FieldName + workflowIndex + optionNum++,
                             regOptionFields[i].DisplayText,
-                            regOptionFields[i].FieldName.toString(), regOptionFields[i].FieldValue);
+                            regOptionFields[i].FieldName, regOptionFields[i].FieldValue);
 
                         // Add option to object's list of filters
                         this._filters.push(checkbox);
@@ -731,11 +731,11 @@ define([
                         "class": "esriFilterOptionHalfContainer"
                     }, divFilterOption);
 
-                    checkbox = this._createOption(divFilterOptionPart,
-                        addlOptionFields.FilterFieldName.toString() + index.toString() + i,
+                    checkbox = this._createOption(divFilterOptionPart, workflowIndex,
+                        addlOptionFields.FilterFieldName + workflowIndex + optionNum++,
                         addlOptionFields.FilterOptions[i].DisplayText,
-                        addlOptionFields.FilterFieldName.toString(),
-                        addlOptionFields.FilterOptions[i].FieldValue.toString());
+                        addlOptionFields.FilterFieldName,
+                        addlOptionFields.FilterOptions[i].FieldValue);
 
                     // Add option to collection
                     alternates.push(checkbox);
@@ -749,13 +749,14 @@ define([
         /**
          * Creates an option checkbox.
          * @param {object} containerDiv -- container node
+         * @param {number} workflowIndex -- workflow index
          * @param {string} id -- id for checkbox
          * @param {string} displayText -- label for checkbox
          * @param {string} fieldName -- field tied to checkbox
          * @param {!object} fieldValue -- value tied to checkbox option
          * @return {object} created checkbox
          */
-        _createOption: function (containerDiv, id, displayText, fieldName, fieldValue) {
+        _createOption: function (containerDiv, workflowIndex, id, displayText, fieldName, fieldValue) {
             var checkboxWithText, checkbox, adjustedFieldValue = fieldValue;
 
             if (typeof adjustedFieldValue === "string") {
@@ -775,7 +776,8 @@ define([
                 "name": fieldName,
                 "value": adjustedFieldValue,
                 "role": "checkbox",
-                "aria-checked": "false"
+                "aria-checked": "false",
+                "workflow-index": workflowIndex
             }, checkboxWithText);
 
             // Label
@@ -817,144 +819,57 @@ define([
         },
 
         _updateFilterability: function () {
-            var i, nl, value, hasOptions = true;
+            var i, nl, workflowIndex, value, numCheckedOptions = [0, 0, 0],
+                readyForFiltering = [true, true, true];
 
-            // Update apply and clear filter buttons based on if we have any options checked
+            // Get the checked options from all three workflows:  buildings, sites, business
             nl = query(".esriCheckBoxChecked");
-            hasOptions = nl.length > 0;
 
-            // Check that range values are defined
+            // Count them by workflow
             for (i = 0; i < nl.length; ++i) {
+                workflowIndex = nl[i].getAttributeNode("workflow-index").value;
+                numCheckedOptions[workflowIndex]++;
+
+                // Check that range values are defined; if not, the workflow containing its option
+                // is not ready for filtering
                 value = nl[i].value;
-                if (typeof value === "object") {
-                    hasOptions = hasOptions && value.from && !isNaN(value.from.valueAsNumber) &&
-                        value.to && !isNaN(value.to.valueAsNumber);
-                    if (hasOptions) {
-                        hasOptions = hasOptions && value.from.valueAsNumber <= value.to.valueAsNumber;
-                    }
+                if (typeof value === "object" &&
+                    !(value.from && !isNaN(value.from.valueAsNumber) &&
+                        value.to && !isNaN(value.to.valueAsNumber) &&
+                        value.from.valueAsNumber <= value.to.valueAsNumber)) {
+                    readyForFiltering[workflowIndex] = false;
                 }
             }
-            console.log("Number of options: " + nl.length + "; ok to filter: " + hasOptions.toString());
+
+            // Combine range check(s) and number of options by workflow to see if workflow can be filtered
+            for (i = 0; i < 3; ++i) {
+                readyForFiltering[i] = readyForFiltering[i] && numCheckedOptions[i] > 0;
+            }
+
+            // Update filtering icon
+            if (readyForFiltering[0]) {
+                domClass.add(this.filterIconBuilding, "esriCTFilterEnabled");
+            }
+            else {
+                domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
+            }
+
+            if (readyForFiltering[1]) {
+                domClass.add(this.filterIconSites, "esriCTFilterEnabled");
+            }
+            else {
+                domClass.remove(this.filterIconSites, "esriCTFilterEnabled");
+            }
+
+            if (readyForFiltering[2]) {
+                domClass.add(this.filterIconBusiness, "esriCTFilterEnabled");
+            }
+            else {
+                domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
+            }
         },
 
         //------------------------------------------------------------------------------------------------------------//
-
-        /**
-         * check whether the check box is clicked in buildings, sites and business tab
-         * @memberOf widgets/siteLocator/siteLocator
-         */
-        _onCheckBoxClicked: function (evt) {
-            //when checkBox is deselected
-            if (!evt.currentTarget.checked) {
-                //check if no filter option is selected
-                if (this._validateFilterOptions()) {
-                    switch (this.workflowCount) {
-                        //disable the filter icon
-                        case 0:
-                            domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
-                            if (domClass.contains(this.clearFilterBuilding, "esriCTClearFilterIconEnable")) {
-                                domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
-                                topic.publish("showProgressIndicator");
-                                this.queryArrayBuildingOR = [];
-                                this.queryArrayBuildingAND = [];
-                                if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForBuilding) {
-                                    this.selectedValue[this.workflowCount] = null;
-                                    appGlobals.shareOptions.sortingData = null;
-                                    this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-                                }
-                                // clear filter query string and retained the buffer results for building tab
-                                this._clearFilter();
-                            }
-                            else {
-                                this._clearFilterCheckBoxes();
-                            }
-                            break;
-                        case 1:
-                            domClass.remove(this.filterIconSites, "esriCTFilterEnabled");
-                            if (domClass.contains(this.clearFilterSites, "esriCTClearFilterIconEnable")) {
-                                domClass.remove(this.clearFilterSites, "esriCTClearFilterIconEnable");
-                                topic.publish("showProgressIndicator");
-                                this.queryArraySitesAND = [];
-                                this.queryArraySitesOR = [];
-                                if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites) {
-                                    this.selectedValue[this.workflowCount] = null;
-                                    appGlobals.shareOptions.sortingData = null;
-                                    this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-                                }
-                                // clear filter query string and retained the buffer results for sites tab
-                                this._clearFilter();
-                            }
-                            else {
-                                this._clearFilterCheckBoxes();
-                            }
-                            break;
-                        case 2:
-                            domClass.remove(this.filterIconBusiness, "esriCTFilterEnabled");
-                            if (domClass.contains(this.clearFilterBusiness, "esriCTClearFilterIconEnable")) {
-                                domClass.remove(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
-                                appGlobals.shareOptions.toFromBussinessFilter = null;
-                                this._clearFilterCheckBoxes();
-                                if (this.selectedValue[this.workflowCount] && this.selectSortOption) {
-                                    this.selectedValue[this.workflowCount] = null;
-                                    appGlobals.shareOptions.sortingData = null;
-                                    this.selectSortOption.set("value", sharedNls.titles.select);
-                                }
-                                // clear filtered results and retained the buffer results for business tab
-                                this._resetBusinessBufferValueResult();
-                            }
-                            else {
-                                this._clearFilterCheckBoxes();
-                            }
-                            break;
-                    }
-                }
-                else {
-                    if (this.filterOptionsValues[evt.currentTarget.value]) {
-                        this.filterOptionsValues[evt.currentTarget.value].txtFrom.disabled = true;
-                        this.filterOptionsValues[evt.currentTarget.value].txtFrom.value = "";
-                        this.filterOptionsValues[evt.currentTarget.value].txtTo.disabled = true;
-                        this.filterOptionsValues[evt.currentTarget.value].txtTo.value = "";
-                    }
-                }
-            }
-            else {
-                //when checkBox is selected and invalid
-                if (this.filterOptionsValues[evt.currentTarget.value]) {
-                    this.filterOptionsValues[evt.currentTarget.value].txtFrom.disabled = !evt.currentTarget.checked;
-                    this.filterOptionsValues[evt.currentTarget.value].txtTo.disabled = !evt.currentTarget.checked;
-                }
-                switch (this.workflowCount) {
-                    //enable the filter icon
-                    case 0:
-                        domClass.add(this.filterIconBuilding, "esriCTFilterEnabled");
-                        break;
-                    case 1:
-                        domClass.add(this.filterIconSites, "esriCTFilterEnabled");
-                        break;
-                    case 2:
-                        domClass.add(this.filterIconBusiness, "esriCTFilterEnabled");
-                        break;
-                }
-            }
-        },
-
-        /**
-         * validate if no filter option is selected for Building, Sites, Business tab
-         * @memberOf widgets/siteLocator/siteLocator
-         */
-        _validateFilterOptions: function () {
-            var noFilterSelected = true,
-                node;
-            for (node in this.filterOptionsValues) {
-                if (this.filterOptionsValues.hasOwnProperty(node)) {
-                    if (this.filterOptionsValues[node].checkBox.checked && this.filterOptionsValues[node].workflow === this.workflowCount) {
-                        noFilterSelected = false;
-                        break;
-                    }
-                }
-            }
-            return noFilterSelected;
-        },
 
         /**
          * show the filtered data in buildings, sites and business tab
