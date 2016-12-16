@@ -515,7 +515,7 @@ define([
                     }
                     else {
                         this.isSharedExtent = true;
-                        this._locateAddressOnMap(mapPoint, null, true);
+                        this._locateAddressOnMap(mapPoint, null);
                     }
                 }, 500));
             }
@@ -801,14 +801,6 @@ define([
                 "innerHTML": displayText
             }, checkboxWithText);
 
-            /*
-            nodeValue = arrFields[i].DisplayText + index;
-            this.filterOptionsValues[nodeValue] = {
-                "checkBox": checkBox,
-                "workflow": index
-            };
-            */
-
             // Toggle checkbox
             this.own(on(checkboxWithText, "click", lang.hitch(this, this._updateCheckbox)));
 
@@ -1024,40 +1016,13 @@ define([
         },
 
         /**
-         * validate range filter values in building, sites and business tab and return the boolean value
-         * @memberOf widgets/siteLocator/siteLocator
-         */
-        _validateRangeFilterValues: function () {
-            var isValid;
-            isValid = true;
-            /*
-            for (node in this.filterOptionsValues) {
-                if (this.filterOptionsValues.hasOwnProperty(node)) {
-                    if (isValid) {
-                        if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
-                            if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
-                                // validate from and to text box value
-                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom,
-                                    this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
-                                if (!isValid) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }*/
-            return isValid;
-        },
-
-        /**
          * check the check box state and valid filters in building and sites tab and get filtered data
          * @memberOf widgets/siteLocator/siteLocator
          */
         _applyFilterForBuildingAndSites: function (workflowIndex) {
             var i, j, filter, filterName, filterValue, nl, queryString = "";
 
+            // Create the query string
             for (i = 0; i < this._filters[workflowIndex].length; ++i) {
                 filter = this._filters[workflowIndex][i];
 
@@ -1111,7 +1076,7 @@ define([
 
             }
 
-            console.log(queryString);
+            // Run the query
             this._callAndOrQuery(queryString);
         },
 
@@ -1221,114 +1186,95 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _createBuffer: function (geometry, bufferDistance, isValidAddressSelected) {
-            var sliderDistance, slider, selectedPanel, geometryService, params, businessTab, DemoInfoTab, isValid;
+            var sliderDistance, slider, selectedPanel, geometryService, params, businessTab, DemoInfoTab;
             topic.publish("showProgressIndicator");
             appGlobals.shareOptions.arrAddressMapPoint[this.workflowCount] = geometry.x + "," + geometry.y;
             if (document.activeElement) {
                 document.activeElement.blur();
             }
-            isValid = this._validateRangeFilterValues();
-            if (isValid) {
-                appGlobals.shareOptions.arrBufferDistance[this.workflowCount] = bufferDistance;
-                this.featureGeometry[this.workflowCount] = geometry;
-                selectedPanel = query(".esriCTsearchContainerSitesSelected")[0];
-                // set slider values for various workflows
-                if (domClass.contains(selectedPanel, "esriCTsearchContainerBuilding")) {
-                    slider = dijit.byId("sliderhorizontalSliderContainerBuliding");
-                    sliderDistance = slider.value;
-                }
-                else if (domClass.contains(selectedPanel, "esriCTsearchContainerSites")) {
-                    slider = dijit.byId("sliderhorizontalSliderContainerSites");
-                    sliderDistance = slider.value;
-                }
-                else if (domClass.contains(selectedPanel, "esriCTsearchContainerBusiness")) {
-                    slider = dijit.byId("sliderhorizontalSliderContainerBusiness");
-                    sliderDistance = slider.value;
-                }
-                geometryService = new GeometryService(appGlobals.configData.GeometryService);
-                if (sliderDistance && Math.round(sliderDistance) !== 0) {
-                    if (geometry && geometry.type === "point") {
-                        //setup the buffer parameters
-                        params = new BufferParameters();
-                        params.distances = [Math.round(sliderDistance)];
-                        params.bufferSpatialReference = this.map.spatialReference;
-                        params.outSpatialReference = this.map.spatialReference;
-                        params.geometries = [this.featureGeometry[this.workflowCount]];
-                        params.unit = GeometryService[this.unitValues[this.workflowCount]];
-                        geometryService.buffer(params, lang.hitch(this, function (geometries) {
-                            this.lastGeometry[this.workflowCount] = geometries;
-                            //reset sort value on buffer change
-                            this.selectedValue[this.workflowCount] = null;
-                            appGlobals.shareOptions.sortingData = null;
-                            // for business tab clear all scrollbar and call enrich data handler
-                            if (this.workflowCount === 2) {
-                                this.revenueData = [];
-                                this.employeeData = [];
-                                businessTab = domClass.contains(this.ResultBusinessTab, "esriCTBusinessInfoTabSelected");
-                                DemoInfoTab = domClass.contains(this.resultDemographicTab, "esriCTDemographicInfoTabSelected");
-                                if (businessTab && DemoInfoTab) {
-                                    domClass.remove(this.resultDemographicTab, "esriCTReportTab");
-                                    domClass.remove(this.ResultBusinessTab, "esriCTAreaOfInterestTab");
-                                }
-                                else if (!businessTab) {
-                                    domClass.remove(this.resultDemographicTab, "esriCTReportTab");
-                                    domClass.add(this.ResultBusinessTab, "esriCTBusinessInfoTabSelected");
-                                }
-                                this._enrichData(geometries, this.workflowCount, null);
+
+            appGlobals.shareOptions.arrBufferDistance[this.workflowCount] = bufferDistance;
+            this.featureGeometry[this.workflowCount] = geometry;
+            selectedPanel = query(".esriCTsearchContainerSitesSelected")[0];
+            // set slider values for various workflows
+            if (domClass.contains(selectedPanel, "esriCTsearchContainerBuilding")) {
+                slider = dijit.byId("sliderhorizontalSliderContainerBuliding");
+                sliderDistance = slider.value;
+            }
+            else if (domClass.contains(selectedPanel, "esriCTsearchContainerSites")) {
+                slider = dijit.byId("sliderhorizontalSliderContainerSites");
+                sliderDistance = slider.value;
+            }
+            else if (domClass.contains(selectedPanel, "esriCTsearchContainerBusiness")) {
+                slider = dijit.byId("sliderhorizontalSliderContainerBusiness");
+                sliderDistance = slider.value;
+            }
+            geometryService = new GeometryService(appGlobals.configData.GeometryService);
+            if (sliderDistance && Math.round(sliderDistance) !== 0) {
+                if (geometry && geometry.type === "point") {
+                    //setup the buffer parameters
+                    params = new BufferParameters();
+                    params.distances = [Math.round(sliderDistance)];
+                    params.bufferSpatialReference = this.map.spatialReference;
+                    params.outSpatialReference = this.map.spatialReference;
+                    params.geometries = [this.featureGeometry[this.workflowCount]];
+                    params.unit = GeometryService[this.unitValues[this.workflowCount]];
+                    geometryService.buffer(params, lang.hitch(this, function (geometries) {
+                        this.lastGeometry[this.workflowCount] = geometries;
+                        //reset sort value on buffer change
+                        this.selectedValue[this.workflowCount] = null;
+                        appGlobals.shareOptions.sortingData = null;
+                        // for business tab clear all scrollbar and call enrich data handler
+                        if (this.workflowCount === 2) {
+                            this.revenueData = [];
+                            this.employeeData = [];
+                            businessTab = domClass.contains(this.ResultBusinessTab, "esriCTBusinessInfoTabSelected");
+                            DemoInfoTab = domClass.contains(this.resultDemographicTab, "esriCTDemographicInfoTabSelected");
+                            if (businessTab && DemoInfoTab) {
+                                domClass.remove(this.resultDemographicTab, "esriCTReportTab");
+                                domClass.remove(this.ResultBusinessTab, "esriCTAreaOfInterestTab");
                             }
-                            else {
-                                this._applyFilterForBuildingAndSites(this.workflowCount);
+                            else if (!businessTab) {
+                                domClass.remove(this.resultDemographicTab, "esriCTReportTab");
+                                domClass.add(this.ResultBusinessTab, "esriCTBusinessInfoTabSelected");
                             }
-                        }));
-                    }
-                    else {
-                        topic.publish("hideProgressIndicator");
-                    }
+                            this._enrichData(geometries, this.workflowCount, null);
+                        }
+                        else {
+                            this._applyFilterForBuildingAndSites(this.workflowCount);
+                        }
+                    }));
                 }
                 else {
                     topic.publish("hideProgressIndicator");
-                    if (document.activeElement) {
-                        document.activeElement.blur();
-                    }
-                    // clear buildings, sites and business tab data
-                    if (this.workflowCount === 0) {
-                        domStyle.set(this.outerDivForPegination, "display", "none");
-                        domConstruct.empty(this.outerResultContainerBuilding);
-                        domConstruct.empty(this.attachmentOuterDiv);
-                        delete this.buildingTabData;
-                    }
-                    else if (this.workflowCount === 1) {
-                        domStyle.set(this.outerDivForPeginationSites, "display", "none");
-                        domConstruct.empty(this.outerResultContainerSites);
-                        domConstruct.empty(this.attachmentOuterDivSites);
-                        delete this.sitesTabData;
-                    }
-                    else if (this.workflowCount === 2) {
-                        this._clearBusinessData();
-                    }
-                    this.lastGeometry[this.workflowCount] = null;
-                    this.map.graphics.clear();
-                    this.map.getLayer("esriBufferGraphicsLayer").clear();
-                    alert(sharedNls.errorMessages.bufferSliderValue);
-                    this.isSharedExtent = false;
                 }
             }
             else {
-                if (isValidAddressSelected) {
-                    alert(sharedNls.errorMessages.invalidInput);
-                    if (this.workflowCount === 0 || this.workflowCount === 1 || this.workflowCount === 2) {
-                        this.clearTextValuesOfFilters();
-                    }
-                }
-                if (this.workflowCount === 2) {
-                    if (domClass.contains(this.filterIconBusiness, "esriCTFilterEnabled")) {
-                        domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
-                    }
-                }
-                this._sliderCollection[this.workflowCount].slider.setValue(appGlobals.shareOptions.arrBufferDistance[this.workflowCount]);
-                domAttr.set(this._sliderCollection[this.workflowCount].divSliderValue, "innerHTML", Math.round(this._sliderCollection[this.workflowCount].slider.value).toString() + " " + appGlobals.configData.DistanceUnitSettings.DistanceUnitName);
                 topic.publish("hideProgressIndicator");
-                this.sliderReset = true;
+                if (document.activeElement) {
+                    document.activeElement.blur();
+                }
+                // clear buildings, sites and business tab data
+                if (this.workflowCount === 0) {
+                    domStyle.set(this.outerDivForPegination, "display", "none");
+                    domConstruct.empty(this.outerResultContainerBuilding);
+                    domConstruct.empty(this.attachmentOuterDiv);
+                    delete this.buildingTabData;
+                }
+                else if (this.workflowCount === 1) {
+                    domStyle.set(this.outerDivForPeginationSites, "display", "none");
+                    domConstruct.empty(this.outerResultContainerSites);
+                    domConstruct.empty(this.attachmentOuterDivSites);
+                    delete this.sitesTabData;
+                }
+                else if (this.workflowCount === 2) {
+                    this._clearBusinessData();
+                }
+                this.lastGeometry[this.workflowCount] = null;
+                this.map.graphics.clear();
+                this.map.getLayer("esriBufferGraphicsLayer").clear();
+                alert(sharedNls.errorMessages.bufferSliderValue);
+                this.isSharedExtent = false;
             }
         },
 

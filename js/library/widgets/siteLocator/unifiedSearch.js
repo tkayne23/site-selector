@@ -544,7 +544,7 @@ define([
                 alert(sharedNls.errorMessages.falseConfigParams);
             }
             on(candidateAddress, "click", lang.hitch(this, function (evt) {
-                var target, isValid;
+                var target;
                 topic.publish("showProgressIndicator");
                 // check the address entered from communities workflow and perform geoenrichment.
                 if (obj.addressWorkflowCount === 3) {
@@ -571,44 +571,41 @@ define([
                             domClass.add(this.clearFilterBusiness, "esriCTClearFilterIconEnable");
                         }
                     }
-                    // validate range filter values in building, sites and business tab and set the default address
-                    isValid = this._validateRangeFilterValues();
-                    if (isValid) {
-                        obj.txtAddress.value = candidateAddress.innerHTML;
-                        domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
 
-                        // check the selected value contains sorted strings then set the dropdown value to select for workflows
-                        if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForBuilding && this.workflowCount === 0) {
-                            this.selectedValue[this.workflowCount] = null;
-                            appGlobals.shareOptions.sortingData = null;
-                            this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
-                        }
-                        else if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites && this.workflowCount === 1) {
-                            this.selectedValue[this.workflowCount] = null;
-                            appGlobals.shareOptions.sortingData = null;
-                            this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
-                        }
-                        else if (this.selectSortOption && this.totalArray && this.workflowCount === 2) {
-                            this.totalArray = [];
-                            appGlobals.shareOptions.toFromBussinessFilter = null;
-                            this.selectSortOption.set("value", sharedNls.titles.select);
-                        }
+                    obj.txtAddress.value = candidateAddress.innerHTML;
+                    domAttr.set(obj.txtAddress, "defaultAddress", obj.txtAddress.value);
 
+                    // check the selected value contains sorted strings then set the dropdown value to select for workflows
+                    if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForBuilding && this.workflowCount === 0) {
+                        this.selectedValue[this.workflowCount] = null;
+                        appGlobals.shareOptions.sortingData = null;
+                        this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
                     }
+                    else if (this.selectedValue[this.workflowCount] && this.selectBusinessSortForSites && this.workflowCount === 1) {
+                        this.selectedValue[this.workflowCount] = null;
+                        appGlobals.shareOptions.sortingData = null;
+                        this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
+                    }
+                    else if (this.selectSortOption && this.totalArray && this.workflowCount === 2) {
+                        this.totalArray = [];
+                        appGlobals.shareOptions.toFromBussinessFilter = null;
+                        this.selectSortOption.set("value", sharedNls.titles.select);
+                    }
+
                     if (candidate.attributes.location) {
                         target = evt.currentTarget || evt.srcElement;
                         this.mapPoint = new Point(domAttr.get(target, "x"), domAttr.get(target, "y"), this.map.spatialReference);
-                        this._locateAddressOnMap(this.mapPoint, obj, isValid);
+                        this._locateAddressOnMap(this.mapPoint, obj);
                     }
                     else {
                         if (candidateName[domAttr.get(candidateAddress, "index", index)]) {
                             layer = candidateName[domAttr.get(candidateAddress, "index", index)].layer;
                             if (!candidate.geometry) {
-                                this._getSelectedCandidateGeometry(layer, candidate, obj, isValid);
+                                this._getSelectedCandidateGeometry(layer, candidate, obj);
                             }
                             else {
                                 this.mapPoint = new Point(candidate.geometry.x, candidate.geometry.y, this.map.spatialReference);
-                                this._locateAddressOnMap(this.mapPoint, obj, isValid);
+                                this._locateAddressOnMap(this.mapPoint, obj);
                             }
                         }
                     }
@@ -621,10 +618,9 @@ define([
          * @param {object} layerobject - selected candidate's layer details
          * @param {object} candidate - selected candidate
          * @param {object} obj contains data for selected workflow
-         * @param {boolean} isValid - flag to indicate if the applied filter is valid or not
          * @memberOf widgets/SiteLocator/UnifiedSearch
          */
-        _getSelectedCandidateGeometry: function (layerobject, candidate, obj, isValid) {
+        _getSelectedCandidateGeometry: function (layerobject, candidate, obj) {
             var queryTask, queryLayer, currentTime;
             // if QueryURL is present for the selected candidate's layer, query the layer with the selected candidates objectid to fetch the candidate geometry
             if (layerobject.QueryURL) {
@@ -636,7 +632,7 @@ define([
                 queryLayer.returnGeometry = true;
                 queryTask.execute(queryLayer, lang.hitch(this, function (featureSet) {
                     this.mapPoint = featureSet.features[0].geometry;
-                    this._locateAddressOnMap(this.mapPoint, obj, isValid);
+                    this._locateAddressOnMap(this.mapPoint, obj);
                     topic.publish("hideProgressIndicator");
                 }), function (err) {
                     alert(err.message);
@@ -651,40 +647,30 @@ define([
          * @param {object} obj contains data for selected workflow
          * @memberOf widgets/SiteLocator/UnifiedSearch
          */
-        _locateAddressOnMap: function (mapPoint, obj, isValid) {
+        _locateAddressOnMap: function (mapPoint, obj) {
             var geoLocationPushpin, locatorMarkupSymbol, graphic;
-            // if the applied filter is valid
-            if (isValid) {
-                if (!this.isSharedExtent) {
-                    this.map.centerAt(mapPoint);
-                }
-                // create pushpin to locate address on map
-                geoLocationPushpin = dojoConfig.baseURL + appGlobals.configData.LocatorSettings.DefaultLocatorSymbol;
-                locatorMarkupSymbol = new PictureMarkerSymbol(geoLocationPushpin, appGlobals.configData.LocatorSettings.MarkupSymbolSize.width, appGlobals.configData.LocatorSettings.MarkupSymbolSize.height);
-                graphic = new Graphic(mapPoint, locatorMarkupSymbol, {}, null);
-                // clear all graphics layers, and add pushpin
-                this.map.getLayer("esriFeatureGraphicsLayer").clear();
-                this.map.getLayer("esriGraphicsLayerMapSettings").clear();
-                this.map.getLayer("esriGraphicsLayerMapSettings").add(graphic);
-                if (obj) {
-                    obj.lastSearchString = lang.trim(obj.txtAddress.value);
-                    appGlobals.shareOptions.arrStrAdderss[this.workflowCount] = obj.lastSearchString;
-                }
-                // create buffer around the selected address
-                this._createBuffer(mapPoint, appGlobals.shareOptions.arrBufferDistance[this.workflowCount], false);
-                if (obj) {
-                    domConstruct.empty(obj.divAddressResults);
-                    domStyle.set(obj.divAddressScrollContainer, "display", "none");
-                    domStyle.set(obj.divAddressScrollContent, "display", "none");
-                }
+
+            if (!this.isSharedExtent) {
+                this.map.centerAt(mapPoint);
             }
-            else {
-                obj.txtAddress.value = obj.lastSearchString;
-                alert(sharedNls.errorMessages.invalidInput);
-                if (this.workflowCount === 0 || this.workflowCount === 1 || this.workflowCount === 2) {
-                    this.clearTextValuesOfFilters();
-                }
-                topic.publish("hideProgressIndicator");
+            // create pushpin to locate address on map
+            geoLocationPushpin = dojoConfig.baseURL + appGlobals.configData.LocatorSettings.DefaultLocatorSymbol;
+            locatorMarkupSymbol = new PictureMarkerSymbol(geoLocationPushpin, appGlobals.configData.LocatorSettings.MarkupSymbolSize.width, appGlobals.configData.LocatorSettings.MarkupSymbolSize.height);
+            graphic = new Graphic(mapPoint, locatorMarkupSymbol, {}, null);
+            // clear all graphics layers, and add pushpin
+            this.map.getLayer("esriFeatureGraphicsLayer").clear();
+            this.map.getLayer("esriGraphicsLayerMapSettings").clear();
+            this.map.getLayer("esriGraphicsLayerMapSettings").add(graphic);
+            if (obj) {
+                obj.lastSearchString = lang.trim(obj.txtAddress.value);
+                appGlobals.shareOptions.arrStrAdderss[this.workflowCount] = obj.lastSearchString;
+            }
+            // create buffer around the selected address
+            this._createBuffer(mapPoint, appGlobals.shareOptions.arrBufferDistance[this.workflowCount], false);
+            if (obj) {
+                domConstruct.empty(obj.divAddressResults);
+                domStyle.set(obj.divAddressScrollContainer, "display", "none");
+                domStyle.set(obj.divAddressScrollContent, "display", "none");
             }
         },
 
