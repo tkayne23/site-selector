@@ -171,18 +171,19 @@ define([], function () {
 
                 FilterSettings: {
                     FilterRangeFields: [{
-                        DisplayText: "Area in square feet (US units or imperial units as you wish)",
+                        DisplayText: "Area (sqft)",
                         FieldName: "BLDGAREA"
+                    }, {
+                        DisplayText: "Distance to rail (mi)",
+                        FieldName: "DISTRAIL "
+                    }, {
+                        DisplayText: "Distance to highway (mi)",
+                        FieldName: "DISTHGWY "
+                    }, {
+                        DisplayText: "Distance to airport (mi)",
+                        FieldName: "DISTAIR "
                     }],
                     RegularFilterOptionFields: [{
-                        FieldName: "ZONEDESC",
-                        DisplayText: "Agricultural",
-                        FieldValue: "AGRICULTURAL"
-                    }, {
-                        FieldName: "ZONEDESC",
-                        DisplayText: "Commercial CommercialY2 CommercialY3 CommercialY4 CommercialY5",
-                        FieldValue: "COMMERCIAL"
-                    }, {
                         FieldName: "ZONEDESC",
                         Options: [{
                             DisplayText: "Agricultural",
@@ -194,130 +195,57 @@ define([], function () {
                             DisplayText: "Office",
                             FieldValue: "Office"
                         }, {
+                            DisplayText: "Commercial",
+                            FieldValue: "Commercial"
+                        }, {
                             DisplayText: "Retail",
                             FieldValue: "Retail"
-                        }]
-                    }, {
-                        FieldName: "ACQUISITION",
-                        Options: [{
-                            DisplayText: "Lease",
-                            FieldValue: "Lease"
                         }, {
-                            DisplayText: "Sale",
-                            FieldValue: "Sale"
+                            DisplayText: "Business district",
+                            FieldValue: "Business District"
                         }, {
                             DisplayText: "Other",
                             FieldValue: "Other"
                         }]
                     }, {
-                        FieldName: "DISTWATER",
-                        Options: [{
-                            DisplayText: "1",
-                            FieldValue: 1
-                        }, {
-                            DisplayText: "2",
-                            FieldValue: 2
-                        }, {
-                            DisplayText: "3",
-                            FieldValue: 3
-                        }]
-                    }],
-                    AdditionalFilterOptions: {
-                        Enabled: true,
-                        FilterFieldName: "SITECOUNTY",
-                        FilterOptions: [{
-                            DisplayText: "Allegany and Monongahela Rivers",
-                            FieldValue: "Allegany"
-                        }, {
-                            DisplayText: "Anne Arundel",
-                            FieldValue: "Anne Arundel"
-                        }, {
-                            DisplayText: "Baltimore",
-                            FieldValue: "Baltimore"
-                        }, {
-                            DisplayText: "Baltimore City Council",
-                            FieldValue: "Baltimore City"
-                        }, {
-                            DisplayText: "Calvert",
-                            FieldValue: "Calvert"
-                        }, {
-                            DisplayText: "Caroline",
-                            FieldValue: "Caroline"
-                        }, {
-                            DisplayText: "Carroll",
-                            FieldValue: "Carroll"
-                        }, {
-                            DisplayText: "Cecil",
-                            FieldValue: "Cecil"
-                        }, {
-                            DisplayText: "Charles",
-                            FieldValue: "Charles"
-                        }, {
-                            DisplayText: "Dorchester",
-                            FieldValue: "Dorchester"
-                        }, {
-                            DisplayText: "Frederick",
-                            FieldValue: "Frederick"
-                        }, {
-                            DisplayText: "Garrett",
-                            FieldValue: "Garrett"
-                        }, {
-                            DisplayText: "Harford",
-                            FieldValue: "Harford"
-                        }, {
-                            DisplayText: "Howard",
-                            FieldValue: "Howard"
-                        }, {
-                            DisplayText: "Montgomery",
-                            FieldValue: "Montgomery"
-                        }, {
-                            DisplayText: "Prince George's",
-                            FieldValue: "Prince George's"
-                        }, {
-                            DisplayText: "Saint Mary's",
-                            FieldValue: "Saint Mary's"
-                        }, {
-                            DisplayText: "Talbot",
-                            FieldValue: "Talbot"
-                        }, {
-                            DisplayText: "Washington",
-                            FieldValue: "Washington"
-                        }, {
-                            DisplayText: "Wicomico",
-                            FieldValue: "Wicomico"
-                        }, {
-                            DisplayText: "Worcester",
-                            FieldValue: "Worcester"
-                        }]
-                    }
+                        FieldName: "WATER",
+                        DisplayText: "Water connection",
+                        FieldValue: "Yes"
+                    }, {
+                        FieldName: "SEWER",
+                        DisplayText: "Sewer connection",
+                        FieldValue: "Yes"
+                    }, {
+                        FieldName: "ELECTRIC",
+                        DisplayText: "Electricity connection",
+                        FieldValue: "Yes"
+                    }]
                 }
             }],
             InfoPanelSettings: {
                 ResultContents: {
                     ShowAttachments: true,
                     DisplayFields: [{
-                            DisplayText: "Address:",
-                            FieldName: "FULLADDR",
-                            SortingEnabled: false
-                        }, {
-                            DisplayText: "Municipality:",
-                            FieldName: "MUNICIPALITY",
-                            SortingEnabled: true
-                        }, {
-                            DisplayText: "Zipcode:",
-                            FieldName: "SITEZIP",
-                            SortingEnabled: true
-                        }, {
-                            DisplayText: "County:",
-                            FieldName: "SITECOUNTY",
-                            SortingEnabled: true
-                        }, {
-                            DisplayText: "Area (sqft):",
-                            FieldName: "BLDGAREA",
-                            SortingEnabled: true
-                        }
-
-                    ]
+                        DisplayText: "Address:",
+                        FieldName: "FULLADDR",
+                        SortingEnabled: false
+                    }, {
+                        DisplayText: "Municipality:",
+                        FieldName: "MUNICIPALITY",
+                        SortingEnabled: true
+                    }, {
+                        DisplayText: "Zipcode:",
+                        FieldName: "SITEZIP",
+                        SortingEnabled: true
+                    }, {
+                        DisplayText: "County:",
+                        FieldName: "SITECOUNTY",
+                        SortingEnabled: true
+                    }, {
+                        DisplayText: "Area (sqft):",
+                        FieldName: "BLDGAREA",
+                        SortingEnabled: true
+                    }]
                 },
                 LayerContents: {
                     ShowAttachments: true,
