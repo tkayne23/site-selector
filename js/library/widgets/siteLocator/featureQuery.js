@@ -42,6 +42,7 @@ define([
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, geoEnrichment], {
         isSharedSort: false,
+        _lastQueryString: null,
 
 
         /**
@@ -53,6 +54,7 @@ define([
             var geometry = this.lastGeometry[this.workflowCount];
 
             if (geometry) {
+                this._lastQueryString = queryString;
                 this.doLayerQuery(geometry, queryString);
             }
             else {
@@ -84,6 +86,7 @@ define([
             dateObj = new Date().getTime().toString();
             this.lastGeometry[this.workflowCount] = geometry;
             this.showBuffer(geometry);
+
             if (this.operationalLayer && this.operationalLayer.url) {
                 queryLayerTask = new QueryTask(this.operationalLayer.url);
                 queryLayer = new Query();
@@ -889,7 +892,7 @@ define([
          * @memberOf widgets/siteLocator/featureQuery
          */
         _selectionChangeForBuildingAndSitesSort: function (value) {
-            var querySort, queryTask, andString, orString, queryString;
+            var querySort, queryTask, queryString = this._lastQueryString || "";
             topic.publish("showProgressIndicator");
             if (this.buildingResultSet && this.workflowCount === 0) {
                 this.buildingResultSet = null;
@@ -899,44 +902,14 @@ define([
             }
             this.selectedValue[this.workflowCount] = value;
             appGlobals.shareOptions.sortingData = this.selectedValue[this.workflowCount];
+
             // initialize query task layer, query and set the query parameter for sorting and get the sorted object ids
             queryTask = new QueryTask(this.operationalLayer.url);
             querySort = new Query();
             if (this.lastGeometry[this.workflowCount]) {
                 querySort.geometry = this.lastGeometry[this.workflowCount][0];
             }
-            if (this.queryArrayBuildingAND.length > 0 && this.workflowCount === 0) {
-                andString = this.queryArrayBuildingAND.join(" AND ");
-            }
-            if (this.queryArrayBuildingOR.length > 0 && this.workflowCount === 0) {
-                orString = this.queryArrayBuildingOR.join(" OR ");
-            }
-            if (this.queryArraySitesAND.length > 0 && this.workflowCount === 1) {
-                andString = this.queryArraySitesAND.join(" AND ");
-            }
 
-            if (this.queryArraySitesOR.length > 0 && this.workflowCount === 1) {
-                andString = this.queryArraySitesOR.join(" OR ");
-            }
-
-            if (andString) {
-                queryString = andString;
-            }
-            if (orString) {
-                orString = "(" + orString + ")";
-                if (queryString) {
-                    queryString += " AND " + orString;
-                }
-                else {
-                    queryString = orString;
-                }
-            }
-            if (queryString) {
-                queryString += " AND UPPER(" + value + ") <> '' AND " + value + " is not null";
-            }
-            else {
-                queryString = "UPPER(" + value + ") <> '' AND " + value + " is not null";
-            }
             //set where clause to honor definition expression configured in webmap
             if (this.operationalLayer.webmapDefinitionExpression) {
                 queryString += " AND " + this.operationalLayer.webmapDefinitionExpression;
