@@ -86,7 +86,7 @@ define([
             }
             // create horizontal slider object and set the slider parameter
             horizontalSlider = new HorizontalSlider({
-                intermediateChanges: false,
+                intermediateChanges: true,
                 "class": "horizontalSlider",
                 minimum: appGlobals.configData.DistanceUnitSettings.MinimumValue,
                 maximum: appGlobals.configData.DistanceUnitSettings.MaximumValue,
