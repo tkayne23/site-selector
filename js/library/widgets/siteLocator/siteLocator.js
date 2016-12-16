@@ -80,7 +80,11 @@ define([
         _previousBufferBuildingValue: 0,
         isInvalidAddress: true,
 
-        _filters: [],
+        _filters: [
+            [],
+            [],
+            []
+        ],
 
         /**
          * create Site Selector widget
@@ -591,7 +595,7 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _createFilterOption: function (workflowIndex, containerDiv, regOptionFields, rangeFields, addlOptionFields) {
-            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId,
+            var i, j, divFilterOption, divFilterOptionPart, fieldName, divFromToBlock, inputId, option,
                 checkbox, fromInput, toInput, alternates, optionNum = 0;
 
             // Create UI for FilterRangeFields
@@ -663,13 +667,16 @@ define([
                     this.own(on(toInput, "input", lang.hitch(this, this._updateFilterability)));
 
                     // Add option to object's list of filters
-                    this._filters.push(checkbox);
+                    this._filters[workflowIndex].push(checkbox);
                 }
             }
 
             // Create UI for RegularFilterOptionFields
             if (regOptionFields) {
                 for (i = 0; i < regOptionFields.length; i++) {
+
+                    option = regOptionFields[i];
+                    fieldName = option.FieldName;
 
                     // Container for option/option set
                     divFilterOption = domConstruct.create("div", {
@@ -678,35 +685,40 @@ define([
 
                     // Set of options
                     if (regOptionFields[i].Options) {
+                        domAttr.set(divFilterOption, "name", fieldName);
+
                         // Create set of options
                         alternates = [];
-                        for (j = 0; j < regOptionFields[i].Options.length; j++) {
+                        for (j = 0; j < option.Options.length; j++) {
                             divFilterOptionPart = domConstruct.create("div", {
                                 "class": "esriFilterOptionHalfContainer"
                             }, divFilterOption);
 
                             checkbox = this._createOption(divFilterOptionPart, workflowIndex,
-                                regOptionFields[i].FieldName + workflowIndex + optionNum++,
-                                regOptionFields[i].Options[j].DisplayText,
-                                regOptionFields[i].FieldName, regOptionFields[i].Options[j].FieldValue);
+                                fieldName + workflowIndex + optionNum++,
+                                option.Options[j].DisplayText,
+                                fieldName, option.Options[j].FieldValue);
 
                             // Add option to collection
                             alternates.push(checkbox);
                         }
 
                         // Add collection to object's list of filters
-                        this._filters.push(alternates);
+                        this._filters[workflowIndex].push({
+                            "container": divFilterOption,
+                            "options": alternates
+                        });
                     }
 
                     // Single option
                     else {
                         checkbox = this._createOption(divFilterOption, workflowIndex,
-                            regOptionFields[i].FieldName + workflowIndex + optionNum++,
+                            fieldName + workflowIndex + optionNum++,
                             regOptionFields[i].DisplayText,
-                            regOptionFields[i].FieldName, regOptionFields[i].FieldValue);
+                            fieldName, regOptionFields[i].FieldValue);
 
                         // Add option to object's list of filters
-                        this._filters.push(checkbox);
+                        this._filters[workflowIndex].push(checkbox);
                     }
                 }
             }
@@ -715,9 +727,12 @@ define([
             // to the RegularFilterOptionFields
             if (addlOptionFields && addlOptionFields.Enabled && addlOptionFields.FilterOptions.length) {
 
+                fieldName = addlOptionFields.FilterFieldName;
+
                 // Container for option/option set
                 divFilterOption = domConstruct.create("div", {
-                    "class": "esriFilterOption"
+                    "class": "esriFilterOption",
+                    "name": fieldName
                 }, containerDiv);
 
                 // create additional filter options UI(dynamic) for configurable fields in buildings and sites tab
@@ -728,9 +743,9 @@ define([
                     }, divFilterOption);
 
                     checkbox = this._createOption(divFilterOptionPart, workflowIndex,
-                        addlOptionFields.FilterFieldName + workflowIndex + optionNum++,
+                        fieldName + workflowIndex + optionNum++,
                         addlOptionFields.FilterOptions[i].DisplayText,
-                        addlOptionFields.FilterFieldName,
+                        fieldName,
                         addlOptionFields.FilterOptions[i].FieldValue);
 
                     // Add option to collection
@@ -738,7 +753,10 @@ define([
                 }
 
                 // Add collection to object's list of filters
-                this._filters.push(alternates);
+                this._filters[workflowIndex].push({
+                    "container": divFilterOption,
+                    "options": alternates
+                });
             }
         },
 
@@ -823,7 +841,7 @@ define([
 
             // Count them by workflow
             for (i = 0; i < nl.length; ++i) {
-                workflowIndex = nl[i].getAttributeNode("workflow-index").value;
+                workflowIndex = domAttr.get(nl[i], "workflow-index");
                 numCheckedOptions[workflowIndex]++;
 
                 // Check that range values are defined; if not, the workflow containing its option
@@ -885,7 +903,7 @@ define([
                             appGlobals.shareOptions.sortingData = null;
                             this.selectBusinessSortForBuilding.set("value", sharedNls.titles.select);
                         }
-                        this._applyFilterForBuildingAndSites();
+                        this._applyFilterForBuildingAndSites(0);
                     }
                 }));
 
@@ -916,7 +934,7 @@ define([
                             appGlobals.shareOptions.sortingData = null;
                             this.selectBusinessSortForSites.set("value", sharedNls.titles.select);
                         }
-                        this._applyFilterForBuildingAndSites();
+                        this._applyFilterForBuildingAndSites(1);
                     }
                 }));
 
@@ -983,7 +1001,7 @@ define([
          */
         _clearFilter: function () {
             this._clearFilterCheckBoxes();
-            this._applyFilterForBuildingAndSites();
+            this._applyFilterForBuildingAndSites(this.workflowCount);
         },
 
         /**
@@ -998,7 +1016,7 @@ define([
 
             // Clear them if they match the current workflow
             for (i = 0; i < nl.length; ++i) {
-                workflowIndex = parseInt(nl[i].getAttributeNode("workflow-index").value);
+                workflowIndex = parseInt(domAttr.get(nl[i], "workflow-index"));
                 if (workflowIndex === this.workflowCount) {
                     this._updateCheckbox(null, nl[i]);
                 }
@@ -1037,72 +1055,64 @@ define([
          * check the check box state and valid filters in building and sites tab and get filtered data
          * @memberOf widgets/siteLocator/siteLocator
          */
-        _applyFilterForBuildingAndSites: function () {
-            var nl;
+        _applyFilterForBuildingAndSites: function (workflowIndex) {
+            var i, j, filter, filterName, filterValue, nl, queryString = "";
 
-            // Get the checked options from all three workflows:  buildings, sites, business
-            nl = query(".esriCheckBoxChecked");
+            for (i = 0; i < this._filters[workflowIndex].length; ++i) {
+                filter = this._filters[workflowIndex][i];
 
-            // Add them to query if they match the current workflow
-            /*for (i = 0; i < nl.length; ++i) {
-                workflowIndex = parseInt(nl[i].getAttributeNode("workflow-index").value);
-                if (workflowIndex === this.workflowCount) {
-
-
-
-
-
-                }
-            }*/
-
-
-
-
-            this._callAndOrQuery(this.andArr, this.orArr);
-
-
-
-
-            /*var isValid;
-            isValid = true;
-            this.andArr = [];
-            this.orArr = [];
-            for (node in this.filterOptionsValues) {
-                if (this.filterOptionsValues.hasOwnProperty(node)) {
-                    if (isValid) {
-                        if (this.filterOptionsValues[node].workflow === this.workflowCount && this.filterOptionsValues[node].checkBox.checked) {
-                            if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
-                                isValid = this._fromToQuery(this.filterOptionsValues[node].txtFrom,
-                                    this.filterOptionsValues[node].txtTo, this.filterOptionsValues[node].checkBox);
-                                // if to and from values is invalid then clear values of from and to textbox of selected workflows
-                                if (!isValid) {
-                                    for (node in this.filterOptionsValues) {
-                                        if (this.filterOptionsValues.hasOwnProperty(node)) {
-                                            if (this.filterOptionsValues[node].workflow === this.workflowCount) {
-                                                if (this.filterOptionsValues[node].txtFrom && this.filterOptionsValues[node].txtTo) {
-                                                    this.filterOptionsValues[node].txtFrom.value = "";
-                                                    this.filterOptionsValues[node].txtTo.value = "";
-                                                }
-                                            }
-                                        }
-                                    }
-                                    topic.publish("hideProgressIndicator");
-                                    break;
-                                }
+                // Set of options
+                if (filter.options) {
+                    filterName = domAttr.get(filter.container, "name");
+                    nl = query(".esriCheckBox.esriCheckBoxChecked", filter.container);
+                    if (nl.length > 0) {
+                        if (queryString.length > 0) {
+                            queryString += " AND ";
+                        }
+                        queryString += "(";
+                        for (j = 0; j < nl.length; ++j) {
+                            if (j > 0) {
+                                queryString += " OR ";
+                            }
+                            filterValue = nl[j].value;
+                            if (typeof filterValue === "string") {
+                                queryString += "UPPER(" + filterName + ") LIKE UPPER('%" + filterValue + "%')";
                             }
                             else {
-                                this.chkQueryHandler(this.filterOptionsValues[node].checkBox);
+                                queryString += filterName + " = " + filterValue;
+                            }
+                        }
+                        queryString += ")";
+                    }
+                }
+                // Singleton option
+                else {
+                    if (domClass.contains(filter, "esriCheckBoxChecked")) {
+                        if (queryString.length > 0) {
+                            queryString += " AND ";
+                        }
+
+                        filterName = domAttr.get(filter, "name");
+                        filterValue = filter.value;
+                        if (typeof filterValue === "object") {
+                            queryString += "(" + filterName + " >= " + filterValue.from.valueAsNumber +
+                                " AND " + filterName + " <= " + filterValue.to.valueAsNumber + ")";
+                        }
+                        else {
+                            if (typeof filterValue === "string") {
+                                queryString += "UPPER(" + filterName + ") LIKE UPPER('%" + filterValue + "%')";
+                            }
+                            else {
+                                queryString += filterName + " = " + filterValue;
                             }
                         }
                     }
                 }
+
             }
-            if (isValid) {
-                this._callAndOrQuery(this.andArr, this.orArr);
-            }
-            else {
-                alert(sharedNls.errorMessages.invalidInput);
-            }*/
+
+            console.log(queryString);
+            this._callAndOrQuery(queryString);
         },
 
         /**
@@ -1267,7 +1277,7 @@ define([
                                 this._enrichData(geometries, this.workflowCount, null);
                             }
                             else {
-                                this._applyFilterForBuildingAndSites();
+                                this._applyFilterForBuildingAndSites(this.workflowCount);
                             }
                         }));
                     }
