@@ -79,7 +79,7 @@ define([], function () {
         // Set options for basemap
         // Please note: All base-maps need to use the same spatial reference.
         // Specify URL to ArcGIS Online REST API
-        PortalAPIURL: "https://www.arcgis.com/sharing/rest/",
+        PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
         BasemapGroupTitle: "Basemaps",
         // Specify the user name of owner of the group that contains basemaps
@@ -91,7 +91,7 @@ define([], function () {
 
         // Set geometry service URL
         // Do not use the ArcGIS Online geometry service (https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service.
-        GeometryService: "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
+        GeometryService: "http://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
 
         // Set geoenrichment service URL
         GeoEnrichmentService: "https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
@@ -669,7 +669,7 @@ define([], function () {
                 SearchField: "SingleLine",
                 SearchBoundaryField: "searchExtent"
             },
-            LocatorURL: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
+            LocatorURL: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
             LocatorOutFields: ["Addr_Type", "Type", "Score", "Match_Addr", "xmin", "xmax", "ymin", "ymax"],
             DisplayField: "${Match_Addr}",
             AddressMatchScore: {
