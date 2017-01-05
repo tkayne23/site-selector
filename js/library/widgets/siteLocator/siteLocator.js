@@ -636,6 +636,7 @@ define([
                         "type": "number",
                         "class": "esriFilterOptionRangeInput",
                         "id": inputId + "from",
+                        "name": inputId + "from",
                         "maxlength": "20"
                     }, divFromToBlock);
 
@@ -653,6 +654,7 @@ define([
                         "type": "number",
                         "class": "esriFilterOptionRangeInput",
                         "id": inputId + "to",
+                        "name": inputId + "to",
                         "maxlength": "20"
                     }, divFromToBlock);
 
@@ -826,7 +828,8 @@ define([
 
         _updateFilterability: function () {
             var i, nl, workflowIndex, value, numCheckedOptions = [0, 0, 0],
-                readyForFiltering = [true, true, true];
+                readyForFiltering = [true, true, true],
+                fromValue, toValue, isReady;
 
             // Get the checked options from all three workflows:  buildings, sites, business
             nl = query(".esriCheckBoxChecked");
@@ -838,12 +841,34 @@ define([
 
                 // Check that range values are defined; if not, the workflow containing its option
                 // is not ready for filtering
+                isReady = false;
                 value = nl[i].value;
-                if (typeof value === "object" &&
-                    !(value.from && !isNaN(value.from.valueAsNumber) &&
-                        value.to && !isNaN(value.to.valueAsNumber) &&
-                        value.from.valueAsNumber <= value.to.valueAsNumber)) {
-                    readyForFiltering[workflowIndex] = false;
+                if (typeof value === "object") {
+                    if (value.from && value.to) {
+                        fromValue = value.from.valueAsNumber;
+                        if (isNaN(fromValue)) { // provide backup method for IE, Edge
+                            fromValue = value.from.value.length === 0 ? Number.NaN : Number(value.from.value);
+                        }
+                        if (!isNaN(fromValue)) {
+                            toValue = value.to.valueAsNumber;
+                            if (isNaN(toValue)) { // provide backup method for IE, Edge
+                                toValue = value.to.value.length === 0 ? Number.NaN : Number(value.to.value);
+                            }
+                            if (!isNaN(toValue)) {
+                                isReady = fromValue <= toValue; // provide backup method for IE, Edge
+                            }
+                        }
+                    }
+                }
+                else if (typeof value === "string") {
+                    isReady = value.length > 0;
+                }
+                else {
+                    isReady = typeof (value) !== "undefined" && value !== null;
+                }
+                readyForFiltering[workflowIndex] = readyForFiltering[workflowIndex] && isReady;
+                if (!isReady) {
+                    break;
                 }
             }
 
@@ -1020,7 +1045,8 @@ define([
          * @memberOf widgets/siteLocator/siteLocator
          */
         _applyFilterForBuildingAndSites: function (workflowIndex) {
-            var i, j, filter, filterName, filterValue, nl, queryString = "";
+            var i, j, filter, filterName, filterValue, nl, queryString = "",
+                fromValue, toValue;
 
             // Create the query string
             for (i = 0; i < this._filters[workflowIndex].length; ++i) {
@@ -1060,16 +1086,23 @@ define([
                         filterName = domAttr.get(filter, "name");
                         filterValue = filter.value;
                         if (typeof filterValue === "object") {
-                            queryString += "(" + filterName + " >= " + filterValue.from.valueAsNumber +
-                                " AND " + filterName + " <= " + filterValue.to.valueAsNumber + ")";
+                            fromValue = filterValue.from.valueAsNumber;
+                            if (isNaN(fromValue)) { // provide backup method for IE, Edge
+                                fromValue = Number(filterValue.from.value);
+                            }
+                            toValue = filterValue.to.valueAsNumber;
+                            if (isNaN(toValue)) { // provide backup method for IE, Edge
+                                toValue = Number(filterValue.to.value);
+                            }
+
+                            queryString += "(" + filterName + " >= " + fromValue +
+                                " AND " + filterName + " <= " + toValue + ")";
+                        }
+                        else if (typeof filterValue === "string") {
+                            queryString += "UPPER(" + filterName + ") LIKE UPPER('%" + filterValue + "%')";
                         }
                         else {
-                            if (typeof filterValue === "string") {
-                                queryString += "UPPER(" + filterName + ") LIKE UPPER('%" + filterValue + "%')";
-                            }
-                            else {
-                                queryString += filterName + " = " + filterValue;
-                            }
+                            queryString += filterName + " = " + filterValue;
                         }
                     }
                 }
