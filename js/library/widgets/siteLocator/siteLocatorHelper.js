@@ -60,6 +60,7 @@ define([
         arrGeoenrichData: [null, null, null, null],
         isIndexShared: false,
         _sliderCollection: [],
+        _lastTimeoutInvocation: null,
 
         /**
          * create horizontal slider for all tab and set minimum maximum value of slider
@@ -128,21 +129,17 @@ define([
              * @memberOf widgets/siteLocator/siteLocatorHelper
              */
             on(horizontalSlider, "change", function (value) {
-                if (Number(value) > Number(horizontalSlider.maximum)) {
-                    horizontalSlider.setValue(horizontalSlider.maximum);
-                }
                 // set change slider value for all workflows
                 domAttr.set(divSliderValue, "innerHTML", Math.round(value) + " " + domAttr.get(divSliderValue, "distanceUnit"));
-                if (_self.workflowCount === 0 && domClass.contains(_self.filterIcon, "esriCTFilterEnabled")) {
-                    domClass.add(_self.clearFilterBuilding, "esriCTClearFilterIconEnable");
+
+                // Clear now-obsolete timer
+                if (_self._lastTimeoutInvocation) {
+                    clearTimeout(_self._lastTimeoutInvocation);
+                    _self._lastTimeoutInvocation = null;
                 }
-                else if (_self.workflowCount === 1 && domClass.contains(_self.filterIconSites, "esriCTFilterEnabled")) {
-                    domClass.add(_self.clearFilterSites, "esriCTClearFilterIconEnable");
-                }
-                else if (_self.workflowCount === 2 && domClass.contains(_self.clearFilterBusiness, "esriCTClearFilterIconEnable")) {
-                    domClass.add(_self.clearFilterBusiness, "esriCTClearFilterIconEnable");
-                }
-                setTimeout(function () {
+
+                // Set timer for this event
+                _self._lastTimeoutInvocation = setTimeout(function () {
                     if (appGlobals.shareOptions.arrBufferDistance[_self.workflowCount] !== value) {
                         if (!_self.sliderReset) {
                             if (_self.featureGeometry && _self.featureGeometry[_self.workflowCount]) {

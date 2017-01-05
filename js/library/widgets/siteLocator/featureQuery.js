@@ -42,216 +42,20 @@ define([
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, geoEnrichment], {
         isSharedSort: false,
+        _lastQueryString: null,
+
 
         /**
-         * performs from to(range) filter query
-         * @param {object}from container node
-         * @param {object}to container node
-         * @param {object}check box object
-         * @param {integer}buffer distance
+         * perform query
+         * @param {string} queryString -- SQL 'where' contents; empty string or null for query based on last geometry
          * @memberOf widgets/siteLocator/featureQuery
          */
-        _fromToQuery: function (fromNode, toNode, chkBox) {
-            var isfilterRemoved = false,
-                isValid = true;
-            // check from node value and to node value and set the "AND" or "OR" query string
-            if (Number(fromNode.value) >= 0 && Number(toNode.value) >= 0 && Number(fromNode.value) <= Number(toNode.value) &&
-                lang.trim(fromNode.value) !== "" && lang.trim(toNode.value) !== "") {
-                // check the range filter validation in building tab
-                if (this.workflowCount === 0) {
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
-                        array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" +
-                            fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND, chkBox.value +
-                            ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
-                        isfilterRemoved = true;
-                    }
-                    // if checkbox state is checked then push the from and to value into "AND" query string
-                    if (chkBox.checked) {
-                        if (fromNode.value !== "" && toNode.value !== 0 && Number(fromNode.value) <= Number(toNode.value)) {
-                            this.queryArrayBuildingAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " +
-                                chkBox.value + "<=" + Number(toNode.value));
-                            fromNode.setAttribute("FieldValue", Number(fromNode.value));
-                            toNode.setAttribute("FieldValue", Number(toNode.value));
-                        }
-                        else {
-                            isValid = false;
-                        }
-                    }
-                    else {
-                        fromNode.value = "";
-                        toNode.value = "";
-                        fromNode.setAttribute("FieldValue", null);
-                        toNode.setAttribute("FieldValue", null);
-                    }
+        _callAndOrQuery: function (queryString) {
+            var geometry = this.lastGeometry[this.workflowCount];
 
-                    if ((fromNode.value !== "" && toNode.value !== "") || isfilterRemoved) {
-                        if (this.featureGeometry[this.workflowCount] && !this.lastGeometry[this.workflowCount]) {
-                            topic.publish("hideProgressIndicator");
-                            isValid = false;
-                        }
-                    }
-                    this.andArr = this.queryArrayBuildingAND;
-                    this.orArr = this.queryArrayBuildingOR;
-                }
-                else {
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
-                        array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" +
-                            fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
-                        isfilterRemoved = true;
-                    }
-                    if (chkBox.checked) {
-                        if (fromNode.value !== "" && toNode.value !== 0 && Number(fromNode.value) <= Number(toNode.value)) {
-                            this.queryArraySitesAND.push(chkBox.value + ">=" + Number(fromNode.value) + " AND " + chkBox.value + "<=" + Number(toNode.value));
-                            fromNode.setAttribute("FieldValue", Number(fromNode.value));
-                            toNode.setAttribute("FieldValue", Number(toNode.value));
-                        }
-                        else {
-                            isValid = false;
-                        }
-                    }
-                    else {
-                        fromNode.value = "";
-                        toNode.value = "";
-                        fromNode.setAttribute("FieldValue", null);
-                        toNode.setAttribute("FieldValue", null);
-                    }
-                    if ((fromNode.value !== "" && toNode.value !== "") || isfilterRemoved) {
-                        if (this.featureGeometry[this.workflowCount] && !this.lastGeometry[this.workflowCount]) {
-                            topic.publish("hideProgressIndicator");
-                            alert(sharedNls.errorMessages.bufferSliderValue);
-                        }
-                    }
-                    this.andArr = this.queryArraySitesAND;
-                    this.orArr = this.queryArraySitesOR;
-                }
-
-            }
-            else {
-                fromNode.value = "";
-                toNode.value = "";
-                // check from node and to node invalid values and remove the item from query string for building tab and update the query string
-                if (this.workflowCount === 0) {
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
-                        array.indexOf(this.queryArrayBuildingAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArrayBuildingAND.splice(array.indexOf(this.queryArrayBuildingAND,
-                            chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " +
-                            chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
-                    }
-                    this.andArr = this.queryArrayBuildingAND;
-                    this.orArr = this.queryArrayBuildingOR;
-
-                }
-                else {
-                    // check from node and to node invalid values and remove the item from query string for sites tab and update the query string
-                    if (Number(fromNode.getAttribute("FieldValue")) <= Number(toNode.getAttribute("FieldValue")) &&
-                        array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" + fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")) !== -1) {
-                        this.queryArraySitesAND.splice(array.indexOf(this.queryArraySitesAND, chkBox.value + ">=" +
-                            fromNode.getAttribute("FieldValue") + " AND " + chkBox.value + "<=" + toNode.getAttribute("FieldValue")), 1);
-                    }
-                    this.andArr = this.queryArraySitesAND;
-                    this.orArr = this.queryArraySitesOR;
-                }
-                if (chkBox.checked) {
-                    isValid = false;
-                }
-            }
-            return isValid;
-        },
-
-        /**
-         * check box query handler
-         * @param {object} check box node
-         * @memberOf widgets/siteLocator/featureQuery
-         */
-        chkQueryHandler: function (chkBoxNode) {
-            var arrAndQuery = [],
-                arrOrQuery = [];
-            //set query string for applied Regular filters
-            if (this.workflowCount === 0) {
-                arrAndQuery = this.queryArrayBuildingAND;
-                arrOrQuery = this.queryArrayBuildingOR;
-            }
-            else {
-                arrAndQuery = this.queryArraySitesAND;
-                arrOrQuery = this.queryArraySitesOR;
-            }
-            // if checkbox is checked("regularFilter") then add the checkbox name and value into "AndQuery" string
-            if (chkBoxNode && chkBoxNode.target && chkBoxNode.target.checked) {
-                if (chkBoxNode.target.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
-                    if (array.indexOf(arrAndQuery, chkBoxNode.target.name + "='" + chkBoxNode.target.value + "'") === -1) {
-                        arrAndQuery.push("UPPER(" + chkBoxNode.target.name + ") ='" + chkBoxNode.target.value + "'");
-                    }
-                }
-                else {
-                    // if checkbox is checked("additionalFilter") then add the checkbox name and value into "OrQuery" string
-                    if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')") === -1) {
-                        arrOrQuery.push("UPPER(" + chkBoxNode.target.name + ") LIKE UPPER('%" + chkBoxNode.target.value + "%')");
-                    }
-                }
-            }
-            else if (chkBoxNode && chkBoxNode.checked) {
-                // check the filter values while sharing
-                if (chkBoxNode.parentElement.getAttribute("isRegularFilterOptionFields") === "true") {
-                    if (array.indexOf(arrAndQuery, chkBoxNode.name + "='" + chkBoxNode.value + "'") === -1) {
-                        arrAndQuery.push("UPPER(" + chkBoxNode.name + ") ='" + chkBoxNode.value + "'");
-                    }
-                }
-                else if (array.indexOf(arrOrQuery, "UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')") === -1) {
-                    arrOrQuery.push("UPPER(" + chkBoxNode.name + ") LIKE UPPER('%" + chkBoxNode.value + "%')");
-                }
-            }
-            // update the query string according to workflow
-            if (this.workflowCount === 0) {
-                this.queryArrayBuildingAND = arrAndQuery;
-                this.queryArrayBuildingOR = arrOrQuery;
-            }
-            else {
-                this.queryArraySitesAND = arrAndQuery;
-                this.queryArraySitesOR = arrOrQuery;
-            }
-            if (this.featureGeometry[this.workflowCount] && !this.lastGeometry[this.workflowCount]) {
-                topic.publish("hideProgressIndicator");
-                alert(sharedNls.errorMessages.bufferSliderValue);
-            }
-
-            this.andArr = arrAndQuery;
-            this.orArr = arrOrQuery;
-        },
-
-        /**
-         * perform and/or query
-         * @param {object} and query parameter
-         * @param {object} or query parameter
-         * @memberOf widgets/siteLocator/featureQuery
-         */
-        _callAndOrQuery: function (arrAndQuery, arrOrQuery) {
-            var geometry, andString, orString, queryString;
-            geometry = this.lastGeometry[this.workflowCount];
-            if (arrAndQuery.length > 0) {
-                andString = arrAndQuery.join(" AND ");
-            }
-            if (arrOrQuery.length > 0) {
-                orString = arrOrQuery.join(" OR ");
-            }
-            if (andString) {
-                queryString = andString;
-            }
-            if (orString) {
-                orString = "(" + orString + ")";
-                if (queryString) {
-                    queryString += " AND " + orString;
-                }
-                else {
-                    queryString = orString;
-                }
-            }
-            if (queryString) {
+            if (geometry) {
+                this._lastQueryString = queryString;
                 this.doLayerQuery(geometry, queryString);
-            }
-            else if (geometry !== null) {
-                this.doLayerQuery(geometry, null);
             }
             else {
                 topic.publish("hideProgressIndicator");
@@ -282,12 +86,13 @@ define([
             dateObj = new Date().getTime().toString();
             this.lastGeometry[this.workflowCount] = geometry;
             this.showBuffer(geometry);
+
             if (this.operationalLayer && this.operationalLayer.url) {
                 queryLayerTask = new QueryTask(this.operationalLayer.url);
                 queryLayer = new Query();
                 queryLayer.returnGeometry = true;
                 queryString = dateObj + "=" + dateObj;
-                if (where !== null) {
+                if (where) {
                     queryString += " AND " + where;
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] = where;
                     appGlobals.shareOptions.arrWhereClause[this.workflowCount] =
@@ -302,7 +107,7 @@ define([
                 }
                 queryLayer.where = queryString;
                 queryLayer.outFields = [this.operationalLayer.objectIdField];
-                if (geometry !== null) {
+                if (geometry) {
                     geometryService = new GeometryService(appGlobals.configData.GeometryService.toString());
                     geometryService.intersect(geometry, appGlobals.shareOptions.webMapExtent, lang.hitch(this, function (interSectGeometry) {
                         if (interSectGeometry[0].rings.length > 0) {
@@ -327,7 +132,7 @@ define([
                             alert(sharedNls.errorMessages.geometryIntersectError);
                             if (this.workflowCount === 0) {
                                 this._clearFilterCheckBoxes();
-                                domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                                domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
                                 domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                                 domClass.remove(this.filterText, "esriCTFilterTextEnable");
                                 domStyle.set(this.filterContainer, "display", "none");
@@ -347,7 +152,7 @@ define([
                         alert(sharedNls.errorMessages.geometryIntersectError);
                         if (this.workflowCount === 0) {
                             this._clearFilterCheckBoxes();
-                            domClass.remove(this.filterIcon, "esriCTFilterEnabled");
+                            domClass.remove(this.filterIconBuilding, "esriCTFilterEnabled");
                             domClass.remove(this.clearFilterBuilding, "esriCTClearFilterIconEnable");
                             domClass.remove(this.filterText, "esriCTFilterTextEnable");
                             domStyle.set(this.filterContainer, "display", "none");
@@ -1087,7 +892,7 @@ define([
          * @memberOf widgets/siteLocator/featureQuery
          */
         _selectionChangeForBuildingAndSitesSort: function (value) {
-            var querySort, queryTask, andString, orString, queryString;
+            var querySort, queryTask, queryString = this._lastQueryString || "";
             topic.publish("showProgressIndicator");
             if (this.buildingResultSet && this.workflowCount === 0) {
                 this.buildingResultSet = null;
@@ -1097,44 +902,14 @@ define([
             }
             this.selectedValue[this.workflowCount] = value;
             appGlobals.shareOptions.sortingData = this.selectedValue[this.workflowCount];
+
             // initialize query task layer, query and set the query parameter for sorting and get the sorted object ids
             queryTask = new QueryTask(this.operationalLayer.url);
             querySort = new Query();
             if (this.lastGeometry[this.workflowCount]) {
                 querySort.geometry = this.lastGeometry[this.workflowCount][0];
             }
-            if (this.queryArrayBuildingAND.length > 0 && this.workflowCount === 0) {
-                andString = this.queryArrayBuildingAND.join(" AND ");
-            }
-            if (this.queryArrayBuildingOR.length > 0 && this.workflowCount === 0) {
-                orString = this.queryArrayBuildingOR.join(" OR ");
-            }
-            if (this.queryArraySitesAND.length > 0 && this.workflowCount === 1) {
-                andString = this.queryArraySitesAND.join(" AND ");
-            }
 
-            if (this.queryArraySitesOR.length > 0 && this.workflowCount === 1) {
-                andString = this.queryArraySitesOR.join(" OR ");
-            }
-
-            if (andString) {
-                queryString = andString;
-            }
-            if (orString) {
-                orString = "(" + orString + ")";
-                if (queryString) {
-                    queryString += " AND " + orString;
-                }
-                else {
-                    queryString = orString;
-                }
-            }
-            if (queryString) {
-                queryString += " AND UPPER(" + value + ") <> '' AND " + value + " is not null";
-            }
-            else {
-                queryString = "UPPER(" + value + ") <> '' AND " + value + " is not null";
-            }
             //set where clause to honor definition expression configured in webmap
             if (this.operationalLayer.webmapDefinitionExpression) {
                 queryString += " AND " + this.operationalLayer.webmapDefinitionExpression;
