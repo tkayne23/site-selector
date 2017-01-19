@@ -112,10 +112,26 @@ define([
                     }
                 }
             }));
-            urlUtils.addProxyRule({
-                urlPrefix: appGlobals.configData.GeoEnrichmentService,
-                proxyUrl: appGlobals.configData.ProxyUrl
-            });
+
+            if (!appGlobals.configData.GeoEnrichmentService) {
+                appGlobals.configData.EnableGeoEnrichmentService = false;
+            }
+            if (typeof appGlobals.configData.EnableGeoEnrichmentService === "undefined") {
+                appGlobals.configData.EnableGeoEnrichmentService = true;
+            }
+            if (appGlobals.configData.EnableGeoEnrichmentService) {
+                urlUtils.addProxyRule({
+                    urlPrefix: appGlobals.configData.GeoEnrichmentService,
+                    proxyUrl: appGlobals.configData.ProxyUrl
+                });
+            }
+
+            // The business and communities tabs are only of interest if geoenrichment is enabled
+            if (appGlobals.configData.EnableGeoEnrichmentService) {
+                domClass.remove(this.esriCTsearchContainerBusiness, "esriCTHidden");
+                domClass.remove(this.esriCTsearchContainerCommunities, "esriCTHidden");
+            }
+
             appGlobals.shareOptions.arrStrAdderss = [null, null, null, null];
             appGlobals.shareOptions.arrAddressMapPoint = [null, null, null, null];
             appGlobals.shareOptions.arrBufferDistance = [null, null, null, null];

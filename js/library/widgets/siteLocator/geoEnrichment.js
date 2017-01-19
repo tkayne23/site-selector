@@ -333,6 +333,12 @@ define([
          */
         _enrichData: function (geometry, workflowCount, standardSearchCandidate) {
             var geometryService, relationParams, standardGeoQueryURL, standardGeoQueryRequest;
+
+            if (!appGlobals.configData.EnableGeoEnrichmentService) {
+                topic.publish("hideProgressIndicator");
+                return;
+            }
+
             // if enrich data contain geometry call show buffer function
             if (geometry) {
                 // check for business workflow

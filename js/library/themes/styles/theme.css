@@ -2335,3 +2335,8 @@ label.css-label
     cursor: pointer;
     margin: 3px 0 3px 10px;
 }
+
+.esriCTHidden
+{
+    display: none;
+}
