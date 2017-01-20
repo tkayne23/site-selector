@@ -37,10 +37,11 @@ define([
     "esri/tasks/GeometryService",
     "esri/tasks/Geoprocessor",
     "esri/tasks/PrintTask",
+    "esri/tasks/PrintTemplate",
     "esri/tasks/query",
     "esri/tasks/QueryTask",
     "esri/tasks/RelationParameters"
-], function (array, declare, lang, domAttr, domClass, domConstruct, domStyle, sharedNls, number, on, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Polygon, esriRequest, GeometryService, Geoprocessor, PrintTask, Query, QueryTask, RelationParameters) {
+], function (array, declare, lang, domAttr, domClass, domConstruct, domStyle, sharedNls, number, on, topic, _TemplatedMixin, _WidgetBase, _WidgetsInTemplateMixin, SelectList, Polygon, esriRequest, GeometryService, Geoprocessor, PrintTask, PrintTemplate, Query, QueryTask, RelationParameters) {
     //========================================================================================================================//
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -1095,6 +1096,9 @@ define([
                                 this.map.centerAt(this.featureGraphics[this.workflowCount].geometry);
                             }
                             webMapJsonData = this._createMapJsonData();
+                            if (!this.arrReportDataJson[this.workflowCount].reportData["Neighborhood Information"]) {
+                                this.arrReportDataJson[this.workflowCount].reportData["Neighborhood Information"] = [];
+                            }
                             params = {
                                 "Logo": dojoConfig.baseURL + appGlobals.configData.ApplicationIcon.toString(),
                                 "WebMap_Json": JSON.stringify(webMapJsonData),
@@ -1165,7 +1169,7 @@ define([
             var printTaskObj = new PrintTask(),
                 jsonObject, i;
             printTaskObj.legendAll = true;
-            jsonObject = printTaskObj._getPrintDefinition(this.map);
+            jsonObject = printTaskObj._getPrintDefinition(this.map, new PrintTemplate());
             jsonObject.operationalLayers[0].maxScale = 0;
             jsonObject.operationalLayers[0].minScale = 0;
             // checking all operational layers and graphic layers exist
