@@ -24,7 +24,7 @@ The Residential Comp Finder application is another configuration of the site-sel
 **Start now using Esri-supplied sample services**
 
 You can start using the application now by setting it up on a web server running Microsoft Internet Information Services (IIS) and using sample services supplied by Esri.
-You'll need to convert to an application in IIS and use the ASP .NET 4.0. application pool.
+You'll need to convert to an application in IIS and use the ASP .NET 4.0 or 4.5. application pool.
 
 **Start now using your own services**
 
@@ -74,7 +74,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's
-[LICENSE.txt](https://raw.github.com/Esri/configurable-place-finder/master/LICENSE.txt) file.
+[LICENSE.txt](https://raw.github.com/Esri/site-selector/master/LICENSE.txt) file.
 
 [](Esri Tags: ArcGISSolutions Local-Government Local Government Site Selector)
 [](Esri Language: JavaScript)
