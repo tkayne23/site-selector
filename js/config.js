@@ -1,4 +1,4 @@
-/*global dojo,define */
+﻿/*global dojo,define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /** @license
  | Copyright 2013 Esri
@@ -66,7 +66,7 @@ define([], function () {
 
         // Set splash window content - Message that appears when the application starts
         SplashScreen: {
-            SplashScreenContent: "The <b>Site Selector</b> application helps business owners and corporations search for and locate available buildings and sites, and combine their property search with key community and business demographic information.   Access to this information facilitates better business decisions and helps to ensure that investments in the area are sustainable and align with their corporate vision.</br><br>Search for a building, site, or community to access detailed property or demographic information and generate reports that can be shared with others.",
+            SplashScreenContent: "The <b>Site Selector</b> application helps business owners and corporations search for and locate available buildings and sites, and combine their property search with key community and business demographic information. Access to this information facilitates better business decisions and helps to ensure that investments in the area are sustainable and align with their corporate vision.</br></br>Search for a building, site, or business to access detailed property or demographic information and generate reports that can be shared with others.",
             IsVisible: true
         },
 
@@ -81,16 +81,16 @@ define([], function () {
         // Specify URL to ArcGIS Online REST API
         PortalAPIURL: "http://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
-        BasemapGroupTitle: "Basemaps",
+        BasemapGroupTitle: "ArcGISforLocalGovernmentBasemapGroup",
         // Specify the user name of owner of the group that contains basemaps
-        BasemapGroupOwner: "GISITAdmin",
+        BasemapGroupOwner: "StateLocalTryItLive",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
         // Specify path to image used to display the thumbnail for a basemap when ArcGIS Online does not provide it
         NoThumbnail: "js/library/themes/images/not-available.png",
 
         // Set geometry service URL
-	// Do not use the ArcGIS Online geometry service (http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service. 
+        // Do not use the ArcGIS Online geometry service (http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer) in this parameter. Using this geometry service because of its version 10.04, will cause the application to produce the message "The searched area is outside the area of interest and will not be analyzed." Please use the provided geometry service or your own local geometry service. 
         GeometryService: "http://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
 
         // Set geoenrichment service URL
@@ -119,19 +119,19 @@ define([], function () {
         DistanceUnitSettings: {
             DistanceUnitName: "Miles", // Allowed values for DistanceUnitName are "Miles", "Kilometers", "Meters" and "Feet".
             MinimumValue: 1,
-            MaximumValue: 50
+            MaximumValue: 20
         },
 
         // Set buffer symbology
         BufferSymbology: {
-            FillSymbolColor: "255,0,0",
-            FillSymbolTransparency: "0.20",
-            LineSymbolColor: "255,0,0",
+            FillSymbolColor: "0,122,194",
+            FillSymbolTransparency: "0.10",
+            LineSymbolColor: "0,122,194",
             LineSymbolTransparency: "0.30"
         },
 
         //Set the color of the circle around the selected point
-        RippleColor: "0,255,255",
+        RippleColor: "0,122,194",
 
         //Set the size of the circle around the selected point
         LocatorRippleSize: 40,
@@ -158,16 +158,16 @@ define([], function () {
         // GeoEnrichmentContents: Configure settings to display data collections or variables from geoenrichment.
         // DownloadSettings: Configure settings for downloading reports from geoprocessing service or geoenrichment.
 
-        WebMapId: "7b29715ea7584f68ab5a5ceea549da35",
+        WebMapId: "4e0f517c76c046a59da8c8955b7d5a43",
         Workflows: [
             {
                 Name: "Buildings",
                 Enabled: true,
                 SearchSettings: [
                     {
-                        Title: "Buildings",
-                        QueryLayerId: "1",
-                        SearchDisplayTitle: "Buildings",
+                        Title: "Improved Sites",
+                        QueryLayerId: "0",
+                        SearchDisplayTitle: "Improved Sites",
                         SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${SITEZIP}",
                         SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(SITEZIP) LIKE UPPER('${0}%')",
 
@@ -179,24 +179,25 @@ define([], function () {
                                 }
                             ],
                             RegularFilterOptionFields: [
-                            ],
 
+
+                            ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
-                                FilterFieldName: "ZONEDESC",
+                                FilterFieldName: "FACTYPE",
                                 FilterOptions: [
                                     {
-                                        DisplayText: "Agricultural",
-                                        FieldValue: "Agricultural"
-                                    }, {
-                                        DisplayText: "Industrial",
-                                        FieldValue: "Industrial"
-                                    }, {
                                         DisplayText: "Office",
-                                        FieldValue: "Office"
+                                        FieldValue: "Office Building"
                                     }, {
                                         DisplayText: "Retail",
-                                        FieldValue: "Retail"
+                                        FieldValue: "Retail Building"
+                                    }, {
+                                        DisplayText: "Warehouse",
+                                        FieldValue: "Warehouse Building"
+                                    }, {
+                                        DisplayText: "Industrial",
+                                        FieldValue: "Industrial Building"
                                     }
                                 ]
                             }
@@ -208,24 +209,20 @@ define([], function () {
                         ShowAttachments: true,
                         DisplayFields: [
                             {
+                                DisplayText: "Name:",
+                                FieldName: "FACNAME",
+                                SortingEnabled: true
+                            }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR",
                                 SortingEnabled: false
                             }, {
-                                DisplayText: "Municipality:",
-                                FieldName: "MUNICIPALITY",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY",
-                                SortingEnabled: true
-                            }, {
                                 DisplayText: "Area (sqft):",
                                 FieldName: "BLDGAREA",
+                                SortingEnabled: true
+                            }, {
+                                DisplayText: "Zoning:",
+                                FieldName: "ZONEDESC",
                                 SortingEnabled: true
                             }
 
@@ -236,6 +233,9 @@ define([], function () {
                         DisplayTitle: "Property Information",
                         DisplayFields: [
                             {
+                                DisplayText: "Name:",
+                                FieldName: "FACNAME"
+                            }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR"
                             }, {
@@ -245,11 +245,53 @@ define([], function () {
                                 DisplayText: "Zipcode:",
                                 FieldName: "SITEZIP"
                             }, {
-                                DisplayText: "Type:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC"
                             }, {
                                 DisplayText: "Area (sqft):",
                                 FieldName: "BLDGAREA"
+                            }, {
+                                DisplayText: "Acquisition:",
+                                FieldName: "ACQUISITION"
+                            }, {
+                                DisplayText: "Incentives:",
+                                FieldName: "INCENTIVE"
+                            }, {
+                                DisplayText: "Gas:",
+                                FieldName: "GAS"
+                            }, {
+                                DisplayText: "Electric:",
+                                FieldName: "ELECTRIC"
+                            }, {
+                                DisplayText: "Water:",
+                                FieldName: "WATER"
+                            }, {
+                                DisplayText: "Sewer:",
+                                FieldName: "SEWER"
+                            }, {
+                                DisplayText: "Telco:",
+                                FieldName: "TELCO"
+                            }, {
+                                DisplayText: "High-Speed ISP:",
+                                FieldName: "ISP"
+                            }, {
+                                DisplayText: "Distance to Rail (Mi):",
+                                FieldName: "DISTRAIL"
+                            }, {
+                                DisplayText: "Distance to Highway (Mi):",
+                                FieldName: "DISTHGWY"
+                            }, {
+                                DisplayText: "Distance to Airport (Mi):",
+                                FieldName: "DISTAIR"
+                            }, {
+                                DisplayText: "Contact Name:",
+                                FieldName: "POCNAME"
+                            }, {
+                                DisplayText: "Company Name:",
+                                FieldName: "POCCOMP"
+                            }, {
+                                DisplayText: "Contact Phone:",
+                                FieldName: "POCPHONE"
                             }
                         ]
                     },
@@ -314,10 +356,6 @@ define([], function () {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
                             Filetype: "PDF" //allowed PDF or XLSX
-			}, {
-                            DisplayOptionTitle: "Demographic and Income Profile",
-                            GeoEnrichmentReportName: "dandi",
-                            Filetype: "PDF" //allowed PDF or XLSX
                         }
                     ]
                 }
@@ -326,8 +364,8 @@ define([], function () {
                 Enabled: true,
                 SearchSettings: [
                     {
-                        Title: "Sites",
-                        QueryLayerId: "0",
+                        Title: "Vacant Land Sites",
+                        QueryLayerId: "1",
                         SearchDisplayTitle: "Sites",
                         SearchDisplayFields: "${FACNAME}, ${FACTYPE}, ${FULLADDR}",
                         SearchExpression: "UPPER(FACNAME) LIKE UPPER('${0}%') OR UPPER(FACTYPE) LIKE UPPER('${0}%') OR UPPER(FULLADDR) LIKE UPPER('${0}%')",
@@ -339,23 +377,36 @@ define([], function () {
                                 }
                             ],
                             RegularFilterOptionFields: [
+                                {
+                                    DisplayText: "Sewer Service",
+                                    FieldName: "SEWER",
+                                    FieldValue: "Yes"
+                                }, {
+                                    DisplayText: "Water Service",
+                                    FieldName: "WATER",
+                                    FieldValue: "Yes"
+                                }, {
+                                    DisplayText: "Gas Service",
+                                    FieldName: "GAS",
+                                    FieldValue: "Yes"
+                                }
                             ],
                             AdditionalFilterOptions: {
                                 Enabled: true,
                                 FilterFieldName: "ZONEDESC",
                                 FilterOptions: [
                                     {
-                                        DisplayText: "Residential",
-                                        FieldValue: "Residential"
+                                        DisplayText: "Industrial (I-2) Zone",
+                                        FieldValue: "I-2"
                                     }, {
-                                        DisplayText: "Industrial",
-                                        FieldValue: "Industrial"
+                                        DisplayText: "Commerical (C-1) Zone",
+                                        FieldValue: "C-1"
                                     }, {
-                                        DisplayText: "Office",
-                                        FieldValue: "Office"
+                                        DisplayText: "Commercial (C-2) Zone",
+                                        FieldValue: "C-2"
                                     }, {
-                                        DisplayText: "Retail",
-                                        FieldValue: "Retail"
+                                        DisplayText: "Planned Use Development (PUD) Zone",
+                                        FieldValue: "PUD"
                                     }
                                 ]
                             }
@@ -373,20 +424,17 @@ define([], function () {
                             }, {
                                 DisplayText: "Address:",
                                 FieldName: "FULLADDR",
-                                SortingEnabled: true
-                            }, {
-                                DisplayText: "County:",
-                                FieldName: "SITECOUNTY",
                                 SortingEnabled: false
                             }, {
                                 DisplayText: "Area (acres):",
                                 FieldName: "TOTAREA",
                                 SortingEnabled: true
                             }, {
-                                DisplayText: "Zipcode:",
-                                FieldName: "SITEZIP",
-                                SortingEnabled: false
+                                DisplayText: "Zoning:",
+                                FieldName: "ZONEDESC",
+                                SortingEnabled: true
                             }
+
                         ]
                     },
                     LayerContents: {
@@ -406,17 +454,59 @@ define([], function () {
                                 DisplayText: "Zipcode:",
                                 FieldName: "SITEZIP"
                             }, {
-                                DisplayText: "Type:",
+                                DisplayText: "Zoning:",
                                 FieldName: "ZONEDESC"
                             }, {
                                 DisplayText: "Area (acres):",
                                 FieldName: "TOTAREA"
+                            }, {
+                                DisplayText: "Acquisition:",
+                                FieldName: "ACQUISITION"
+                            }, {
+                                DisplayText: "Incentives:",
+                                FieldName: "INCENTIVE"
+                            }, {
+                                DisplayText: "Gas:",
+                                FieldName: "GAS"
+                            }, {
+                                DisplayText: "Electric:",
+                                FieldName: "ELECTRIC"
+                            }, {
+                                DisplayText: "Water:",
+                                FieldName: "WATER"
+                            }, {
+                                DisplayText: "Sewer:",
+                                FieldName: "SEWER"
+                            }, {
+                                DisplayText: "Telco:",
+                                FieldName: "TELCO"
+                            }, {
+                                DisplayText: "High-Speed ISP:",
+                                FieldName: "ISP"
+                            }, {
+                                DisplayText: "Distance to Rail (Mi):",
+                                FieldName: "DISTRAIL"
+                            }, {
+                                DisplayText: "Distance to Highway (Mi):",
+                                FieldName: "DISTHGWY"
+                            }, {
+                                DisplayText: "Distance to Airport (Mi):",
+                                FieldName: "DISTAIR"
+                            }, {
+                                DisplayText: "Contact Name:",
+                                FieldName: "POCNAME"
+                            }, {
+                                DisplayText: "Company Name:",
+                                FieldName: "POCCOMP"
+                            }, {
+                                DisplayText: "Contact Phone:",
+                                FieldName: "POCPHONE"
                             }
                         ]
                     },
                     GeoenrichmentDistance: {
                         Unit: "UNIT_STATUTE_MILE",
-                        BufferDistance: 1
+                        BufferDistance: 2
                     },
                     GeoEnrichmentContents: {
                         DisplayTitle: "Neighborhood Information",
@@ -475,10 +565,6 @@ define([], function () {
                         }, {
                             DisplayOptionTitle: "Traffic Count Profile",
                             GeoEnrichmentReportName: "traffic",
-                            Filetype: "PDF" //allowed PDF or XLSX
-			}, {
-                            DisplayOptionTitle: "Demographic and Income Profile",
-                            GeoEnrichmentReportName: "dandi",
                             Filetype: "PDF" //allowed PDF or XLSX
                         }
                     ]
@@ -584,20 +670,21 @@ define([], function () {
                 }
             }, {
                 Name: "Communities",
-                Enabled: true,
+                Enabled: false,
                 EnableSearch: true,
                 EnableDropdown: true,
                 FilterSettings: {
                     StandardGeographyQuery: {
-                        LocatorDefaultAddress: "Baltimore, MD",
+                        LocatorDefaultAddress: "Naperville",
                         QueryField: "geographyQuery",
                         SourceCountry: "US",
                         FeatureLimit: 10
                     },
                     FilterLayer: {
-                        Title: "Municipalities",
-                        QueryLayerId: "2",
-                        FilterFieldName: "COUNTYNAME"
+                        Title: "EconomicDevelopment - Municipalities",
+                        QueryLayerId: "54",
+                        FilterFieldName: "COUNTY",
+                        OutFields: ["COUNTY"]
                     },
                     InfoPanelSettings: {
                         GeoEnrichmentContents: {
@@ -610,8 +697,7 @@ define([], function () {
                                 }, {
                                     DisplayText: "Labor Force Participation Rate",
                                     FieldName: "industry.CIVLBFR_CY"
-                                },
-                                {
+                                }, {
                                     DisplayText: "Total Population",
                                     FieldName: "KeyUSFacts.TOTPOP_CY"
                                 }, {
@@ -679,7 +765,7 @@ define([], function () {
                 height: 35
             },
             DisplayText: "Address",
-            LocatorDefaultAddress: "4401 Hartwick Rd, College Park, Maryland, 20740",
+            LocatorDefaultAddress: "1100 Hidden Springs, Naperville, Illinois, 60540",
             LocatorParameters: {
                 SearchField: "SingleLine",
                 SearchBoundaryField: "searchExtent"
@@ -717,7 +803,7 @@ define([], function () {
         //------------------------------------------------------------------------------------------------------------------------
         // Set widgets settings such as widget title, widgetPath, mapInstanceRequired to be displayed in header panel
         // WidgetPath: path of the widget respective to the widgets package.
-        //The geolocation button has been hidden from the user interface by commenting out the widgetpath for geolocation below. You can enable geolocation by uncommenting the widgetpath for geolocation. The geolocation button, however, will only work on browsers supporting geolocation over HTTP connections.  If a browser requires a HTTPS connection to support geolocation and the button is enabled, the button will not work, but the application will work correctly otherwise.
+        // The geolocation button has been hidden from the user interface by commenting out the widgetpath for geolocation below. You can enable geolocation by uncommenting the widgetpath for geolocation. The geolocation button, however, will only work on browsers supporting geolocation over HTTP connections.  If a browser requires a HTTPS connection to support geolocation and the button is enabled, the button will not work, but the application will work correctly otherwise.
 
         AppHeaderWidgets: [
             {
@@ -725,7 +811,7 @@ define([], function () {
             }, 
             //{
             //    WidgetPath: "widgets/geoLocation/geoLocation"
-            // }, 
+            //},
             {
                 WidgetPath: "widgets/share/share"
             }, {
