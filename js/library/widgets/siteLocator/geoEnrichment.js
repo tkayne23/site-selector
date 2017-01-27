@@ -1029,7 +1029,9 @@ define([
             innerDownloadDiv = domConstruct.create("div", {
                 "class": "esriCTInnerDownloadDiv"
             }, outerDownloadDiv);
-            innerDownloadLabel = domConstruct.create("label", {}, innerDownloadDiv);
+            innerDownloadLabel = domConstruct.create("label", {
+                "class": "esriCTCursorPointer"
+            }, innerDownloadDiv);
             domAttr.set(innerDownloadLabel, "innerHTML", sharedNls.titles.textDownload);
 
             sortContentDivDownload = domConstruct.create("div", {}, sortingDivDwnload);
