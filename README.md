@@ -37,7 +37,7 @@ Show me a list of other [Local Government GitHub repositories](http://esri.githu
 Additional [information and sample data](http://links.esri.com/localgovernment/help/SiteSelector)
 are available for the application.
 
-This application uses the 3.11 version of
+This application uses the 3.19 version of
 [Esri's ArcGIS API for JavaScript](http://help.arcgis.com/en/webapi/javascript/arcgis/);
 see the site for concepts, samples, and a reference for using the API to create mapping web sites.
 
