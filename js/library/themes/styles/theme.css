@@ -1968,12 +1968,7 @@ div.esriCTPrev
     height: 30px;
 }
 
-.esriCTHorizantalRuleBuliding
-{
-    clear: both;
-}
-
-.esriCTbuildingAreaToFromDiv
+.esriCTFilterClear
 {
     clear: both;
 }
@@ -2315,7 +2310,7 @@ label.css-label
     margin: 3px 0px 3px 10px;
 }
 
-.esriCTFilterDiv, .esriCTFilterDivBisuness
+.esriCTFilterDiv, .esriCTFilterDivBusiness
 {
     clear: both;
     float: right;

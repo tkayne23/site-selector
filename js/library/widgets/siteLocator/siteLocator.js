@@ -300,7 +300,7 @@ define([
                 appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
                 appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
 
-                this._createFilterOption(0, this.horizantalruleBuliding,
+                this._createFilterOption(0, this.buildingsFilter,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.FilterRangeFields,
                     appGlobals.configData.Workflows[0].SearchSettings[0].FilterSettings.AdditionalFilterOptions
@@ -328,7 +328,7 @@ define([
                 appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields.length ||
                 appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions.FilterOptions.length) {
 
-                this._createFilterOption(1, this.horizantalruleSites,
+                this._createFilterOption(1, this.sitesFilter,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.RegularFilterOptionFields,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.FilterRangeFields,
                     appGlobals.configData.Workflows[1].SearchSettings[0].FilterSettings.AdditionalFilterOptions
@@ -354,7 +354,7 @@ define([
             // dynamic UI of Business tab
             if (appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields.length) {
 
-                this._createFilterOption(2, this.BussinessFromToMainDiv,
+                this._createFilterOption(2, this.businessFilter,
                     null,
                     appGlobals.configData.Workflows[2].FilterSettings.FilterRangeFields,
                     null
