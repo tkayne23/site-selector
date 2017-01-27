@@ -1096,9 +1096,6 @@ define([
                                 this.map.centerAt(this.featureGraphics[this.workflowCount].geometry);
                             }
                             webMapJsonData = this._createMapJsonData();
-                            if (!this.arrReportDataJson[this.workflowCount].reportData["Neighborhood Information"]) {
-                                this.arrReportDataJson[this.workflowCount].reportData["Neighborhood Information"] = [];
-                            }
                             params = {
                                 "Logo": dojoConfig.baseURL + appGlobals.configData.ApplicationIcon.toString(),
                                 "WebMap_Json": JSON.stringify(webMapJsonData),

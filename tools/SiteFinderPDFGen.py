@@ -112,7 +112,11 @@ def export_web_map(web_map_json):
 def create_print_table(table_data):
     """Formats report data into table"""
 
-    column_counter = 0
+    num_columns = len(RECEIVEDDATA.keys())
+    if num_columns != 1 and num_columns != 2:
+        arcpy.AddError("Only one or two columns are supported")
+        return None
+
     data_list = []
     table_keys = []
     for key in RECEIVEDDATA.keys():
@@ -151,7 +155,16 @@ def create_print_table(table_data):
 
     column_header_color = Color(0.8666666666666667, 0.8745098039215686,
                                 0.8745098039215686, 1)
-    table_style = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
+    if num_columns == 1:
+        table_style = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                                ('ALIGN', (0, 0), (1, 0), 'CENTER'),
+                                ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
+                                ('BACKGROUND', (0, 0), (1, 0),
+                                 column_header_color),
+                                ('SPAN', (0, 0), (1, 0)),
+                                ])
+    else:
+        table_style = TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP'),
                                 ('ALIGN', (0, 0), (1, 0), 'CENTER'),
                                 ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
                                 ('BACKGROUND', (0, 0), (1, 0),
@@ -161,6 +174,7 @@ def create_print_table(table_data):
                                 ('SPAN', (0, 0), (1, 0)),
                                 ('SPAN', (3, 0), (4, 0)),
                                 ])
+
     row_color = Color(0.9529411764705882, 0.9529411764705882,
                       0.9529411764705882, 1)
 
@@ -168,7 +182,8 @@ def create_print_table(table_data):
         if i % 2 != 0:
             table_style.add('BACKGROUND', (0, (i+1)), (1, (i+1)),
                             row_color)
-            table_style.add('BACKGROUND', (3, (i+1)), (4, (i+1)),
+            if num_columns == 2:
+                table_style.add('BACKGROUND', (3, (i+1)), (4, (i+1)),
                             row_color)
         values_list = []
         for header in table_keys:
@@ -184,8 +199,10 @@ def create_print_table(table_data):
         values_list.pop()
         data_list.append(values_list)
 
-    data_table = Table(data_list, colWidths=(145, 100, 10, 145, 100),
-                        style=table_style)
+    if num_columns == 1:
+        data_table = Table(data_list, colWidths=(145, 100), style=table_style)
+    else:
+        data_table = Table(data_list, colWidths=(145, 100, 10, 145, 100), style=table_style)
     return data_table
 
 def on_first_page(canvas, DOC): #pylint: disable=W0621
@@ -446,19 +463,12 @@ try:
     TABLEKEYSINDEX = {}
     if len(ATTRIBUTEDATA) > 0:
         RECEIVEDDATA = json.loads(ATTRIBUTEDATA)[0]
-        for key in RECEIVEDDATA.keys():
-
-            TEMPDICT = {key : ATTRIBUTEDATA.find(key)}
-            TABLEKEYSINDEX.update(TEMPDICT)
-        SORTEDTABLESINDEX = sorted((value, key) for (key, value)
-                                   in TABLEKEYSINDEX.items())
-
         TABLEHOLDER = create_print_table(RECEIVEDDATA)
+        if TABLEHOLDER != None:
+            arcpy.AddMessage("Printing Table...")
+            ELEMENTSOFDOC.append(Spacer(1, 0.50*cm))
+            ELEMENTSOFDOC.append(TABLEHOLDER)
 
-        arcpy.AddMessage("Printing Table...")
-        ELEMENTSOFDOC.append(Spacer(1, 0.50*cm))
-        ELEMENTSOFDOC.append(TABLEHOLDER)
-       
 
     #Drawing the attachment images
     arcpy.AddMessage("Printing attachment images...")
