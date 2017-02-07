@@ -81,9 +81,9 @@ define([], function () {
         // Specify URL to ArcGIS Online REST API
         PortalAPIURL: "https://www.arcgis.com/sharing/rest/",
         // Specify the title of group that contains basemaps
-        BasemapGroupTitle: "Basemaps",
+        BasemapGroupTitle: "ArcGISforLocalGovernmentBasemapGroup",
         // Specify the user name of owner of the group that contains basemaps
-        BasemapGroupOwner: "GISITAdmin",
+        BasemapGroupOwner: "StateLocalTryItLive",
         // Specify spatial reference for basemaps, since all basemaps need to use the same spatial reference
         BasemapSpatialReferenceWKID: 102100,
         // Specify path to image used to display the thumbnail for a basemap when ArcGIS Online does not provide it
@@ -94,6 +94,7 @@ define([], function () {
         GeometryService: "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/",
 
         // Set geoenrichment service URL
+		EnableGeoEnrichmentService: true,
         GeoEnrichmentService: "https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
 
         // Following zoom level will be set for the map upon searching an address
@@ -179,15 +180,10 @@ define([], function () {
                     }, {
                         DisplayText: "Assessed Value",
                         FieldName: "CNTASSDVAL"
-                    }, {
-                        DisplayText: "Year Built",
-                        FieldName: "RESYRBLT"
                     }],
-                    RegularFilterOptionFields: [],
-                    AdditionalFilterOptions: {
-                        Enabled: true,
-                        FilterFieldName: "RESSTRTYPE",
-                        FilterOptions: [{
+                    RegularFilterOptionFields: [{
+                        FieldName: "RESSTRTYPE",
+                        Options: [{
                             DisplayText: "Colonial",
                             FieldValue: "Colonial"
                         }, {
@@ -200,7 +196,24 @@ define([], function () {
                             DisplayText: "Ranch",
                             FieldValue: "Ranch"
                         }]
-                    }
+
+                    }//, {
+                        //FieldName: "RESYRBLT",
+                        //Options: [{
+                        //    DisplayText: "1994",
+                        //    FieldValue: "1994"
+                        //}, {
+                        //    DisplayText: "1995",
+                        //    FieldValue: "1995"
+                        //}, {
+                        //    DisplayText: "1996",
+                        //    FieldValue: "1996"
+                        //}, {
+                        //    DisplayText: "1997",
+                        //    FieldValue: "1997"
+                        //}]
+                    //}
+					]
                 }
             }],
             InfoPanelSettings: {
@@ -315,7 +328,7 @@ define([], function () {
                 },
                 DownloadSettings: [{
                     DisplayOptionTitle: "Property Information",
-                    GeoProcessingServiceURL: "https://52.26.253.224:6080/arcgis/rest/services/GeneratePDFReport/GPServer/GeneratePDFReport",
+                    GeoProcessingServiceURL: "http://dev003829.esri.com:6080/arcgis/rest/services/GeneratePDFReport/GPServer/SiteSelectorPDFGen",
                     Filetype: "PDF" //allowed PDF
                 }, {
                     DisplayOptionTitle: "Traffic Count Profile",
