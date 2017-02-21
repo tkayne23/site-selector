@@ -354,12 +354,10 @@ define([], function () {
                         DisplayText: "Area (acres)",
                         FieldName: "TOTAREA"
                     }],
-                    RegularFilterOptionFields: [],
-                    AdditionalFilterOptions: {
-                        Enabled: true,
-                        FilterFieldName: "ZONEDESC",
-                        FilterOptions: [{
-                            DisplayText: "Residential",
+					RegularFilterOptionFields: [{
+						FieldName: "ZONEDESC",
+						Options: [{
+							DisplayText: "Residential",
                             FieldValue: "Residential"
                         }, {
                             DisplayText: "Industrial",
@@ -370,10 +368,27 @@ define([], function () {
                         }, {
                             DisplayText: "Retail",
                             FieldValue: "Retail"
-                        }]
-                    }
-                }
-            }],
+						}]
+
+						}//, {
+							//FieldName: "RESYRBLT",
+							//Options: [{
+							//    DisplayText: "1994",
+							//    FieldValue: "1994"
+							//}, {
+							//    DisplayText: "1995",
+							//    FieldValue: "1995"
+							//}, {
+							//    DisplayText: "1996",
+							//    FieldValue: "1996"
+							//}, {
+							//    DisplayText: "1997",
+							//    FieldValue: "1997"
+							//}]
+						//}
+						]
+					}
+				}],
             InfoPanelSettings: {
                 ResultContents: {
                     ShowAttachments: true,
