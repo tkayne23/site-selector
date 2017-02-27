@@ -95,7 +95,7 @@ define([], function () {
 
         // Set geoenrichment service URL
 		EnableGeoEnrichmentService: true,
-        GeoEnrichmentService: "https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
+        GeoEnrichmentService: "http://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver",
 
         // Following zoom level will be set for the map upon searching an address
         ZoomLevel: 16,
