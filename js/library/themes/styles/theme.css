@@ -1968,17 +1968,7 @@ div.esriCTPrev
     height: 30px;
 }
 
-.esriCTHorizantalRuleBuliding
-{
-    clear: both;
-}
-
-.esriCTdivHideOptionBuilding
-{
-    clear: both;
-}
-
-.esriCTbuildingAreaToFromDiv
+.esriCTFilterClear
 {
     clear: both;
 }
@@ -1991,9 +1981,12 @@ div.esriCTPrev
     margin-bottom: 10px;
 }
 
-.esriCTCheckBoxWithText div.esriCTCheckBox, .esriCTCheckBoxWithText div.esriCTCheckBox
+.esriCTDivAdditionalOpt
 {
-    margin-bottom: 5px;
+    display: inline-block;
+    width: 48%;
+    overflow: hidden;
+    padding: 2px;
 }
 
 .esriCTSearchGroupRow
@@ -2023,12 +2016,101 @@ div.esriCTPrev
     display: table-cell;
 }
 
+
+
+
+.esriFilterOption
+{
+    clear: both;
+    margin: 6px 0 6px 0;
+    padding: 4px;
+    border: 1px solid #007ac2;
+}
+
+.esriFilterOptionHalfContainer
+{
+    display: inline-block;
+    width: 48%;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.esriFilterOptionRange
+{
+    margin-left: 15px;
+}
+
+.esriFilterOptionRangeBlock
+{
+    display: inline-block;
+}
+
+.esriFilterOptionRangeLabel
+{
+    margin-left: 10px;
+}
+
+.esriFilterOptionRangeInput
+{
+    margin: 2px 0 2px 5px;
+    width: 72px;
+    padding: 2px 2px;
+}
+
+.esriCheckBoxWithText
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.esriCheckBox
+{
+    float: left;
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    vertical-align: middle;
+    background-image: url(../images/checkbox.png);
+    cursor: pointer;
+}
+
+.esriCheckBoxChecked
+{
+    background-position: 0 -20px;
+}
+
+.esriCheckBoxInput
+{
+    position: absolute;
+    z-index: -1000;
+    top: -1000px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+}
+
+.esriCheckBoxLabel
+{
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+
+
+
+
 .esriCTCheckBoxWithText
 {
-    width: 35%;
-    float: left;
+    width: 100%;
     display: table;
-    margin-bottom: 10PX;
+    table-layout: fixed;
+    overflow: hidden;
 }
 
 .esriCTOptionRow
@@ -2039,7 +2121,7 @@ div.esriCTPrev
 
 .esriCTCheckBox
 {
-    width: 15px;
+    width: 21px;
     display: table-cell;
 }
 
@@ -2051,12 +2133,19 @@ input[type="radio"]
 .esriCTChkLabel
 {
     display: table-cell;
-    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 5px;
 }
 
 .esriCTDivFilterOption
 {
     clear: both;
+    width: 98%;
+    margin: 6px 0 6px 0;
+    padding: 4px;
+    background-color: rgb(235, 235, 228);
 }
 
 .esriCTLeftFromTO
@@ -2221,7 +2310,7 @@ label.css-label
     margin: 3px 0px 3px 10px;
 }
 
-.esriCTFilterDiv, .esriCTFilterDivBisuness
+.esriCTFilterDiv, .esriCTFilterDivBusiness
 {
     clear: both;
     float: right;
@@ -2240,4 +2329,9 @@ label.css-label
     vertical-align: middle;
     cursor: pointer;
     margin: 3px 0 3px 10px;
+}
+
+.esriCTHidden
+{
+    display: none;
 }

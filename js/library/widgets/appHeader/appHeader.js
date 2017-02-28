@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,alert,appGlobals */
+/*global define,dojoConfig,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -38,23 +38,23 @@ define([
         sharedNls: sharedNls,
 
         /**
-        * create header panel
-        *
-        * @param {string} appGlobals.configData.ApplicationName Application name specified in configuration file
-        *
-        * @class
-        * @name widgets/appHeader/appHeader
-        */
+         * create header panel
+         *
+         * @param {string} appGlobals.configData.ApplicationName Application name specified in configuration file
+         *
+         * @class
+         * @name widgets/appHeader/appHeader
+         */
         postCreate: function () {
 
             /**
-            * add applicationHeaderParentContainer to div for header panel and append to esriCTParentDivContainer container
-            *
-            * applicationHeaderParentContainer container for application header
-            * @member {div} applicationHeaderParentContainer
-            * @private
-            * @memberOf widgets/appHeader/appHeader
-            */
+             * add applicationHeaderParentContainer to div for header panel and append to esriCTParentDivContainer container
+             *
+             * applicationHeaderParentContainer container for application header
+             * @member {div} applicationHeaderParentContainer
+             * @private
+             * @memberOf widgets/appHeader/appHeader
+             */
             var applicationHeaderDiv;
             topic.subscribe("showProgressIndicator", lang.hitch(this, this.showProgressIndicator));
             topic.subscribe("hideProgressIndicator", lang.hitch(this, this.hideProgressIndicator));
@@ -63,31 +63,31 @@ define([
             domConstruct.place(this.applicationHeaderParentContainer, applicationHeaderDiv);
             this._loadApplicationHeaderIcon();
             /**
-            * set browser header and application header to application name
-            *
-            * applicationHeaderName container for application name
-            * @member {div} applicationHeaderName
-            * @private
-            * @memberOf widgets/appHeader/appHeader
-            */
+             * set browser header and application header to application name
+             *
+             * applicationHeaderName container for application name
+             * @member {div} applicationHeaderName
+             * @private
+             * @memberOf widgets/appHeader/appHeader
+             */
             document.title = appGlobals.configData.ApplicationName;
             domAttr.set(this.applicationHeaderName, "innerHTML", appGlobals.configData.ApplicationName);
         },
 
         /**
-        * append widgets to header panel
-        * @param {object} widgets Contain widgets to be displayed in header panel
-        * @memberOf widgets/appHeader/appHeader
-        */
+         * append widgets to header panel
+         * @param {object} widgets Contain widgets to be displayed in header panel
+         * @memberOf widgets/appHeader/appHeader
+         */
 
         loadHeaderWidgets: function (widgets) {
             var i;
             /**
-            * applicationHeaderWidgetsContainer container for header panel widgets
-            * @member {div} applicationHeaderWidgetsContainer
-            * @private
-            * @memberOf widgets/appHeader/appHeader
-            */
+             * applicationHeaderWidgetsContainer container for header panel widgets
+             * @member {div} applicationHeaderWidgetsContainer
+             * @private
+             * @memberOf widgets/appHeader/appHeader
+             */
             for (i in widgets) {
                 if (widgets.hasOwnProperty(i)) {
                     if (widgets[i].domNode) {
@@ -98,9 +98,9 @@ define([
         },
 
         /**
-        * load Application Header Icon
-        * @memberOf widgets/appHeader/appHeader
-        */
+         * load Application Header Icon
+         * @memberOf widgets/appHeader/appHeader
+         */
         _loadApplicationHeaderIcon: function () {
             if (appGlobals.configData.ApplicationFavicon && lang.trim(appGlobals.configData.ApplicationFavicon).length !== 0) {
                 this._loadIcons("shortcut icon", appGlobals.configData.ApplicationFavicon);
@@ -108,7 +108,10 @@ define([
             if (appGlobals.configData.ApplicationIcon && lang.trim(appGlobals.configData.ApplicationIcon).length !== 0) {
                 this._loadIcons("apple-touch-icon-precomposed", appGlobals.configData.ApplicationIcon);
                 this._loadIcons("apple-touch-icon", appGlobals.configData.ApplicationIcon);
-                domConstruct.create("img", { "class": "esriCTApplicationIcon", "src": dojoConfig.baseURL + appGlobals.configData.ApplicationIcon }, this.divImgApplicationHeaderIcon);
+                domConstruct.create("img", {
+                    "class": "esriCTApplicationIcon",
+                    "src": dojoConfig.baseURL + appGlobals.configData.ApplicationIcon
+                }, this.divImgApplicationHeaderIcon);
             }
         },
 
@@ -118,7 +121,7 @@ define([
             icon.rel = rel;
             icon.type = "image/x-icon";
             icon.href = dojoConfig.baseURL + iconPath;
-            document.getElementsByTagName('head')[0].appendChild(icon);
+            document.getElementsByTagName("head")[0].appendChild(icon);
         },
 
         showProgressIndicator: function () {

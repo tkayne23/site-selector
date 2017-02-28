@@ -1,4 +1,4 @@
-﻿/*global define */
+/*global define */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -30,10 +30,10 @@ define([
     CommonShare = declare("js.CommonShare", null, {
         sharedNls: sharedNls,
         /**
-        * Create the tiny URL
-        * @param {string} urlStr is URL to shrink
-        * @param {string} tinyURLServiceURL is Bitly service
-        */
+         * Create the tiny URL
+         * @param {string} urlStr is URL to shrink
+         * @param {string} tinyURLServiceURL is Bitly service
+         */
         getTinyLink: function (urlStr, tinyURLServiceURL) {
             var encodedUri, shareUrl, deferred;
 
@@ -50,13 +50,15 @@ define([
                 }).then(function (response) {
                     if (response.data && response.data.url) {
                         deferred.resolve(response.data.url);
-                    } else {
+                    }
+                    else {
                         deferred.resolve(urlStr);
                     }
                 }, function (error) {
                     deferred.resolve(urlStr);
                 });
-            } catch (ex) {
+            }
+            catch (ex) {
                 deferred.resolve(urlStr);
             }
             return deferred;
@@ -64,24 +66,24 @@ define([
 
 
         /**
-        * share application detail with selected share option
-        * @param {Deferred} waitForUrl is deferred for shrinking URL to share
-        * @param {object} mapSharingOptions sharing site URL
-        * @param {string} site Selected share option
-        */
+         * share application detail with selected share option
+         * @param {Deferred} waitForUrl is deferred for shrinking URL to share
+         * @param {object} mapSharingOptions sharing site URL
+         * @param {string} site Selected share option
+         */
         share: function (waitForUrl, mapSharingOptions, site) {
-            var windowObj = (site === "facebook" || site === "twitter") ? window.open('', '_blank') : null;
+            var windowObj = (site === "facebook" || site === "twitter") ? window.open("", "_blank") : null;
             waitForUrl.then(function (urlToShare) {
                 switch (site) {
-                case "facebook":
-                    windowObj.location = string.substitute(mapSharingOptions.FacebookShareURL, [urlToShare]);
-                    break;
-                case "twitter":
-                    windowObj.location = string.substitute(mapSharingOptions.TwitterShareURL, [urlToShare]);
-                    break;
-                case "email":
-                    parent.location = string.substitute(mapSharingOptions.ShareByMailLink, [urlToShare]);
-                    break;
+                    case "facebook":
+                        windowObj.location = string.substitute(mapSharingOptions.FacebookShareURL, [urlToShare]);
+                        break;
+                    case "twitter":
+                        windowObj.location = string.substitute(mapSharingOptions.TwitterShareURL, [urlToShare]);
+                        break;
+                    case "email":
+                        parent.location = string.substitute(mapSharingOptions.ShareByMailLink, [urlToShare]);
+                        break;
                 }
             });
         }

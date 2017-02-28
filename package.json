@@ -1,0 +1,18 @@
+{
+  "name": "site-selector",
+  "version": "1.0.0",
+  "homepage": "http://solutions.arcgis.com/",
+  "private": true,
+  "bugs": "https://github.com/Esri/site-selector/issues",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Esri/site-selector.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-jsbeautifier": "^0.2.13"
+  },
+  "scripts": {}
+}

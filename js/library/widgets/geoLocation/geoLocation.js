@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,Modernizr,alert,appGlobals */
+/*global define,dojoConfig,Modernizr,alert,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -37,23 +37,26 @@ define([
         sharedNls: sharedNls,
 
         /**
-        * create geolocation widget
-        *
-        * @class
-        * @name widgets/geoLocation/geoLocation
-        */
+         * create geolocation widget
+         *
+         * @class
+         * @name widgets/geoLocation/geoLocation
+         */
         postCreate: function () {
 
             /**
-            * Modernizr.geolocation checks for support for geolocation on client browser
-            * if browser is not supported, geolocation widget is not created
-            */
+             * Modernizr.geolocation checks for support for geolocation on client browser
+             * if browser is not supported, geolocation widget is not created
+             */
             if (Modernizr.geolocation) {
-                this.domNode = domConstruct.create("div", { "title": sharedNls.tooltips.locate, "class": "esriCTTdGeolocation" }, null);
+                this.domNode = domConstruct.create("div", {
+                    "title": sharedNls.tooltips.locate,
+                    "class": "esriCTTdGeolocation"
+                }, null);
                 this.own(on(this.domNode, "click", lang.hitch(this, function () {
                     /**
-                    * minimize other open header panel widgets and call geolocation service
-                    */
+                     * minimize other open header panel widgets and call geolocation service
+                     */
                     topic.publish("setMaxLegendLength");
                     this._showCurrentLocation();
                 })));
@@ -61,20 +64,21 @@ define([
         },
 
         /**
-        * get device location from geolocation service
-        * @param {string} appGlobals.configData.GeometryService Geometry service url specified in configuration file
-        * @memberOf widgets/geoLocation/geoLocation
-        */
+         * get device location from geolocation service
+         * @param {string} appGlobals.configData.GeometryService Geometry service url specified in configuration file
+         * @memberOf widgets/geoLocation/geoLocation
+         */
 
         _showCurrentLocation: function () {
-            var mapPoint, self = this, currentBaseMap, geometryServiceUrl, geometryService;
+            var mapPoint, self = this,
+                currentBaseMap, geometryServiceUrl, geometryService;
             geometryServiceUrl = appGlobals.configData.GeometryService;
             geometryService = new GeometryService(geometryServiceUrl);
 
             /**
-            * get device location using geolocation service
-            * @param {object} position Co-ordinates of device location in spatialReference of wkid:4326
-            */
+             * get device location using geolocation service
+             * @param {object} position Co-ordinates of device location in spatialReference of wkid:4326
+             */
             navigator.geolocation.getCurrentPosition(function (position) {
                 mapPoint = new Point(position.coords.longitude, position.coords.latitude, new SpatialReference({
                     wkid: 4326
@@ -82,17 +86,18 @@ define([
                 topic.publish("showProgressIndicator");
 
                 /**
-                * projects the device location on the map
-                * @param {string} appGlobals.configData.ZoomLevel Zoom level specified in configuration file
-                * @param {object} mapPoint Map point of device location in spatialReference of wkid:4326
-                * @param {object} newPoint Map point of device location in spatialReference of map
-                */
+                 * projects the device location on the map
+                 * @param {string} appGlobals.configData.ZoomLevel Zoom level specified in configuration file
+                 * @param {object} mapPoint Map point of device location in spatialReference of wkid:4326
+                 * @param {object} newPoint Map point of device location in spatialReference of map
+                 */
                 geometryService.project([mapPoint], self.map.spatialReference).then(function (newPoint) {
                     var selectedBasemap, basemapId;
                     selectedBasemap = appGlobals.configData.BaseMapLayers[appGlobals.shareOptions.selectedBasemapIndex];
                     if (selectedBasemap.length) {
                         basemapId = selectedBasemap[0].BasemapId;
-                    } else {
+                    }
+                    else {
                         basemapId = selectedBasemap.BasemapId;
                     }
                     if (self.map.getLayer(basemapId)) {
@@ -120,10 +125,10 @@ define([
         },
 
         /**
-        * add push pin on the map
-        * @param {object} mapPoint Map point of device location in spatialReference of map
-        * @memberOf widgets/geoLocation/geoLocation
-        */
+         * add push pin on the map
+         * @param {object} mapPoint Map point of device location in spatialReference of map
+         * @memberOf widgets/geoLocation/geoLocation
+         */
         _addGraphic: function (mapPoint) {
             var locatorMarkupSymbol, geoLocationPushpin, graphic;
             geoLocationPushpin = dojoConfig.baseURL + appGlobals.configData.LocatorSettings.DefaultLocatorSymbol;

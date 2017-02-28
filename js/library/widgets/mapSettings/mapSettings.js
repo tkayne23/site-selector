@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,alert,esri,appGlobals */
+/*global define,dojoConfig,alert,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -57,19 +57,19 @@ define([
         isInfoPopupShown: false,
 
         /**
-        * initialize map object
-        *
-        * @class
-        * @name widgets/mapSettings/mapSettings
-        */
+         * initialize map object
+         *
+         * @class
+         * @name widgets/mapSettings/mapSettings
+         */
         postCreate: function () {
             var mapDeferred;
             topic.publish("showProgressIndicator");
 
             /**
-            * load map
-            * @param {string} appGlobals.configData.BaseMapLayers Basemap settings specified in configuration file
-            */
+             * load map
+             * @param {string} appGlobals.configData.BaseMapLayers Basemap settings specified in configuration file
+             */
 
             mapDeferred = esriUtils.createMap(appGlobals.configData.WebMapId, "esriCTParentDivContainer", {
                 mapOptions: {
@@ -90,7 +90,10 @@ define([
                 //subscribe event to hide customized infowindow
                 topic.subscribe("hideInfoWindow", lang.hitch(this, this._hideInfoWindow));
                 //initialize customized infowindow widget
-                this.infoWindowPanel = new InfoWindow({ infoWindowWidth: appGlobals.configData.InfoPopupWidth, infoWindowHeight: appGlobals.configData.InfoPopupHeight });
+                this.infoWindowPanel = new InfoWindow({
+                    infoWindowWidth: appGlobals.configData.InfoPopupWidth,
+                    infoWindowHeight: appGlobals.configData.InfoPopupHeight
+                });
                 this._fetchWebMapData(response);
                 topic.publish("hideProgressIndicator");
                 this._mapOnLoad();
@@ -103,9 +106,9 @@ define([
         },
 
         /**
-        * update infoWindow content when it's position is set on map
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * update infoWindow content when it's position is set on map
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _onSetInfoWindowPosition: function (infoTitle, divInfoDetailsTab, screenPoint, infoPopupWidth, infoPopupHeight) {
             this.infoWindowPanel.resize(infoPopupWidth, infoPopupHeight);
             this.infoWindowPanel.hide();
@@ -117,9 +120,9 @@ define([
         },
 
         /**
-        * set infoWindow anchor position on map
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * set infoWindow anchor position on map
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _onSetMapTipPosition: function () {
             if (appGlobals.shareOptions.infoWindowIsShowing && this.selectedMapPoint) {
                 var screenPoint = this.map.toScreen(this.selectedMapPoint);
@@ -129,18 +132,21 @@ define([
         },
 
         /**
-        * fetch web map operational layers and generate settings
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * fetch web map operational layers and generate settings
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _fetchWebMapData: function (response) {
-            var webMapDetails = response.itemInfo.itemData, i, defArr = [], def, mapServerData;
+            var webMapDetails = response.itemInfo.itemData,
+                i, defArr = [],
+                def, mapServerData;
             for (i = 0; i < webMapDetails.operationalLayers.length; i++) {
                 // check for webmap mapserver and feature layer
                 if (webMapDetails.operationalLayers[i].visibility && webMapDetails.operationalLayers[i].layerObject) {
                     mapServerData = webMapDetails.operationalLayers[i].resourceInfo.layers || webMapDetails.operationalLayers[i].layerObject.layerInfos;
                     if (mapServerData) {
                         this._setDynamicOperationLayers(webMapDetails.operationalLayers[i], mapServerData, defArr);
-                    } else {
+                    }
+                    else {
                         def = new Deferred();
                         defArr.push(def);
                         def.resolve(webMapDetails.operationalLayers[i]);
@@ -171,9 +177,9 @@ define([
         },
 
         /**
-        * set Dynamic Operation Layers
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * set Dynamic Operation Layers
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _setDynamicOperationLayers: function (operationalLayer, mapServerData, defArr) {
             var url, layerUrl, i, operationalLayerObj = {};
             url = operationalLayer.url;
@@ -189,11 +195,12 @@ define([
         },
 
         /**
-        * load feature layer
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * load feature layer
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _loadFeatureLayer: function (layerUrl, layerObject) {
-            var dynamicOperationalLayer = {}, fLayer, def = new Deferred();
+            var dynamicOperationalLayer = {},
+                fLayer, def = new Deferred();
             fLayer = new FeatureLayer(layerUrl);
             on(fLayer, "load", lang.hitch(this, function (evt) {
                 dynamicOperationalLayer = layerObject;
@@ -206,9 +213,9 @@ define([
         },
 
         /**
-        * get layer object info
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * get layer object info
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _getLayerObject: function (operationalLayer, layerData) {
             var i;
             if (operationalLayer.layers) {
@@ -222,9 +229,9 @@ define([
             return layerData;
         },
         /**
-        * activate events on map
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * activate events on map
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _activateMapEvents: function () {
             this.map.on("click", lang.hitch(this, function (evt) {
                 topic.publish("loadingIndicatorHandler");
@@ -238,19 +245,22 @@ define([
                     mapPoint = new Point(window.location.toString().split("$mapPointForInfowindow=")[1].split("$")[0].split(",")[0], window.location.toString().split("$mapPointForInfowindow=")[1].split("$")[0].split(",")[1], this.map.spatialReference);
                     this._showInfoWindowOnMap(mapPoint);
                     appGlobals.shareOptions.mapPointForInfowindow = mapPoint.x + "," + mapPoint.y;
-                } else {
+                }
+                else {
                     this._onSetMapTipPosition();
                 }
             }));
         },
 
         /**
-        * show infoWindow on map
-        * @param{object} mapPoint is location on map to show infoWindow
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * show infoWindow on map
+         * @param{object} mapPoint is location on map to show infoWindow
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _showInfoWindowOnMap: function (mapPoint) {
-            var onMapFeaturArray = [], featureArray = [], j, i;
+            var onMapFeaturArray = [],
+                featureArray = [],
+                j, i;
             for (i = 0; i < appGlobals.operationalLayers.length; i++) {
                 if (appGlobals.operationalLayers[i].layerObject.visibleAtMapScale && appGlobals.operationalLayers[i].popupInfo) {
                     if (!appGlobals.operationalLayers[i].layerObject.hideInfo) {
@@ -279,9 +289,9 @@ define([
         },
 
         /**
-        * hide infoWindow
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * hide infoWindow
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _hideInfoWindow: function () {
             //check if infoWindow is opened
             if (appGlobals.shareOptions.infoWindowIsShowing && this.infoWindowPanel) {
@@ -291,19 +301,20 @@ define([
             }
         },
         /**
-        * fetch infoWindow data from query task result
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * fetch infoWindow data from query task result
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _fetchQueryResults: function (featureArray, mapPoint) {
             var point, headerPanel, headerPanelnew;
-            headerPanel = query('.esriCTdivInfoWindowCarousel')[0];
-            headerPanelnew = query('.esriCTheaderPanel')[0];
+            headerPanel = query(".esriCTdivInfoWindowCarousel")[0];
+            headerPanelnew = query(".esriCTheaderPanel")[0];
             if (featureArray.length > 0) {
                 this.count = 0;
                 appGlobals.shareOptions.mapPointForInfowindow = mapPoint.x + "," + mapPoint.y;
                 if (featureArray[this.count].attr.geometry.type !== "point") {
                     point = mapPoint;
-                } else {
+                }
+                else {
                     point = featureArray[this.count].attr.geometry;
                 }
                 this._createInfoWindowContent(point, featureArray, this.count, false);
@@ -311,8 +322,9 @@ define([
                     domClass.remove(query(".esriCTdivInfoRightArrow")[0], "esriCTShowInfoRightArrow");
                     domStyle.set(headerPanel, "display", "none");
                     domClass.add(headerPanelnew, "esriCTNewHeaderPanel");
-                } else {
-                    domAttr.set(query(".esriCTdivInfoTotalFeatureCount")[0], "innerHTML", '/' + featureArray.length);
+                }
+                else {
+                    domAttr.set(query(".esriCTdivInfoTotalFeatureCount")[0], "innerHTML", "/" + featureArray.length);
                     domStyle.set(headerPanel, "display", "block");
                     domClass.remove(headerPanelnew, "esriCTNewHeaderPanel");
                     query(".esriCTdivInfoRightArrow")[0].onclick = lang.hitch(this, function () {
@@ -322,18 +334,20 @@ define([
                         this._previousInfoContent(featureArray, point);
                     });
                 }
-            } else {
+            }
+            else {
                 topic.publish("hideLoadingIndicatorHandler");
             }
         },
 
         /**
-        * execute query task to find infoWindow data
-        * @param{string} index is layer index in operational layer array
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * execute query task to find infoWindow data
+         * @param{string} index is layer index in operational layer array
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _executeQueryTask: function (index, mapPoint, QueryURL, onMapFeaturArray) {
-            var esriQuery, queryTask, queryOnRouteTask, currentTime, layerIndex = index, queryString;
+            var esriQuery, queryTask, queryOnRouteTask, currentTime, layerIndex = index,
+                queryString;
             queryTask = new QueryTask(QueryURL);
             esriQuery = new Query();
             currentTime = new Date().getTime() + index.toString();
@@ -360,9 +374,9 @@ define([
         },
 
         /**
-        * get extent from map point
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * get extent from map point
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _extentFromPoint: function (point) {
             var screenPoint, sourcePoint, destinationPoint, sourceMapPoint, destinationMapPoint, tolerance = 15;
             screenPoint = this.map.toScreen(point);
@@ -374,16 +388,16 @@ define([
         },
 
         /**
-        * generate Id and title of operational layers
-        * @param{string} string value of layer URL
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * generate Id and title of operational layers
+         * @param{string} string value of layer URL
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _createLayerURL: function (layerObject) {
             var layerTitle, layerId, index, searchSettings, i, str;
             for (i = 0; i < appGlobals.configData.Workflows.length; i++) {
                 searchSettings = appGlobals.configData.Workflows[i].SearchSettings;
                 layerTitle = layerObject.title;
-                str = layerObject.url.split('/');
+                str = layerObject.url.split("/");
                 layerId = str[str.length - 1];
                 if (searchSettings) {
                     for (index = 0; index < searchSettings.length; index++) {
@@ -394,7 +408,8 @@ define([
                             }
                         }
                     }
-                } else if (appGlobals.configData.Workflows[i].FilterSettings.FilterLayer) {
+                }
+                else if (appGlobals.configData.Workflows[i].FilterSettings.FilterLayer) {
                     if (appGlobals.configData.Workflows[i].FilterSettings.FilterLayer.Title && appGlobals.configData.Workflows[i].FilterSettings.FilterLayer.QueryLayerId) {
                         if (layerTitle === appGlobals.configData.Workflows[i].FilterSettings.FilterLayer.Title && layerId === appGlobals.configData.Workflows[i].FilterSettings.FilterLayer.QueryLayerId) {
                             appGlobals.configData.Workflows[i].FilterSettings.FilterLayer.LayerURL = str.join("/");
@@ -408,18 +423,26 @@ define([
             var home, mapDefaultExtent, graphicsLayer, imgCustomLogo, extent, featureGrapgicLayer, imgSource, bufferGraphicLayer;
 
             /**
-            * set map extent to default extent
-            * @param {string} Default extent of map
-            */
-            extent = this._getQueryString('extent');
+             * set map extent to default extent
+             * @param {string} Default extent of map
+             */
+            extent = this._getQueryString("extent");
             if (extent !== "") {
-                mapDefaultExtent = extent.split(',');
-                mapDefaultExtent = new GeometryExtent({ "xmin": parseFloat(mapDefaultExtent[0]), "ymin": parseFloat(mapDefaultExtent[1]), "xmax": parseFloat(mapDefaultExtent[2]), "ymax": parseFloat(mapDefaultExtent[3]), "spatialReference": { "wkid": this.map.spatialReference.wkid} });
+                mapDefaultExtent = extent.split(",");
+                mapDefaultExtent = new GeometryExtent({
+                    "xmin": parseFloat(mapDefaultExtent[0]),
+                    "ymin": parseFloat(mapDefaultExtent[1]),
+                    "xmax": parseFloat(mapDefaultExtent[2]),
+                    "ymax": parseFloat(mapDefaultExtent[3]),
+                    "spatialReference": {
+                        "wkid": this.map.spatialReference.wkid
+                    }
+                });
                 this.map.setExtent(mapDefaultExtent);
             }
             /**
-            * load ESRI 'Home Button' widget
-            */
+             * load ESRI 'Home Button' widget
+             */
             home = this._addHomeButton();
             domConstruct.place(home.domNode, query(".esriSimpleSliderIncrementButton")[0], "after");
             home.startup();
@@ -427,10 +450,14 @@ define([
             if (appGlobals.configData.CustomLogoUrl && lang.trim(appGlobals.configData.CustomLogoUrl).length !== 0) {
                 if (appGlobals.configData.CustomLogoUrl.match("http:") || appGlobals.configData.CustomLogoUrl.match("https:")) {
                     imgSource = appGlobals.configData.CustomLogoUrl;
-                } else {
+                }
+                else {
                     imgSource = dojoConfig.baseURL + appGlobals.configData.CustomLogoUrl;
                 }
-                imgCustomLogo = domConstruct.create("img", { "src": imgSource, "class": "esriCTCustomMapLogo" }, dom.byId("esriCTParentDivContainer"));
+                imgCustomLogo = domConstruct.create("img", {
+                    "src": imgSource,
+                    "class": "esriCTCustomMapLogo"
+                }, dom.byId("esriCTParentDivContainer"));
                 domClass.add(imgCustomLogo, "esriCTCustomMapLogoBottom");
             }
             // check length of basemap layers and show base map gallery
@@ -449,12 +476,13 @@ define([
         },
 
         /**
-        * return extent value of map
-        * @param {string} Default extent of map
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * return extent value of map
+         * @param {string} Default extent of map
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _getQueryString: function (key) {
-            var extentValue = "", regex, qs;
+            var extentValue = "",
+                regex, qs;
             regex = new RegExp("[\\?&]" + key + "=([^&#]*)");
             qs = regex.exec(window.location.href);
             if (qs && qs.length > 0) {
@@ -464,10 +492,10 @@ define([
         },
 
         /**
-        * load ESRI 'Home Button' widget which sets map extent to default extent
-        * @return {object} Home button widget
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * load ESRI 'Home Button' widget which sets map extent to default extent
+         * @return {object} Home button widget
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _addHomeButton: function () {
             var home = new HomeButton({
                 map: this.map
@@ -476,10 +504,10 @@ define([
         },
 
         /**
-        * crate an object of base map gallery
-        * @return {object} base map object
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * crate an object of base map gallery
+         * @return {object} base map object
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _showBasMapGallery: function (isWebmap) {
             var basMapGallery = new BaseMapGallery({
                 map: this.map,
@@ -489,17 +517,17 @@ define([
         },
 
         /* return current map instance
-        * @return {object} Current map instance
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * @return {object} Current map instance
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _getMapInstance: function () {
             return this.map;
         },
 
         /**
-        * display next page of infoWindow on clicking of next arrow
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * display next page of infoWindow on clicking of next arrow
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _nextInfoContent: function (featureArray, point) {
             if (!domClass.contains(query(".esriCTdivInfoRightArrow")[0], "disableArrow")) {
                 if (this.count < featureArray.length) {
@@ -513,9 +541,9 @@ define([
         },
 
         /**
-        * display previous page of infoWindow on clicking of previous arrow
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * display previous page of infoWindow on clicking of previous arrow
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _previousInfoContent: function (featureArray, point) {
             if (!domClass.contains(query(".esriCTdivInfoLeftArrow")[0], "disableArrow")) {
                 if (this.count !== 0 && this.count < featureArray.length) {
@@ -529,17 +557,19 @@ define([
         },
 
         /**
-        * create infoWindow content for selected address
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * create infoWindow content for selected address
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _createInfoWindowContent: function (mapPoint, featureArray, count, isInfoArrowClicked) {
             var infoPopupFieldsCollection, divInfoDetailsTab, key, screenPoint, fieldLabel, urlRegex, divInfoFieldValue,
                 divInfoRow, i, fieldValue, divLink, infoTitle, attributes, infoIndex, descriptionValue, objectID, fieldInfo, domainValue, isLink;
             if (featureArray[count].attr && featureArray[count].attr.attributes) {
                 attributes = featureArray[count].attr.attributes;
-            } else if (featureArray[count].attribute) {
+            }
+            else if (featureArray[count].attribute) {
                 attributes = featureArray[count].attribute;
-            } else {
+            }
+            else {
                 attributes = featureArray[count].attributes;
             }
             infoIndex = featureArray[count].layerIndex;
@@ -547,26 +577,33 @@ define([
                 if (featureArray.length > 1 && count !== featureArray.length - 1) {
                     domClass.add(query(".esriCTdivInfoRightArrow")[0], "esriCTShowInfoRightArrow");
                     domAttr.set(query(".esriCTdivInfoFeatureCount")[0], "innerHTML", count);
-                } else {
+                }
+                else {
                     domClass.remove(query(".esriCTdivInfoRightArrow")[0], "esriCTShowInfoRightArrow");
                     domAttr.set(query(".esriCTdivInfoFeatureCount")[0], "innerHTML", "");
                 }
                 if (count > 0 && count < featureArray.length) {
                     domClass.add(query(".esriCTdivInfoLeftArrow")[0], "esriCTShowInfoLeftArrow");
                     domAttr.set(query(".esriCTdivInfoFeatureCount")[0], "innerHTML", count + 1);
-                } else {
+                }
+                else {
                     domClass.remove(query(".esriCTdivInfoLeftArrow")[0], "esriCTShowInfoLeftArrow");
                     domAttr.set(query(".esriCTdivInfoFeatureCount")[0], "innerHTML", count + 1);
                 }
-            } else {
+            }
+            else {
                 domClass.remove(query(".esriCTdivInfoRightArrow")[0], "esriCTShowInfoRightArrow");
                 domClass.remove(query(".esriCTdivInfoLeftArrow")[0], "esriCTShowInfoLeftArrow");
                 domAttr.set(query(".esriCTdivInfoFeatureCount")[0], "innerHTML", "");
                 domAttr.set(query(".esriCTdivInfoTotalFeatureCount")[0], "innerHTML", "");
             }
             topic.publish("hideLoadingIndicatorHandler");
-            divInfoDetailsTab = domConstruct.create("div", { "class": "esriCTInfoDetailsTab" }, null);
-            this.divInfoDetailsContainer = domConstruct.create("div", { "class": "divInfoDetailsContainer" }, divInfoDetailsTab);
+            divInfoDetailsTab = domConstruct.create("div", {
+                "class": "esriCTInfoDetailsTab"
+            }, null);
+            this.divInfoDetailsContainer = domConstruct.create("div", {
+                "class": "divInfoDetailsContainer"
+            }, divInfoDetailsTab);
             // check feature attribute value and show NA if it is null or empty
             for (i in attributes) {
                 if (attributes.hasOwnProperty(i)) {
@@ -579,44 +616,61 @@ define([
             if (appGlobals.operationalLayers[infoIndex].popupInfo && appGlobals.operationalLayers[infoIndex].popupInfo.description) {
                 descriptionValue = this._getDescription(attributes, appGlobals.operationalLayers[infoIndex]);
                 //create a div with pop up info description and add it to details div
-                divInfoRow = domConstruct.create("div", { "class": "esriCTDisplayRow" }, this.divInfoDetailsContainer);
+                divInfoRow = domConstruct.create("div", {
+                    "class": "esriCTDisplayRow"
+                }, this.divInfoDetailsContainer);
                 domConstruct.create("div", {
                     "innerHTML": descriptionValue,
                     "class": "esriCTDisplayFieldCustomPopUp"
                 }, divInfoRow);
-            } else if (appGlobals.operationalLayers[infoIndex].popupInfo && appGlobals.operationalLayers[infoIndex].popupInfo.fieldInfos && appGlobals.operationalLayers[infoIndex].popupInfo.fieldInfos.length > 0) {
+            }
+            else if (appGlobals.operationalLayers[infoIndex].popupInfo && appGlobals.operationalLayers[infoIndex].popupInfo.fieldInfos && appGlobals.operationalLayers[infoIndex].popupInfo.fieldInfos.length > 0) {
                 urlRegex = new RegExp("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?");
                 infoPopupFieldsCollection = appGlobals.operationalLayers[infoIndex].popupInfo.fieldInfos;
                 for (key = 0; key < infoPopupFieldsCollection.length; key++) {
                     if (infoPopupFieldsCollection[key].visible) {
                         if (attributes.hasOwnProperty(infoPopupFieldsCollection[key].fieldName)) {
                             isLink = false;
-                            divInfoRow = domConstruct.create("div", { "class": "esriCTDisplayRow" }, this.divInfoDetailsContainer);
+                            divInfoRow = domConstruct.create("div", {
+                                "class": "esriCTDisplayRow"
+                            }, this.divInfoDetailsContainer);
                             fieldLabel = infoPopupFieldsCollection[key].label;
                             if (lang.trim(fieldLabel) === "") {
                                 fieldLabel = infoPopupFieldsCollection[key].fieldName;
                             }
-                            domConstruct.create("div", { "class": "esriCTDisplayField", "innerHTML": fieldLabel }, divInfoRow);
-                            divInfoFieldValue = domConstruct.create("div", { "class": "esriCTValueField" }, divInfoRow);
+                            domConstruct.create("div", {
+                                "class": "esriCTDisplayField",
+                                "innerHTML": fieldLabel
+                            }, divInfoRow);
+                            divInfoFieldValue = domConstruct.create("div", {
+                                "class": "esriCTValueField"
+                            }, divInfoRow);
                             fieldValue = attributes[infoPopupFieldsCollection[key].fieldName];
                             fieldInfo = this._isDateField(infoPopupFieldsCollection[key].fieldName, appGlobals.operationalLayers[infoIndex].layerObject);
                             if (fieldValue !== appGlobals.configData.ShowNullValueAs) {
                                 if (fieldInfo) {
                                     fieldValue = this._setDateFormat(infoPopupFieldsCollection[key], fieldValue);
-                                } else {
+                                }
+                                else {
                                     fieldInfo = this._hasDomainCodedValue(infoPopupFieldsCollection[key].fieldName, attributes, appGlobals.operationalLayers[infoIndex].layerObject);
                                     if (fieldInfo) {
                                         if (fieldInfo.isTypeIdField) {
                                             fieldValue = fieldInfo.name;
-                                        } else {
+                                        }
+                                        else {
                                             domainValue = this._domainCodedValues(fieldInfo, fieldValue);
                                             fieldValue = domainValue.domainCodedValue;
                                         }
-                                    } else if (fieldValue.toString().match(urlRegex)) {
+                                    }
+                                    else if (fieldValue.toString().match(urlRegex)) {
                                         isLink = true;
-                                        divLink = domConstruct.create("div", { "class": "esriCTLink", innerHTML: sharedNls.titles.moreInfo }, divInfoFieldValue);
+                                        divLink = domConstruct.create("div", {
+                                            "class": "esriCTLink",
+                                            innerHTML: sharedNls.titles.moreInfo
+                                        }, divInfoFieldValue);
                                         on(divLink, "click", lang.hitch(this, this._makeWindowOpenHandler(fieldValue)));
-                                    } else {
+                                    }
+                                    else {
                                         if (infoPopupFieldsCollection[key].format) {
                                             fieldValue = this._numberFormatCorverter(infoPopupFieldsCollection[key], fieldValue);
                                         }
@@ -632,7 +686,8 @@ define([
             }
             try {
                 infoTitle = this._popUpTitleDetails(attributes, appGlobals.operationalLayers[infoIndex]);
-            } catch (ex) {
+            }
+            catch (ex) {
                 infoTitle = appGlobals.configData.ShowNullValueAs;
             }
 
@@ -647,7 +702,8 @@ define([
                 domClass.remove(query(".esriCTdivInfoRightArrow")[0], "disableArrow");
                 domClass.remove(query(".esriCTdivInfoLeftArrow")[0], "disableArrow");
                 this._centralizeInfowindowOnMap(infoTitle, divInfoDetailsTab, appGlobals.configData.InfoPopupWidth, appGlobals.configData.InfoPopupHeight);
-            } else {
+            }
+            else {
                 screenPoint = this.map.toScreen(this.selectedMapPoint);
                 screenPoint.y = this.map.height - screenPoint.y;
                 domClass.remove(query(".esriCTdivInfoRightArrow")[0], "disableArrow");
@@ -658,11 +714,11 @@ define([
         },
 
         /**
-        * sets the info popup header
-        * @param{array} featureSet
-        * @param{object} operationalLayer - operational layer data
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * sets the info popup header
+         * @param{array} featureSet
+         * @param{object} operationalLayer - operational layer data
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _popUpTitleDetails: function (featureSet, operationalLayer) {
             var i, j, titleField, fieldValue, domainValue, popupTitle, titleArray, headerValue, headerFieldArray, fieldInfo, popupInfoValue;
             headerValue = null;
@@ -681,10 +737,12 @@ define([
                             fieldValue = featureSet[titleArray[0]];
                             // concatenate string and first field from the header and insert in an array
                             headerFieldArray.push(fieldValue);
-                        } else {
+                        }
+                        else {
                             headerFieldArray.push(titleField);
                         }
-                    } else {
+                    }
+                    else {
                         for (j = 0; j < titleArray.length; j++) {
                             if (j === 0) {
                                 if (featureSet.hasOwnProperty(titleArray[j])) {
@@ -695,12 +753,14 @@ define([
                                         if (fieldInfo) {
                                             //set date format
                                             fieldValue = this._setDateFormat(popupInfoValue, fieldValue);
-                                        } else {
+                                        }
+                                        else {
                                             fieldInfo = this._hasDomainCodedValue(titleArray[j], featureSet, operationalLayer.layerObject);
                                             if (fieldInfo) {
                                                 if (fieldInfo.isTypeIdField) {
                                                     fieldValue = fieldInfo.name;
-                                                } else {
+                                                }
+                                                else {
                                                     domainValue = this._domainCodedValues(fieldInfo, fieldValue);
                                                     fieldValue = domainValue.domainCodedValue;
                                                 }
@@ -713,7 +773,8 @@ define([
                                     }
                                     headerFieldArray.push(fieldValue);
                                 }
-                            } else {
+                            }
+                            else {
                                 headerFieldArray.push(titleArray[j]);
                             }
                         }
@@ -724,11 +785,13 @@ define([
                 for (j = 0; j < headerFieldArray.length; j++) {
                     if (headerValue) {
                         headerValue = headerValue + headerFieldArray[j];
-                    } else {
+                    }
+                    else {
                         headerValue = headerFieldArray[j];
                     }
                 }
-            } else {
+            }
+            else {
                 // if popup title is not empty, display popup field headerValue else display a configurable text
                 if (lang.trim(operationalLayer.popupInfo.title) !== "") {
                     headerValue = operationalLayer.popupInfo.title;
@@ -741,18 +804,19 @@ define([
         },
 
         /**
-        * format number value based on the format received from info popup
-        * @param{object} popupInfoValue
-        * @param{string} fieldValue
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * format number value based on the format received from info popup
+         * @param{object} popupInfoValue
+         * @param{string} fieldValue
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _numberFormatCorverter: function (popupInfoValue, fieldValue) {
             if (popupInfoValue.format && popupInfoValue.format.places !== null && popupInfoValue.format.places !== "" && !isNaN(parseFloat(fieldValue))) {
                 // Check if digit separator is available
                 if (popupInfoValue.format.digitSeparator) {
                     fieldValue = parseFloat(fieldValue).toFixed(popupInfoValue.format.places);
                     fieldValue = this._convertNumberToThousandSeperator(fieldValue);
-                } else if (popupInfoValue.format.places) {
+                }
+                else if (popupInfoValue.format.places) {
                     fieldValue = fieldValue.toFixed(popupInfoValue.format.places);
                 }
             }
@@ -760,11 +824,11 @@ define([
         },
 
         /**
-        * check if field type is date
-        * @param{object} layerObj - layer data
-        * @param{string} fieldName - current field
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * check if field type is date
+         * @param{object} layerObj - layer data
+         * @param{string} fieldName - current field
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _isDateField: function (fieldName, layerObj) {
             var i, dateField = null;
             for (i = 0; i < layerObj.fields.length; i++) {
@@ -776,103 +840,105 @@ define([
             return dateField;
         },
         /**
-        * format date value based on the format received from info popup
-        * @param{object} dateFieldInfo
-        * @param{string} dataFieldValue
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * format date value based on the format received from info popup
+         * @param{object} dateFieldInfo
+         * @param{string} dataFieldValue
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _setDateFormat: function (dateFieldInfo, dateFieldValue) {
-            var dateObj = new Date(dateFieldValue), popupDateFormat;
+            var dateObj = new Date(dateFieldValue),
+                popupDateFormat;
             if (dateFieldInfo.format && dateFieldInfo.format.dateFormat) {
                 popupDateFormat = this._getDateFormat(dateFieldInfo.format.dateFormat);
                 dateFieldValue = locale.format(this.utcTimestampFromMs(dateObj), {
                     datePattern: popupDateFormat,
                     selector: "date"
                 });
-            } else {
+            }
+            else {
                 dateFieldValue = dateObj.toLocaleDateString();
             }
             return dateFieldValue;
         },
 
         /**
-        * this function is used to convert ArcGIS date format constants to readable date formats
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * this function is used to convert ArcGIS date format constants to readable date formats
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _getDateFormat: function (type) {
             var dateFormat;
             switch (type) {
-            case "shortDate":
-                dateFormat = "MM/dd/yyyy";
-                break;
-            case "shortDateLE":
-                dateFormat = "dd/MM/yyyy";
-                break;
-            case "longMonthDayYear":
-                dateFormat = "MMMM dd, yyyy";
-                break;
-            case "dayShortMonthYear":
-                dateFormat = "dd MMM yyyy";
-                break;
-            case "longDate":
-                dateFormat = "EEEE, MMMM dd, yyyy";
-                break;
-            case "shortDateLongTime":
-                dateFormat = "MM/dd/yyyy hh:mm:ss a";
-                break;
-            case "shortDateLELongTime":
-                dateFormat = "dd/MM/yyyy hh:mm:ss a";
-                break;
-            case "shortDateLELongTime24":
-                dateFormat = "dd/MM/yyyy hh:mm:ss";
-                break;
-            case "shortDateShortTime":
-                dateFormat = "MM/dd/yyyy hh:mm a";
-                break;
-            case "shortDateLEShortTime":
-                dateFormat = "dd/MM/yyyy hh:mm a";
-                break;
-            case "shortDateShortTime24":
-                dateFormat = "MM/dd/yyyy HH:mm";
-                break;
-            case "shortDateLongTime24":
-                dateFormat = "MM/dd/yyyy hh:mm:ss";
-                break;
-            case "shortDateLEShortTime24":
-                dateFormat = "dd/MM/yyyy HH:mm";
-                break;
-            case "longMonthYear":
-                dateFormat = "MMMM yyyy";
-                break;
-            case "shortMonthYear":
-                dateFormat = "MMM yyyy";
-                break;
-            case "year":
-                dateFormat = "yyyy";
-                break;
-            default:
-                dateFormat = "MMMM dd, yyyy";
+                case "shortDate":
+                    dateFormat = "MM/dd/yyyy";
+                    break;
+                case "shortDateLE":
+                    dateFormat = "dd/MM/yyyy";
+                    break;
+                case "longMonthDayYear":
+                    dateFormat = "MMMM dd, yyyy";
+                    break;
+                case "dayShortMonthYear":
+                    dateFormat = "dd MMM yyyy";
+                    break;
+                case "longDate":
+                    dateFormat = "EEEE, MMMM dd, yyyy";
+                    break;
+                case "shortDateLongTime":
+                    dateFormat = "MM/dd/yyyy hh:mm:ss a";
+                    break;
+                case "shortDateLELongTime":
+                    dateFormat = "dd/MM/yyyy hh:mm:ss a";
+                    break;
+                case "shortDateLELongTime24":
+                    dateFormat = "dd/MM/yyyy hh:mm:ss";
+                    break;
+                case "shortDateShortTime":
+                    dateFormat = "MM/dd/yyyy hh:mm a";
+                    break;
+                case "shortDateLEShortTime":
+                    dateFormat = "dd/MM/yyyy hh:mm a";
+                    break;
+                case "shortDateShortTime24":
+                    dateFormat = "MM/dd/yyyy HH:mm";
+                    break;
+                case "shortDateLongTime24":
+                    dateFormat = "MM/dd/yyyy hh:mm:ss";
+                    break;
+                case "shortDateLEShortTime24":
+                    dateFormat = "dd/MM/yyyy HH:mm";
+                    break;
+                case "longMonthYear":
+                    dateFormat = "MMMM yyyy";
+                    break;
+                case "shortMonthYear":
+                    dateFormat = "MMM yyyy";
+                    break;
+                case "year":
+                    dateFormat = "yyyy";
+                    break;
+                default:
+                    dateFormat = "MMMM dd, yyyy";
             }
             return dateFormat;
         },
 
         /**
-        * this function is used to convert number to thousand separator
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * this function is used to convert number to thousand separator
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _convertNumberToThousandSeperator: function (number) {
             number = number.split(".");
             number[0] = number[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-            return number.join('.');
+            return number.join(".");
         },
 
         /**
-        * show attached images in the issue details
-        * @param{array} operationalLayer
-        * @param{object} parentDiv
-        * @param{string} objectID
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * show attached images in the issue details
+         * @param{array} operationalLayer
+         * @param{object} parentDiv
+         * @param{string} objectID
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _showAttachments: function (operationalLayer, objectID, divInfoDetailsContainer) {
             var i, divInfoRow, attchmentNode;
             // query attachments in layer
@@ -886,7 +952,9 @@ define([
                 }
                 for (i = 0; i < infos.length; i++) {
                     //create a div with pop up info description and add it to details div
-                    divInfoRow = domConstruct.create("div", { "class": "esriCTDisplayRow" }, divInfoDetailsContainer);
+                    divInfoRow = domConstruct.create("div", {
+                        "class": "esriCTDisplayRow"
+                    }, divInfoDetailsContainer);
                     attchmentNode = domConstruct.create("div", {
                         "innerHTML": infos[i].name,
                         "class": "esriCTLink"
@@ -901,20 +969,21 @@ define([
         },
 
         /**
-        * show attachments in new window when user clicks on the attachment thumbnail
-        * @param{object} evt
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * show attachments in new window when user clicks on the attachment thumbnail
+         * @param{object} evt
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _openAttachment: function (evt) {
-            var node = evt.currentTarget || evt.srcElement, imgUrl;
+            var node = evt.currentTarget || evt.srcElement,
+                imgUrl;
             imgUrl = domAttr.get(node, "imgPath");
             window.open(imgUrl);
         },
 
         /**
-        * open link in a window on clicking of it
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * open link in a window on clicking of it
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _makeWindowOpenHandler: function (link) {
             return function () {
                 window.open(link);
@@ -923,11 +992,11 @@ define([
 
 
         /**
-        * get description from layer pop up info
-        * @param{array} featureSet
-        * @param{object} operationalLayer - operational layer data
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * get description from layer pop up info
+         * @param{array} featureSet
+         * @param{object} operationalLayer - operational layer data
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _getDescription: function (featureSet, operationalLayerDetails) {
             var descriptionValue, i, field, splittedArrayForClosingBraces, popupInfoValue, fieldValue, fieldInfo, domainValue;
             // assuming Fields will be configure within the curly braces'{}'
@@ -952,16 +1021,19 @@ define([
                                 fieldValue = this._numberFormatCorverter(popupInfoValue, fieldValue);
                             }
                             descriptionValue += fieldValue;
-                        } else {
+                        }
+                        else {
                             fieldInfo = this._hasDomainCodedValue(field, featureSet, operationalLayerDetails.layerObject);
                             if (fieldInfo) {
                                 if (fieldInfo.isTypeIdField) {
                                     descriptionValue += fieldInfo.name;
-                                } else {
+                                }
+                                else {
                                     domainValue = this._domainCodedValues(fieldInfo, featureSet[lang.trim(field)]);
                                     descriptionValue += domainValue.domainCodedValue;
                                 }
-                            } else if (featureSet[field] || featureSet[field] === 0) {
+                            }
+                            else if (featureSet[field] || featureSet[field] === 0) {
                                 // check if the field is valid field or not, if it is valid then substitute its value.
                                 fieldValue = featureSet[field];
                                 if (popupInfoValue.format) {
@@ -969,7 +1041,8 @@ define([
                                     fieldValue = this._numberFormatCorverter(popupInfoValue, fieldValue);
                                 }
                                 descriptionValue += fieldValue;
-                            } else if (field === "") {
+                            }
+                            else if (field === "") {
                                 // if field is empty means only curly braces are configured in pop-up
                                 descriptionValue += "{}";
                             }
@@ -978,15 +1051,18 @@ define([
                         // if splittedArrayForClosingBraces length is more than 1, then there are more closing braces in the string, so join the array with }
                         if (splittedArrayForClosingBraces.length > 1) {
                             descriptionValue += splittedArrayForClosingBraces.join("}");
-                        } else {
+                        }
+                        else {
                             descriptionValue += splittedArrayForClosingBraces.join("");
                         }
-                    } else {
+                    }
+                    else {
                         // if there is no closing bracket then add the rest of the string prefixed with '{' as we have split it with '{'
                         descriptionValue += "{" + operationalLayerDetails.popupInfo.description.split("{")[i];
                     }
                 }
-            } else {
+            }
+            else {
                 // no '{' braces means no field has been configured only Custom description is present in pop-up
                 descriptionValue = operationalLayerDetails.popupInfo.description;
             }
@@ -994,19 +1070,20 @@ define([
         },
 
         /**
-        * check if field has domain coded values
-        * @param{string} fieldName
-        * @param{object} feature
-        * @param{object} layerObject
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * check if field has domain coded values
+         * @param{string} fieldName
+         * @param{object} feature
+         * @param{object} layerObject
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _hasDomainCodedValue: function (fieldName, feature, layerObject) {
             var i, j, fieldInfo;
             for (i = 0; i < layerObject.fields.length; i++) {
                 if (layerObject.fields[i].name === fieldName) {
                     if (layerObject.fields[i].domain && layerObject.fields[i].domain.codedValues) {
                         fieldInfo = layerObject.fields[i];
-                    } else if (layerObject.typeIdField) {
+                    }
+                    else if (layerObject.typeIdField) {
                         // get types from layer object, if typeIdField is available
                         for (j = 0; j < layerObject.types.length; j++) {
                             if (String(layerObject.types[j].id) === String(feature[layerObject.typeIdField])) {
@@ -1028,10 +1105,12 @@ define([
                     if (fieldInfo.domains.hasOwnProperty(fieldName)) {
                         fieldInfo.domain = {};
                         fieldInfo.domain = fieldInfo.domains[fieldName];
-                    } else {
+                    }
+                    else {
                         fieldInfo = null;
                     }
-                } else {
+                }
+                else {
                     // set isTypeIdField to true if current field is typeIdField
                     fieldInfo.isTypeIdField = true;
                 }
@@ -1040,14 +1119,16 @@ define([
         },
 
         /**
-        * fetch domain coded value
-        * @param{object} operationalLayerDetails
-        * @param{string} fieldValue
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * fetch domain coded value
+         * @param{object} operationalLayerDetails
+         * @param{string} fieldValue
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _domainCodedValues: function (operationalLayerDetails, fieldValue) {
             var k, codedValues, domainValueObj;
-            domainValueObj = { domainCodedValue: appGlobals.configData.ShowNullValueAs };
+            domainValueObj = {
+                domainCodedValue: appGlobals.configData.ShowNullValueAs
+            };
             codedValues = operationalLayerDetails.domain.codedValues;
             if (codedValues) {
                 // loop for codedValue
@@ -1058,7 +1139,8 @@ define([
                         if (codedValues[k].code === fieldValue) {
                             fieldValue = codedValues[k].name;
                         }
-                    } else if (codedValues[k].code === parseInt(fieldValue, 10)) {
+                    }
+                    else if (codedValues[k].code === parseInt(fieldValue, 10)) {
                         fieldValue = codedValues[k].name;
                     }
                 }
@@ -1068,11 +1150,11 @@ define([
         },
 
         /**
-        * fetch field from popup info
-        * @param{string} fieldName - current field
-        * @param{object} popupInfo - operational layer popupInfo object
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * fetch field from popup info
+         * @param{string} fieldName - current field
+         * @param{object} popupInfo - operational layer popupInfo object
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _getPopupInfo: function (fieldName, popupInfo) {
             var i, fieldInfo;
             for (i = 0; i < popupInfo.fieldInfos.length; i++) {
@@ -1085,38 +1167,47 @@ define([
         },
 
         /**
-        * convert the UTC time stamp from Millisecond
-        * @returns Date
-        * @param {object} utcMilliseconds contains UTC millisecond
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * convert the UTC time stamp from Millisecond
+         * @returns Date
+         * @param {object} utcMilliseconds contains UTC millisecond
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         utcTimestampFromMs: function (utcMilliseconds) { // returns Date
             return this.localToUtc(new Date(utcMilliseconds));
         },
 
         /**
-        * convert the local time to UTC
-        * @param {object} localTimestamp contains Local time
-        * @returns Date
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * convert the local time to UTC
+         * @param {object} localTimestamp contains Local time
+         * @returns Date
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         localToUtc: function (localTimestamp) { // returns Date
             return new Date(localTimestamp.getTime());
         },
 
         /**
-        * centralizes the infoWindow on map
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * centralizes the infoWindow on map
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _centralizeInfowindowOnMap: function (infoTitle, divInfoDetailsTab, infoPopupWidth, infoPopupHeight) {
             var extentChanged, screenPoint, extent, mapDefaultExtent;
             if (!appGlobals.shareOptions.isInfoPopupShared) {
                 extentChanged = this.map.setExtent(this._calculateCustomMapExtent(this.selectedMapPoint));
-            } else {
-                extent = this._getQueryString('extent');
+            }
+            else {
+                extent = this._getQueryString("extent");
                 if (extent !== "") {
-                    mapDefaultExtent = extent.split(',');
-                    mapDefaultExtent = new GeometryExtent({ "xmin": parseFloat(mapDefaultExtent[0]), "ymin": parseFloat(mapDefaultExtent[1]), "xmax": parseFloat(mapDefaultExtent[2]), "ymax": parseFloat(mapDefaultExtent[3]), "spatialReference": { "wkid": this.map.spatialReference.wkid} });
+                    mapDefaultExtent = extent.split(",");
+                    mapDefaultExtent = new GeometryExtent({
+                        "xmin": parseFloat(mapDefaultExtent[0]),
+                        "ymin": parseFloat(mapDefaultExtent[1]),
+                        "xmax": parseFloat(mapDefaultExtent[2]),
+                        "ymax": parseFloat(mapDefaultExtent[3]),
+                        "spatialReference": {
+                            "wkid": this.map.spatialReference.wkid
+                        }
+                    });
                     extentChanged = this.map.setExtent(mapDefaultExtent);
                 }
             }
@@ -1128,9 +1219,9 @@ define([
             }));
         },
         /**
-        * calculate extent of map
-        * @memberOf widgets/mapSettings/mapSettings
-        */
+         * calculate extent of map
+         * @memberOf widgets/mapSettings/mapSettings
+         */
         _calculateCustomMapExtent: function (mapPoint) {
             var width, height, ratioHeight, totalYPoint, infoWindowHeight, xmin, ymin, xmax, ymax;
             width = this.map.extent.getWidth();

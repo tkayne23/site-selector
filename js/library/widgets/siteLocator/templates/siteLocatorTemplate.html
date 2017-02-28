@@ -8,11 +8,11 @@
             <div class="directionsDisplayTextSites" data-dojo-attach-point="sitesContent">
             </div>
         </div>
-        <div class="esriCTsearchContainerBusiness esriCTTab" data-dojo-attach-point="esriCTsearchContainerBusiness">
+        <div class="esriCTsearchContainerBusiness esriCTTab esriCTHidden" data-dojo-attach-point="esriCTsearchContainerBusiness">
             <div class="directionsDisplayTextBusiness" data-dojo-attach-point="businessContent">
             </div>
         </div>
-        <div class="esriCTsearchContainerCommunities esriCTTab" data-dojo-attach-point="esriCTsearchContainerCommunities">
+        <div class="esriCTsearchContainerCommunities esriCTTab esriCTHidden" data-dojo-attach-point="esriCTsearchContainerCommunities">
             <div class="directionsDisplayTextCommunities" data-dojo-attach-point="communitiesContent">
             </div>
         </div>
@@ -84,18 +84,14 @@
                 </div>
                 <div class="esriCTFilterContainer" data-dojo-attach-point="filterContainer">
                     <div class="esriOuterDiv">
-                        <div class="esriCTbuildingAreaToFromDiv" data-dojo-attach-point="buildingAreaToFromDiv">
-                        </div>
-                        <div class="esriCTHorizantalRuleBuliding" data-dojo-attach-point="horizantalruleBuliding">
-                        </div>
-                        <div class="esriCTdivHideOptionBuilding" data-dojo-attach-point="divHideOptionBuilding">
+                        <div class="esriCTFilterClear" data-dojo-attach-point="buildingsFilter">
                         </div>
                     </div>
                     <div class="esriCTFilterDiv">
                         <div class="esriOuterDiv">
                             <div class="esriCTClearFilterIcon" data-dojo-attach-point="clearFilterBuilding">
                             </div>
-                            <div class="esriCTFilterIcon" data-dojo-attach-point="filterIcon">
+                            <div class="esriCTFilterIcon" data-dojo-attach-point="filterIconBuilding">
                             </div>
                         </div>
                     </div>
@@ -179,11 +175,7 @@
                 </div>
                 <div class="esriCTFilterContainer" data-dojo-attach-point="filterContainerSites">
                     <div class="esriOuterDiv">
-                        <div class="esriCTbuildingAreaToFromDiv" data-dojo-attach-point="sitesFromToMainDiv">
-                        </div>
-                        <div class="esriCTHorizantalRuleSites" data-dojo-attach-point="horizantalruleSites">
-                        </div>
-                        <div class="esriCTdivHideOptionBuilding" data-dojo-attach-point="divHideOptionSites">
+                        <div class="esriCTFilterClear" data-dojo-attach-point="sitesFilter">
                         </div>
                     </div>
                     <div class="esriCTFilterDiv">
@@ -215,7 +207,7 @@
             <div class="esriOuterDivContainer">
                 <div class="esriOuterDiv">
                     <div class="esriCTClear">
-                        <div class="esriCTBussinessSearchLabel" data-dojo-attach-point="searchBusinessText">
+                        <div data-dojo-attach-point="searchBusinessText">
                         </div>
                     </div>
                     <div class="esriCTAddressClear">
@@ -276,12 +268,10 @@
             </div>
             <div class="esriCTFilterContainer" data-dojo-attach-point="filterContainerBussiness">
                 <div class="esriOuterDiv">
-                    <div class="esriCTbuildingAreaToFromDiv" data-dojo-attach-point="BussinessFromToMainDiv">
-                    </div>
-                    <div class="esriCTdivHideOptionBuilding" data-dojo-attach-point="divHideOptionBussiness">
+                    <div class="esriCTFilterClear" data-dojo-attach-point="businessFilter">
                     </div>
                 </div>
-                <div class="esriCTFilterDivBisuness">
+                <div class="esriCTFilterDivBusiness">
                     <div class="esriOuterDiv">
                         <div class="esriCTClearFilterIcon" data-dojo-attach-point="clearFilterBusiness">
                         </div>

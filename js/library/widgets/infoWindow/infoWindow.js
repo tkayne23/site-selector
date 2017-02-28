@@ -1,4 +1,4 @@
-﻿/*global define,dojo,dojoConfig,esri,alert,appGlobals */
+/*global define,appGlobals */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
 /*
  | Copyright 2013 Esri
@@ -39,11 +39,11 @@ define([
         sharedNls: sharedNls,
 
         /**
-        * create infoWindow widget
-        *
-        * @class
-        * @name widgets/infoWindow/infoWindow
-        */
+         * create infoWindow widget
+         *
+         * @class
+         * @name widgets/infoWindow/infoWindow
+         */
         postCreate: function () {
             if (!this.infoWindowWidth) {
                 this.infoWindowWidth = "100px";
@@ -53,12 +53,15 @@ define([
             }
             this.infoWindowContainer = domConstruct.create("div", {}, dom.byId("esriCTParentDivContainer"));
             this.infoWindowContainer.appendChild(this.domNode);
-            this._anchor = domConstruct.create("div", { "class": "esriCTdivTriangle" }, this.domNode);
+            this._anchor = domConstruct.create("div", {
+                "class": "esriCTdivTriangle"
+            }, this.domNode);
             domUtils.hide(this.domNode);
             this.own(on(this.esriCTclosediv, "click", lang.hitch(this, function () {
                 if (query(".map .logo-sm")) {
                     this.InfoShow = true;
-                } else {
+                }
+                else {
                     this.InfoShow = false;
                 }
                 appGlobals.shareOptions.mapPointForInfowindow = null;
@@ -78,10 +81,10 @@ define([
         },
 
         /**
-        * show infoWindow
-        * @param {object} screenPoint to show infoWindow
-        * @memberOf widgets/infoWindow/infoWindow
-        */
+         * show infoWindow
+         * @param {object} screenPoint to show infoWindow
+         * @memberOf widgets/infoWindow/infoWindow
+         */
         show: function (detailsTab, screenPoint) {
             this.InfoShow = false;
             this.setLocation(screenPoint);
@@ -91,9 +94,9 @@ define([
         },
 
         /**
-        * resize infoWindow
-        * @memberOf widgets/infoWindow/infoWindow
-        */
+         * resize infoWindow
+         * @memberOf widgets/infoWindow/infoWindow
+         */
         resize: function (width, height) {
             this.infoWindowWidth = width;
             this.infoWindowHeight = height;
@@ -104,23 +107,24 @@ define([
         },
 
         /**
-        * set title of infoWindow
-        * @memberOf widgets/infoWindow/infoWindow
-        */
+         * set title of infoWindow
+         * @memberOf widgets/infoWindow/infoWindow
+         */
         setTitle: function (infoTitle) {
             if (infoTitle.length > 0) {
                 this.popUpHeaderPanel.innerHTML = "";
                 this.popUpHeaderPanel.innerHTML = infoTitle;
                 this.popUpHeaderPanel.title = infoTitle;
-            } else {
+            }
+            else {
                 this.popUpHeaderPanel.innerHTML = appGlobals.configData.ShowNullValueAs;
             }
         },
 
         /**
-        * set location of infoWindow
-        * @memberOf widgets/infoWindow/infoWindow
-        */
+         * set location of infoWindow
+         * @memberOf widgets/infoWindow/infoWindow
+         */
         setLocation: function (location) {
             if (location.spatialReference) {
                 location = this.map.toScreen(location);
@@ -136,9 +140,9 @@ define([
         },
 
         /**
-        * hide infoWindow
-        * @memberOf widgets/infoWindow/infoWindow
-        */
+         * hide infoWindow
+         * @memberOf widgets/infoWindow/infoWindow
+         */
         hide: function () {
             this.isShowing = false;
             this.onHide();
@@ -146,9 +150,9 @@ define([
         },
 
         /**
-        * hide infoWindow container
-        * @memberOf widgets/infoWindow/infoWindow
-        */
+         * hide infoWindow container
+         * @memberOf widgets/infoWindow/infoWindow
+         */
         _hideInfoContainer: function () {
             this.own(on(this.esriCTclosediv, "click", lang.hitch(this, function () {
                 domUtils.hide(this.domNode);
